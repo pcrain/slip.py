@@ -1,0 +1,180 @@
+{% block content %}
+    <div id="replayDataOuterGrid">
+        <table id="replayListing">
+        <tr>
+          {# <td rowspan="3"><a href="/replays/{{ r.__file.split('.')[0] }}">{{ r.__file }}</a></td> #}
+          <td class="align-left" colspan="2">{{ r.players[0].get("tag_player","YO") }}</td>
+          <td class="align-right" colspan="2">{{ r.players[1].get("tag_player","YO") }}</td>
+        </tr>
+        <tr>
+          {# <td>{{ r.__file.split(".")[0] }}</td> #}
+          <td>
+            {% for i in range(r.players[0].end_stocks,4) %}
+              <img class="dead" title="{{ r.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[0].char_name }}{{ r.players[0].color }}.png" />
+            {% endfor %}
+            {% for i in range(r.players[0].end_stocks) %}
+              <img title="{{ r.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[0].char_name }}{{ r.players[0].color }}.png" />
+            {% endfor %}
+          </td>
+          <td class="stage align-center" colspan="2" background="{{ url_for('static',filename='icons/stage') }}/{{ r.stage_name }}.png" title="{{ r.stage_name }}">
+            {{ r.__game_length }}
+          </td>
+          <td style="text-align: right;">
+            {% for i in range(r.players[1].end_stocks) %}
+              <img title="{{ r.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[1].char_name }}{{ r.players[1].color }}.png" />
+            {% endfor %}
+            {% for i in range(r.players[1].end_stocks,4) %}
+              <img class="dead" title="{{ r.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[1].char_name }}{{ r.players[1].color }}.png" />
+            {% endfor %}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4">
+            <span class="stacked-bar-graph">
+              {% for k,v in r.players[0].interactions.items() %}
+                <span title="{{ k }}" style="width:{{100*v / r.__act_length}}%" class="interaction int_{{ k }}"></span>
+              {% endfor %}
+            </span>
+          </td>
+        </tr>
+        <tr class="padrow"><td colspan="4"></td></tr>
+        </table>
+        <div id="replayDataGrid">
+            <div class="heading" style="grid-area: overview">Overview</div>
+                <div style="grid-area: stocks">End Stocks</div>
+                <div style="grid-area: percent">End %</div>
+                <div style="grid-area: airborne">Time Airborne</div>
+                <div style="grid-area: ledgegrabs">Ledge Grabs</div>
+
+            <div class="heading" style="grid-area: interactions">Interactions (% of match)</div>
+            {% for k in INTERACTIONS[:9] %}
+                <div style="grid-area: {{k}}">{{k.title()}}</div>
+            {% endfor %}
+
+            <div class="heading" style="grid-area: neutral">Neutral</div>
+                <div style="grid-area: neutwins">Neutral Wins</div>
+                <div style="grid-area: counters">Counterattacks</div>
+                <div style="grid-area: pokes">Pokes</div>
+                <div style="grid-area: reversals">Reverse Edgeguards</div>
+                <div style="grid-area: dashdances">Dashdances</div>
+
+            <div class="heading" style="grid-area: offense">Offense</div>
+                <div style="grid-area: damage">Damage Dealt</div>
+                <div style="grid-area: moveslanded">Moves Landed</div>
+                <div style="grid-area: stabs">Shield Stabs</div>
+                <div style="grid-area: breaks">Shields Broken</div>
+                <div style="grid-area: grabs">Grabs Landed</div>
+                <div style="grid-area: stagespikes">Stage Spikes</div>
+
+            <div class="heading" style="grid-area: defense">Defense</div>
+                <div style="grid-area: airdodges">Airdodges</div>
+                <div style="grid-area: spotdodges">Spotdodges</div>
+                <div style="grid-area: rolls">Rolls</div>
+                <div style="grid-area: escapes">Grabs Escaped</div>
+                <div style="grid-area: shields">Attacks Shielded</div>
+                <div style="grid-area: powershields">Attacks Powershielded</div>
+                <div style="grid-area: techs">Floor Techs</div>
+                <div style="grid-area: walltechs">Wall Techs</div>
+                <div style="grid-area: jumptechs">Wall Tech Jumps</div>
+
+            <div class="heading" style="grid-area: tech">Technique</div>
+                <div style="grid-area: lcancel">L Cancels Hit</div>
+                <div style="grid-area: techhit">Techs Hit</div>
+                <div style="grid-area: wavedashes">Wavedashes</div>
+                <div style="grid-area: wavelands">Wavelands</div>
+                <div style="grid-area: shielddrops">Shield Drops</div>
+                <div style="grid-area: nils">No Impact Lands</div>
+                <div style="grid-area: pivots">Pivots</div>
+                <div style="grid-area: ecaerials">Edge-cancelled Aerials</div>
+                <div style="grid-area: ecspecials">Edge-cancelled Specials</div>
+                <div style="grid-area: mcancels">Meteor Cancels</div>
+
+            <div class="heading" style="grid-area: misc">Miscellaneous</div>
+                <div style="grid-area: taunts">Taunts</div>
+                <div style="grid-area: phantoms">Phantom Hits</div>
+                <div style="grid-area: sds">Self Destucts</div>
+
+            {% for p in r.p %}
+                {% set outer_loop = loop %}
+
+                {# Overview #}
+                <div class="{{hl_if_higher(r,loop.index,'end_stocks')}}" style="grid-area: stocks{{loop.index}}">{{ p["end_stocks"] }}</div>
+                <div style="grid-area: percent{{loop.index}}">{{ "%.0f"|format(p["end_pct"]) }}%</div>
+                <div style="grid-area: airborne{{loop.index}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>
+                <div style="grid-area: ledgegrabs{{loop.index}}">{{ p["ledge_grabs"] }}</div>
+
+                {# Interactions #}
+                {% for k in INTERACTIONS[:9] %}
+                    <div class="{{hl_if_higher(r,outer_loop.index,'int'+k)}}" style="grid-area: {{k}}{{outer_loop.index}}">{{ "%.2f"|format(100*p["interactions"][k] / r["__act_length"]) }}%</div>
+                {% endfor %}
+
+                {# Neutral #}
+                <div class="{{hl_if_higher(r,loop.index,'neutral_wins')}}" style="grid-area: neutwins{{loop.index}}">{{ p["neutral_wins"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'counters')}}" style="grid-area: counters{{loop.index}}">{{ p["counters"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'pokes')}}" style="grid-area: pokes{{loop.index}}">{{ p["pokes"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'reverse_edgeguards')}}" style="grid-area: reversals{{loop.index}}">{{ p["reverse_edgeguards"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'dashdances')}}" style="grid-area: dashdances{{loop.index}}">{{ p["dashdances"] }}</div>
+
+                {# Offense #}
+                <div class="{{hl_if_higher(r,loop.index,'damage_dealt')}}" style="grid-area: damage{{loop.index}}">{{ "%.2f"|format(p["damage_dealt"]) }}%</div>
+                <div class="{{hl_if_higher(r,loop.index,'num_moves_landed')}}" style="grid-area: moveslanded{{loop.index}}">{{ p["num_moves_landed"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'shield_stabs')}}" style="grid-area: stabs{{loop.index}}">{{ p["shield_stabs"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'shield_breaks')}}" style="grid-area: breaks{{loop.index}}">{{ p["shield_breaks"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'grabs')}}" style="grid-area: grabs{{loop.index}}">{{ p["grabs"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'stage_spikes')}}" style="grid-area: stagespikes{{loop.index}}">{{ p["stage_spikes"] }}</div>
+
+                {# Defense #}
+                <div class="{{hl_if_higher(r,loop.index,'airdodges')}}" style="grid-area: airdodges{{loop.index}}">{{ p["airdodges"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'spotdodges')}}" style="grid-area: spotdodges{{loop.index}}">{{ p["spotdodges"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'rolls')}}" style="grid-area: rolls{{loop.index}}">{{ p["rolls"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'grab_escapes')}}" style="grid-area: escapes{{loop.index}}">{{ p["grab_escapes"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'hits_blocked')}}" style="grid-area: shields{{loop.index}}">{{ p["hits_blocked"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'powershields')}}" style="grid-area: powershields{{loop.index}}">{{ p["powershields"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'techs')}}" style="grid-area: techs{{loop.index}}">{{ p["techs"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'walltechs')}}" style="grid-area: walltechs{{loop.index}}">{{ p["walltechs"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'walltechjumps')}}" style="grid-area: jumptechs{{loop.index}}">{{ p["walltechjumps"] }}</div>
+
+                {# Tech #}
+                <div class="{{hl_if_higher(r,loop.index,'l_cancels_hit_pct')}}" style="grid-area: lcancel{{loop.index}}">
+                    {{ p["l_cancels_hit"] }} ({{ "%.2f%%"|format(p["l_cancels_hit_pct"]) }})
+                </div>
+                <div class="{{hl_if_higher(r,loop.index,'tech_hit_pct')}}" style="grid-area: techhit{{loop.index}}">
+                    {{ (p["techs"]+p["walltechs"]+p["walltechjumps"]) }} ({{ "%.2f%%"|format(p["tech_hit_pct"]) }})
+                </div>
+                <div class="{{hl_if_higher(r,loop.index,'wavedashes')}}" style="grid-area: wavedashes{{loop.index}}">{{ p["wavedashes"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'wavelands')}}" style="grid-area: wavelands{{loop.index}}">{{ p["wavelands"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'shield_drops')}}" style="grid-area: shielddrops{{loop.index}}">{{ p["shield_drops"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'no_impact_lands')}}" style="grid-area: nils{{loop.index}}">{{ p["no_impact_lands"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'pivots')}}" style="grid-area: pivots{{loop.index}}">{{ p["pivots"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'edge_cancel_aerials')}}" style="grid-area: ecaerials{{loop.index}}">{{ p["edge_cancel_aerials"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'edge_cancel_specials')}}" style="grid-area: ecspecials{{loop.index}}">{{ p["edge_cancel_specials"] }}</div>
+                <div class="{{hl_if_higher(r,loop.index,'meteor_cancels')}}" style="grid-area: mcancels{{loop.index}}">{{ p["meteor_cancels"] }}</div>
+
+                {# Miscellaneous #}
+                <div style="grid-area: taunts{{loop.index}}">{{ p["taunts"] }}</div>
+                <div style="grid-area: phantoms{{loop.index}}">{{ p["phantom_hits"] }}</div>
+                <div class="{{'hl-red' if p['self_destructs'] > 0}}" style="grid-area: sds{{loop.index}}">{{ p["self_destructs"] }}</div>
+
+            {% endfor %}
+        </div> {# replayDataGrid #}
+        {% for p in r.p %}
+            <div id="replayPlayer{{loop.index}}Grid">
+                <div class="heading" style="grid-area: moves{{loop.index}}">Moves Shown</div>
+                <div style="grid-area: movelist{{loop.index}}">
+                    {% for a in p["attacks"] %}
+                        {% if p["attacks"]|length > loop.index and a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
+                            <div title="{{a}}" class="{{'hl-green' if a['punish_id']%2 else 'hl-red'}}">
+                                {{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
+                                {% if a["kill_dir"] != "NEUT" %}
+                                    <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}">
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div> {# replayDataOuterGrid #}
+
+
+{% endblock %}

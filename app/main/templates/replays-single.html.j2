@@ -1,0 +1,7 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    {% for r in replays %}
+        {% include '_replay.html.j2' %}
+    {% endfor %}
+{% endblock %}

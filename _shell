@@ -1,0 +1,5 @@
+#!/bin/bash
+#Launch my website's shell
+
+export FLASK_APP=pretzel-bar
+flask shell

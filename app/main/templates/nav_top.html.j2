@@ -1,0 +1,27 @@
+{% block nav_top %}
+  <span class="navbar_top">
+    <a href="{{ url_for('main.index') }}">
+      <span class="site_header_icon">
+        <img src="{{ url_for('static', filename='icons/smash-ball.png') }}" alt="{{ SITE_NAME }}">
+      </span>
+      <span class="site_name">
+        {{ SITE_NAME }}
+      </span>
+    </a>
+
+    {#
+    <a href="{{ url_for('main.index') }}">Home</a>
+    {% if current_user.is_anonymous %}
+      <a href="{{ url_for('auth.login') }}">Login</a>
+    {% else %}
+      <a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    {% endif %}
+    <a href="{{ url_for('main.explore') }}">Explore</a>
+    #}
+
+    {% for navicon in nav_icons %}
+      {# {%- include '_navicon_top.html.j2' -%} #}
+    {% endfor %}
+  </span>
+{% endblock %}

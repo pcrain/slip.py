@@ -1,0 +1,51 @@
+<html>
+  <head>
+    {% if title %}
+      <title>{{ title }} - {{ SITE_NAME }}</title>
+    {% else %}
+      <title>{{ SITE_NAME }}</title>
+    {% endif %}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='icons/pretzel.png') }}">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='css/toastr.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toastr.js') }}"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // toastr.info('TOASTY TOASTY TOAST');
+      // toastr.info('TOASTY TOASTY TOAST 2');
+    </script>
+    <header>
+      {% block nav_top %}
+        {% include "nav_top.html.j2" %}
+      {% endblock %}
+    </header>
+    {% block nav_side %}
+      {% include "nav_side.html.j2" %}
+    {% endblock %}
+    <div id='bodyWrapper'>
+      <div tabindex=1 id='bodyContainer'>
+        {# <span onclick="openNav()">open</span> #}
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        {% block content %}
+          {# Content is extended from here #}
+        {% endblock %}
+      </div>
+    </div>
+    <footer>
+      {% block nav_bottom %}
+        {% include "nav_bottom.html.j2" %}
+      {% endblock %}
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    <script type=text/javascript>
+      // Every 10 seconds
+      setInterval(function() {
+          $.ajax({
+              type: "get",
+              url: "/api/thing",
+              success:function(data) {
+                $("#result").text(JSON.stringify(data));
+              }
+          });
+      }, 10000); //10000 milliseconds = 10 seconds
+      //On button click
+      $(function() {
+        $('a#calculate').bind('click', function() {
+          $.getJSON('/api/thing', {
+            // a: $('input[name="a"]').val(),
+            // b: $('input[name="b"]').val()
+          }, function(data) {
+            // toastr.info(JSON.stringify(data));
+            $("#result").text(JSON.stringify(data));
+          });
+          return false;
+        });
+      });
+    </script>
+    <h1>jQuery Example</h1>
+    <p><input type=text size=5 name=a> +
+       <input type=text size=5 name=b> =
+       <span id=result>?</span>
+    <p><a href=# id=calculate>calculate server side</a>
+{% endblock %}

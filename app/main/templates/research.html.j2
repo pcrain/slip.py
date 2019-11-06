@@ -1,0 +1,10 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    <h1>TEST!</h1>
+    <ul>
+        {% for entry in entries %}
+            <li>{{ entry }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

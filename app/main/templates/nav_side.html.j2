@@ -1,0 +1,8 @@
+{% block nav_side %}
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="openSideNav()">&rarr;</a>
+    {% for navicon in nav_icons %}
+      {# {%- include '_navicon_side.html.j2' -%} #}
+    {% endfor %}
+  </div>
+{% endblock %}
