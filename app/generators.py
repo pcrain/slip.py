@@ -5,14 +5,14 @@ def config_generators(app):
   @app.context_processor
   def get_nav_icons():
     return dict(nav_icons=[
-      {"name": "Home",      "src" : "/index",    "img" : "spacefm.svg",},
-      {"name": "GitHub",    "src" : "/github",   "img" : "github-desktop.svg",},
-      {"name": "Games",     "src" : "/games",    "img" : "preferences-desktop-gaming.svg",},
-      {"name": "Research",  "src" : "/research", "img" : "dconf-editor.svg",},
-      {"name": "CV",        "src" : "/cv",       "img" : "scinotes.svg",},
-      {"name": "About",     "src" : "/about",    "img" : "preferences-desktop-emoticons.svg",},
-      {"name": "Settings",  "src" : "/settings", "img" : "palapeli.svg",},
-      {"name": "AJAX Test", "src" : "/thing",    "img" : "com.github.artemanufrij.hashit.svg",},
+      {"name": "Home",      "src" : "/replays",  "img" : "preferences-desktop-gaming.svg",},
+      # {"name": "GitHub",    "src" : "/github",   "img" : "github-desktop.svg",},
+      # {"name": "Games",     "src" : "/games",    "img" : "spacefm.svg",},
+      {"name": "Upload",    "src" : "/upload",   "img" : "dconf-editor.svg",},
+      # {"name": "CV",        "src" : "/cv",       "img" : "scinotes.svg",},
+      # {"name": "About",     "src" : "/about",    "img" : "preferences-desktop-emoticons.svg",},
+      # {"name": "Settings",  "src" : "/settings", "img" : "palapeli.svg",},
+      # {"name": "AJAX Test", "src" : "/thing",    "img" : "com.github.artemanufrij.hashit.svg",},
       ])
 
   @app.context_processor

@@ -21,6 +21,9 @@ class Config(object):
     ADMINS                         = ['patrickacrain@gmail.com']
     POSTS_PER_PAGE                 = 10
     STATIC_FOLDER                  = "{}/app/static/".format(basedir)
+    UPLOAD_FOLDER                  = STATIC_FOLDER+"data/uploads"
+    REPLAY_FOLDER                  = STATIC_FOLDER+"data/replays"
+    ANALYZER                       = "/home/pretzel/workspace/slippc/slippc"
 
     INTERACTIONS = [
         "EDGEGUARDING",

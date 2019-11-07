@@ -17,6 +17,12 @@ a:visited {
   color: rgba(160,0,160,1.0);
 }
 
+code {
+  display: block;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
 #bodyWrapper {
   height        : auto;
   top           : 65px;
@@ -365,6 +371,7 @@ div#replayPlayer2Grid {
 }
 
 div#replayDataGrid {
+  height: 0;
   margin: 0 24px;
   max-width: 600px;
   display: grid;
@@ -446,7 +453,6 @@ div#replayDataOuterGrid div.heading {
   border-radius: 25px;
   margin: 5px 0;
   padding: 0;
-  height: 21px;
 }
 
 .hl-green { background-color: rgba(128,255,128,0.25); }

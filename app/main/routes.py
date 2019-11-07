@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
 from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 from app import db
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
@@ -8,7 +9,46 @@ from datetime import datetime
 from app.main import bp
 from app.main.forms import EditProfileForm, PostForm
 
-import os, json
+import os, json, sys, subprocess, shlex, hashlib
+
+# Easy colors (print)
+class col:
+  BLN = '\033[0m'    # Blank
+  UND = '\033[1;4m'  # Underlined
+  INV = '\033[1;7m'  # Inverted
+  CRT = '\033[1;41m' # Critical
+  BLK = '\033[1;30m' # Black
+  RED = '\033[1;31m' # Red
+  GRN = '\033[1;32m' # Green
+  YLW = '\033[1;33m' # Yellow
+  BLU = '\033[1;34m' # Blue
+  MGN = '\033[1;35m' # Magenta
+  CYN = '\033[1;36m' # Cyan
+  WHT = '\033[1;37m' # White
+
+# Useful printing codes (long)
+def inptp(s):
+    return input(col.WHT+"["+col.BLU+"input"+col.WHT+"] "+str(s)+col.BLN)
+def infop(s):
+    print(col.WHT+"["+col.GRN+" info"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+def logfp(s,logf=None):
+    print(col.WHT+"["+col.MGN+"  log"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+    if logf is not None: logf.write(str(s)+"\n")
+def dbugp(s):
+    print(col.WHT+"["+col.BLK+"debug"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+def simup(s):
+  if _simulate:
+    print(col.WHT+"["+col.CYN+"simul"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+def warnp(s):
+    print(col.WHT+"["+col.YLW+" warn"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+def erorp(s):
+    print(col.WHT+"["+col.RED+"error"+col.WHT+"] "+col.BLN+str(s)+"\n",file=sys.stderr)
+def sendp(s):
+    print(col.WHT+"["+col.CYN+" send"+col.WHT+"] "+s+col.BLN,file=sys.stderr)
+def recvp(s):
+    print(col.WHT+"["+col.CYN+" recv"+col.WHT+"] "+s+col.BLN,file=sys.stderr)
+def passp(s):
+    return getpass(col.WHT+"["+col.BLU+"paswd"+col.WHT+"] "+str(s)+col.BLN,file=sys.stderr)
 
 @bp.before_request
 def before_request():
@@ -137,8 +177,9 @@ def thing_api():
 def replays():
     rdir      = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
     rfiles    = os.listdir(rdir)
+    rfiles .sort(key=lambda x: os.path.getmtime(rdir+"/"+x))
     replays   = []
-    for r in sorted(rfiles,reverse=True)[:50]:
+    for r in rfiles[:50]:
         rf = os.path.join(rdir,r)
         replays.append(load_replay(rf))
     return render_template("replays.html.j2", replays=replays)
@@ -176,3 +217,67 @@ def get_game_length(frames):
     secs   = frames // 60
     frames -= 60*secs
     return f"{mins:02d}:{secs:02d}.{int((100*frames)/60):02d}"
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ["slp"]
+
+#Compute md5sum for file
+def md5file(fname):
+  #http://stackoverflow.com/questions/3431825/generating-a-md5-checksum-of-a-file
+  hash_md5 = hashlib.md5()
+  with open(fname, "rb") as f:
+    for chunk in iter(lambda: f.read(4096), b""):
+      hash_md5.update(chunk)
+  return hash_md5.hexdigest()
+
+#Call a process and return its output
+def call(coms,inp="",ignoreErrors=False,returnErrors=False):
+  # p = subprocess.Popen(coms.split(" "), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+  p = subprocess.Popen(coms,
+    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate(inp.encode("utf-8"))
+  if ignoreErrors:
+    oc = output.decode('utf-8',errors='replace')
+  else:
+    oc = output.decode('utf-8')
+  # print(oc)
+  if returnErrors:
+    return (oc,err.decode('utf-8'))
+  return oc
+
+#Call a process and return its output using shell syntax
+def shcall(comstring,inp="",ignoreErrors=False):
+  return call(shlex.split(comstring),inp,ignoreErrors)
+
+@bp.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        dbugp(file)
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file:
+            # if not allowed_file(file.filename):
+            #     flash('Invalid replay file')
+            #     return redirect(request.url)
+            filename = secure_filename(file.filename)
+            opath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            dbugp(opath)
+            file.save(opath)
+            m     = md5file(opath)
+            afile = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
+            _,err = call([current_app.config['ANALYZER'],"-i",opath,"-a",afile],returnErrors=True)
+            if not os.path.exists(afile):
+              flash('Failed to parse replay; got the following error: <br/><code>'+err+'</code>')
+              return redirect(request.url)
+            return redirect('replays/'+m)
+            # return redirect(url_for('uploaded_file', filename=filename))
+    return render_template("upload.html.j2")
