@@ -47,7 +47,7 @@
                 <div style="grid-area: ledgegrabs">Ledge Grabs</div>
 
             <div class="heading" style="grid-area: interactions">Interactions (% of match)</div>
-            {% for k in INTERACTIONS[:9] %}
+            {% for k in INTERACTIONS[:8] %}
                 <div style="grid-area: {{k}}">{{k.title()}}</div>
             {% endfor %}
 
@@ -104,7 +104,7 @@
                 <div style="grid-area: ledgegrabs{{loop.index}}">{{ p["ledge_grabs"] }}</div>
 
                 {# Interactions #}
-                {% for k in INTERACTIONS[:9] %}
+                {% for k in INTERACTIONS[:8] %}
                     <div class="{{hl_if_higher(r,outer_loop.index,'int'+k)}}" style="grid-area: {{k}}{{outer_loop.index}}">{{ "%.2f"|format(100*p["interactions"][k] / r["__act_length"]) }}%</div>
                 {% endfor %}
 
@@ -158,20 +158,55 @@
             {% endfor %}
         </div> {# replayDataGrid #}
         {% for p in r.p %}
+            {% set outer_loop = loop %}
             <div id="replayPlayer{{loop.index}}Grid">
                 <div class="heading" style="grid-area: moves{{loop.index}}">Moves Shown</div>
-                <div style="grid-area: movelist{{loop.index}}">
+                <div class="comboGrid">
+                    {% if outer_loop.index == 1 and p["punishes"]|length > 0 %}
+                        {% set dam = p["punishes"][0]["end_pct"]-p["punishes"][0]["start_pct"] %}
+                        <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
+                            {{"%.0f"|format(dam)}}%
+                        </span>
+                    {% endif %}
+                    <span class="comboWrapper">
                     {% for a in p["attacks"] %}
-                        {% if p["attacks"]|length > loop.index and a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
-                            <div title="{{a}}" class="{{'hl-green' if a['punish_id']%2 else 'hl-red'}}">
-                                {{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
-                                {% if a["kill_dir"] != "NEUT" %}
-                                    <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}">
-                                {% endif %}
-                            </div>
+                        {% if loop.index > 1 and a["punish_id"] != p["attacks"][loop.index0-1]["punish_id"] %}
+                            </span> {# comboWrapper #}
+                            {% if outer_loop.index == 1 %}
+                                {% set dam =
+                                    p["punishes"][a["punish_id"]]["end_pct"]-
+                                    p["punishes"][a["punish_id"]]["start_pct"]
+                                %}
+                            {% else %}
+                                {% set dam =
+                                    p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["end_pct"]-
+                                    p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["start_pct"]
+                                %}
+                            {% endif %}
+                            <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
+                                {{"%.0f"|format(dam)}}%
+                            </span>
+                            <span class="comboWrapper">
+                        {% endif %}
+                        {% if p["attacks"]|length == loop.index or a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
+                            <span class="combomoveWrapper {{'hl-green' if a['punish_id']%2 else 'hl-red'}}">
+                                <span title="{{a}}" class="combomove">
+                                    {{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
+                                    {% if a["kill_dir"] != "NEUT" %}
+                                        <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}">
+                                    {% endif %}
+                                </span> {# combomove #}
+                            </span> {# combomoveWrapper #}
                         {% endif %}
                     {% endfor %}
-                </div>
+                    </span> {# comboWrapper #}
+                    {% if outer_loop.index == 2 and p["punishes"]|length > 0 %}
+                        {% set dam = p["punishes"][-1]["end_pct"]-p["punishes"][-1]["start_pct"] %}
+                        <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
+                            {{"%.0f"|format(dam)}}%
+                        </span>
+                    {% endif %}
+                </div> {# movelist #}
             </div>
         {% endfor %}
     </div> {# replayDataOuterGrid #}

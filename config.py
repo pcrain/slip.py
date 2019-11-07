@@ -33,7 +33,7 @@ class Config(object):
         "POSITIONING",
         # "NEUTRAL",
         "POKING",
-        "TRADING",
+        # "TRADING",
         # "DEFENSIVE",
         "PRESSURED",
         "GROUNDING",

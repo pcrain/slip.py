@@ -317,6 +317,23 @@ table#replayListing {
   grid-area: overview;
 }
 
+div.comboGrid {
+  display: grid;
+  /*grid-column-gap: 0;*/
+  /*grid-row-gap: 0;*/
+  grid-auto-rows: min-content;
+}
+
+div#replayPlayer1Grid div.comboGrid {
+  grid-area: movelist1;
+  grid-template-columns: 25px 1fr;
+}
+
+div#replayPlayer2Grid div.comboGrid {
+  grid-area: movelist2;
+  grid-template-columns: 1fr 25px;
+}
+
 div#replayDataOuterGrid {
   /*max-width: 1200px;*/
   display: grid;
@@ -368,12 +385,12 @@ div#replayDataGrid {
     "FOOTSIES1     FOOTSIES     FOOTSIES2"
     "POSITIONING1  POSITIONING  POSITIONING2"
     "POKING1       POKING       POKING2"
-    "TRADING1      TRADING      TRADING2"
-    "PRESSURED1    PRESSURED    PRESSURED2"
-    "GROUNDING1    GROUNDING    GROUNDING2"
-    "PUNISHED1     PUNISHED     PUNISHED2"
-    "ESCAPING1     ESCAPING     ESCAPING2"
-    "RECOVERING1   RECOVERING   RECOVERING2"
+    /*"TRADING1      TRADING      TRADING2"*/
+    /*"PRESSURED1    PRESSURED    PRESSURED2"*/
+    /*"GROUNDING1    GROUNDING    GROUNDING2"*/
+    /*"PUNISHED1     PUNISHED     PUNISHED2"*/
+    /*"ESCAPING1     ESCAPING     ESCAPING2"*/
+    /*"RECOVERING1   RECOVERING   RECOVERING2"*/
 
     "neutral       neutral      neutral"
     "neutwins1     neutwins     neutwins2"
@@ -437,4 +454,54 @@ div#replayDataOuterGrid div.heading {
 
 img.killicon {
   width: 16px;
+}
+
+span.comboWrapper {
+  /*display: inline-block;*/
+  /*background-color: yellow;*/
+  padding: 6px 16px;
+  align-self: center;
+  justify-self: center;
+}
+
+span.comboResult {
+  align-self: center;
+  justify-self: center;
+}
+
+span.combomoveWrapper {
+  display: inline-block;
+  transform: skewX(-10deg);
+  /*border: 1px solid black;*/
+  border: 1px solid slateblue;
+  /*border-radius: 4px;*/
+  padding: 2px 8px;
+  margin: -1px -2px 0 -2px;
+}
+
+span.combomove {
+  transform: skewX(10deg);
+  display: inline-block;
+  white-space: nowrap;
+  /*margin: 1px 0;*/
+  /*clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);*/
+  /*line-height: 32px;*/
+}
+
+div.empty {
+  height: 8px;
+}
+
+span.combomove img {
+  white-space:nowrap;
+}
+
+span.bigcombo {
+  color: yellow;
+  font-weight: bold;
+}
+
+span.hugecombo {
+  color: red;
+  font-weight: bold;
 }
