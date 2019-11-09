@@ -4,7 +4,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from app import db
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post
+from app.models import User, Post, Replay
 from datetime import datetime
 from app.main import bp
 from app.main.forms import EditProfileForm, PostForm
@@ -175,18 +175,28 @@ def thing_api():
 
 @bp.route('/replays')
 def replays():
-    rdir      = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
-    rfiles    = os.listdir(rdir)
-    rfiles .sort(key=lambda x: os.path.getmtime(rdir+"/"+x))
-    replays   = []
-    for r in rfiles[:50]:
-        rf = os.path.join(rdir,r)
-        replays.append(load_replay(rf))
-    return render_template("replays.html.j2", replays=replays)
+    rdir     = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
+    page     = request.args.get('page', 1, type=int)
+    rdata    = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.replays', page=rdata.next_num) if rdata.has_next else None
+    prev_url = url_for('main.replays', page=rdata.prev_num) if rdata.has_prev else None
+    replays  = []
+    for r in rdata.items:
+        rpath                         = os.path.join(rdir,r.checksum+".slp.json")
+        if not os.path.exists(rpath):
+            current_app.logger.warning('Replay {} is missing'.format(rpath))
+            continue
+        replay                        = load_replay(rpath)
+        replay["__original_filename"] = r.filename
+        replays.append(replay)
+    return render_template("replays.html.j2", title="Public Replays", replays=replays, next_url=next_url, prev_url=prev_url)
+    # return render_template('index.html.j2', title='Home', form=form,
+    #                        posts=posts.items, next_url=next_url,
+    #                        prev_url=prev_url)
 
 @bp.route('/replays/<r>')
 def replay_viz(r):
-    rpath = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
+    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
     replay = load_replay(rpath)
     return render_template("replays-single.html.j2", replays=[replay])
 
@@ -252,6 +262,24 @@ def shcall(comstring,inp="",ignoreErrors=False):
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    # form = PostForm()
+    # if form.validate_on_submit():
+    #     post = Post(body=form.post.data, author=current_user)
+    #     db.session.add(post)
+    #     db.session.commit()
+    #     flash('Your post is now live!')
+    #     return redirect(url_for('main.index'))
+    # page = request.args.get('page', 1, type=int)
+    # posts = current_user.followed_posts().paginate(
+    #     page, current_app.config['POSTS_PER_PAGE'], False)
+    # next_url = url_for('main.index', page=posts.next_num) \
+    #     if posts.has_next else None
+    # prev_url = url_for('main.index', page=posts.prev_num) \
+    #     if posts.has_prev else None
+    # return render_template('index.html.j2', title='Home', form=form,
+    #                        posts=posts.items, next_url=next_url,
+    #                        prev_url=prev_url)
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -278,6 +306,18 @@ def upload_file():
             if not os.path.exists(afile):
               flash('Failed to parse replay; got the following error: <br/><code>'+err+'</code>')
               return redirect(request.url)
+
+            if len(Replay.query.filter_by(checksum=m).all()) > 0:
+              flash('Replay already in database')
+              return redirect('replays/'+m)
+
+            replay = Replay(
+                checksum  = m,
+                filename  = filename,
+                user_id   = -1,
+                is_public = True,
+                )
+            db.session.add(replay)
+            db.session.commit()
             return redirect('replays/'+m)
-            # return redirect(url_for('uploaded_file', filename=filename))
     return render_template("upload.html.j2")

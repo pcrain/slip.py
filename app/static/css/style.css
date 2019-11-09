@@ -30,6 +30,7 @@ code {
   position      : fixed;
   width         : 100%;
 
+  /*overflow-x    : hidden;*/
   overflow-y    : auto;
   padding-right : 15px;
   text-align    : center;
@@ -37,18 +38,20 @@ code {
 
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #bodyWrapper {
-  transition: margin-left .5s;
+  /*transition: margin-left .5s;*/
   margin-left: 0; /* Same as navbar width */
   /*padding: 20px;*/
+  /*margin-left: 50px;*/
+  margin-right: 50px;
 }
 
 #bodyContainer {
   /* 100% - 2*(min-width of navbar) */
   /*width: calc(100% - 100px); */
   max-width: 1200px;
-  width: 100% - 100px);
+  width: calc(100% - 55px);
   display: inline-block;
-  margin: 0 auto;
+  margin: 0 0 0 45px;
   outline:none; /* Disable border when focused */
 }
 
@@ -342,6 +345,7 @@ div#replayPlayer2Grid div.comboGrid {
 
 div#replayDataOuterGrid {
   /*max-width: 1200px;*/
+  grid-template-columns: 0.5fr 1fr 0.5fr;
   display: grid;
   grid-template-areas:
     "overview overview  overview"
@@ -349,7 +353,7 @@ div#replayDataOuterGrid {
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
-  width: 300px;
+  max-width: 300px;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 32px auto;
@@ -405,6 +409,8 @@ div#replayDataGrid {
     "pokes1        pokes        pokes2"
     "reversals1    reversals    reversals2"
     "dashdances1   dashdances   dashdances2"
+    "shorthops1    shorthops    shorthops2"
+    "fullhops1     fullhops     fullhops2"
 
     "offense       offense      offense"
     "damage1       damage       damage2"

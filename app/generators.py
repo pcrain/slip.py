@@ -5,10 +5,10 @@ def config_generators(app):
   @app.context_processor
   def get_nav_icons():
     return dict(nav_icons=[
-      {"name": "Home",      "src" : "/replays",  "img" : "preferences-desktop-gaming.svg",},
+      {"name": "Home",      "src" : "/replays",  "img" : "slippi.png",},
       # {"name": "GitHub",    "src" : "/github",   "img" : "github-desktop.svg",},
       # {"name": "Games",     "src" : "/games",    "img" : "spacefm.svg",},
-      {"name": "Upload",    "src" : "/upload",   "img" : "dconf-editor.svg",},
+      {"name": "Upload",    "src" : "/upload",   "img" : "upload.png",},
       # {"name": "CV",        "src" : "/cv",       "img" : "scinotes.svg",},
       # {"name": "About",     "src" : "/about",    "img" : "preferences-desktop-emoticons.svg",},
       # {"name": "Settings",  "src" : "/settings", "img" : "palapeli.svg",},
