@@ -193,9 +193,9 @@
                             <span class="comboWrapper">
                         {% endif %}
                         {% if p["attacks"]|length == loop.index or a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
-                            <span class="combomoveWrapper {{'hl-green' if a['punish_id']%2 else 'hl-red'}}">
+                            <span class="combomoveWrapper op-{{a['opening']}}">
                                 <span title="{{a}}" class="combomove">
-                                    {{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
+                                    {{a["cancel_name"]+" " if a["move_name"] != "" else ""}}{{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
                                     {% if a["kill_dir"] != "NEUT" %}
                                         <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}">
                                     {% endif %}

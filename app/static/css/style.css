@@ -519,6 +519,9 @@ span.hugecombo {
 }
 
 span.replaySummary {
+  border: 4px solid rgba(0,0,0,0.5);
+  border-radius: 8px;
+  margin: 10px;
   display: inline-grid;
   grid-template-areas:
     "p1tag    stagegrid p2tag"
@@ -528,7 +531,6 @@ span.replaySummary {
 }
 
 span.replayStageGrid {
-  margin: 10px;
   width:  250px;
   height: 150px;
   /*background-color: gray;*/
@@ -619,5 +621,18 @@ span.rs-char1 img, span.rs-char2 img {
   width: 50px;
   height: auto;
 }
-span.rs-char1 { grid-area: p1char; justify-self: start; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
-span.rs-char2 { grid-area: p2char; justify-self: end; }
+span.rs-char1 { grid-area: p1char; justify-self: start; }
+span.rs-char2 { grid-area: p2char; justify-self: end; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
+
+span.op-EDGEGUARDING { background-color: rgba(128,255,128,0.45); }
+span.op-PRESSURING   { background-color: rgba(255,255,128,0.45); }
+span.op-PUNISHING    { background-color: rgba(255,128,128,0.45); }
+span.op-TECHCHASING  { background-color: rgba(255,128,255,0.45); }
+span.op-SHARKING     { background-color: rgba(128,128,255,0.45); }
+
+span.op-POKING       { background-color: rgba(128,128,128,0.45); }
+span.op-POSITIONING  { background-color: rgba(128,128,128,0.45); }
+
+span.op-RECOVERING   { background-color: rgba(255,192,192,0.45); }
+span.op-PUNISHED     { background-color: rgba(255,192,192,0.45); }
+span.op-ESCAPING     { background-color: rgba(255,192,192,0.45); }

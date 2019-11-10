@@ -1,56 +1,40 @@
-{# <table>
-    <tr valign="top">
-        <td><img src="{{ post.author.avatar(36) }}"></td>
-        <td>
-            <a href="{{ url_for('main.user', username=post.author.username) }}">
-                {{ post.author.username }}
-            </a>
-            says:<br>{{ post.body }}
-        </td>
-    </tr>
-</table> #}
+<span class="replaySummary"><a class="nostyle" href="/replays/{{ replay.__file.split('.')[0] }}">
+  <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ replay.stage_name }}.png)" title="{{ replay.stage_name }}">
 
-<tr>
-  <td rowspan="3"><a href="/replays/{{ replay.__file.split('.')[0] }}">{{ replay.__original_filename.split('.')[0] }}</a></td>
-  <td class="align-left" colspan="2">{{ replay.players[0].get("tag_player","YO") }}</td>
-  <td class="align-right" colspan="2">{{ replay.players[1].get("tag_player","YO") }}</td>
-</tr>
-<tr>
-  {# <td>{{ replay.__file.split(".")[0] }}</td> #}
-  <td>
-    {% for i in range(replay.players[0].end_stocks,4) %}
-      <img class="dead" title="{{ replay.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[0].char_name }}{{ replay.players[0].color }}.png" />
-    {% endfor %}
-    {% for i in range(replay.players[0].end_stocks) %}
-      <img title="{{ replay.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[0].char_name }}{{ replay.players[0].color }}.png" />
-    {% endfor %}
-  </td>
-  <td class="stage align-center" colspan="2" background="{{ url_for('static',filename='icons/stage') }}/{{ replay.stage_name }}.png" title="{{ replay.stage_name }}">
-    {{ replay.__game_length }}
-  </td>
-  <td>
-    {% for i in range(replay.players[1].end_stocks) %}
-      <img title="{{ replay.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[1].char_name }}{{ replay.players[1].color }}.png" />
-    {% endfor %}
-    {% for i in range(replay.players[1].end_stocks,4) %}
-      <img class="dead" title="{{ replay.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[1].char_name }}{{ replay.players[1].color }}.png" />
-    {% endfor %}
-  </td>
-</tr>
-<tr>
-  <td colspan="4">
-    <span class="stacked-bar-graph">
-      {% for k,v in replay.players[0].interactions.items() %}
-        <span title="{{ k }}" style="width:{{100*v / replay.__act_length}}%" class="int_{{ k }}"></span>
+    {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
+      {% if (0 == replay.players[1].end_stocks) %}
+        <img title="Winner" class="rs-win1" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
+    {% elif (replay.players[0].end_stocks < replay.players[1].end_stocks) %}
+      {% if (0 == replay.players[0].end_stocks) %}
+        <img title="Winner" class="rs-win2" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
+    {% endif %}
+    <span class="rs-tag1">{{ replay.players[0].get("tag_player","[?]") }}</span>
+    <span class="rs-tag2">{{ replay.players[1].get("tag_player","[?]") }}</span>
+
+    <span class="rs-char1"><img title="{{ replay.players[0].char_name }}" src="{{ url_for('static',filename='icons/css') }}/{{ replay.players[0].char_name }}{{ replay.players[0].color }}.png" /></span>
+    <span class="rs-char2"><img title="{{ replay.players[1].char_name }}" src="{{ url_for('static',filename='icons/css') }}/{{ replay.players[1].char_name }}{{ replay.players[1].color }}.png" /></span>
+
+    <span class="rs-stocks1">
+      {% for i in range(replay.players[0].end_stocks,4) %}
+        <img class="dead" title="{{ replay.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[0].char_name }}{{ replay.players[0].color }}.png" />
+      {% endfor %}
+      {% for i in range(replay.players[0].end_stocks) %}
+        <img title="{{ replay.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[0].char_name }}{{ replay.players[0].color }}.png" />
       {% endfor %}
     </span>
-  </td>
-</tr>
-<tr class="padrow"><td colspan="4"></td></tr>
 
+    <span title="{{ replay.__original_filename.split('.')[0] }}" class="rs-filename">{{ replay.__original_filename.split('.')[0] }}</span>
+    <span title="Game Length" class="rs-timer">{{ replay.__game_length }}</span>
 
-{# <div class="stacked-bar-graph">
-  <span style="width:20%" class="bar-1">20%</span>
-  <span style="width:15%" class="bar-2">15%</span>
-  <span style="width:30%" class="bar-3">30%</span>
-</div> #}
+    <span class="rs-stocks2">
+      {% for i in range(replay.players[1].end_stocks) %}
+        <img title="{{ replay.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[1].char_name }}{{ replay.players[1].color }}.png" />
+      {% endfor %}
+      {% for i in range(replay.players[1].end_stocks,4) %}
+        <img class="dead" title="{{ replay.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ replay.players[1].char_name }}{{ replay.players[1].color }}.png" />
+      {% endfor %}
+    </span>
+  </span>
+</a></span>
