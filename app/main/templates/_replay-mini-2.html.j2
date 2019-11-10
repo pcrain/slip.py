@@ -2,9 +2,13 @@
   <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ replay.stage_name }}.png)" title="{{ replay.stage_name }}">
 
     {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
-      <img title="Winner" class="rs-win1" src="{{ url_for('static',filename='icons/winner.png')}}"/>
-    {% else %}
-      <img title="Winner" class="rs-win2" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% if (0 == replay.players[1].end_stocks) %}
+        <img title="Winner" class="rs-win1" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
+    {% elif (replay.players[0].end_stocks < replay.players[1].end_stocks) %}
+      {% if (0 == replay.players[0].end_stocks) %}
+        <img title="Winner" class="rs-win2" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
     {% endif %}
     <span class="rs-tag1">{{ replay.players[0].get("tag_player","[?]") }}</span>
     <span class="rs-tag2">{{ replay.players[1].get("tag_player","[?]") }}</span>
