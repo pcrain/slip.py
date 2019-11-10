@@ -517,3 +517,120 @@ span.hugecombo {
   color: red;
   font-weight: bold;
 }
+
+span.replaySummary {
+  display: inline-grid;
+  grid-template-areas:
+    "p1tag    stagegrid p2tag"
+    "p1stats  stagegrid p2stats"
+    "p1stats  .         p2stats"
+    ;
+}
+
+span.replayStageGrid {
+  margin: 10px;
+  width:  250px;
+  height: 150px;
+  /*background-color: gray;*/
+  /*background-blend-mode: multiply;*/
+  grid-area: stagegrid;
+  display: inline-grid;
+  grid-template-areas:
+    "filename filename filename filename filename filename filename"
+    "p1char   p1tag    p1tag    p1tag    p1tag    p1tag    p2char"
+    "p1char   p2tag    p2tag    p2tag    p2tag    p2tag    p2char"
+    "p1win    .        timer    timer    timer    .        p2win"
+    "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
+    ;
+  grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr 50px;
+}
+
+a.nostyle:link {
+    text-decoration: inherit;
+    color: inherit;
+    /*cursor: auto;*/
+}
+
+a.nostyle:visited {
+    text-decoration: inherit;
+    color: inherit;
+    /*cursor: auto;*/
+}
+
+span.rs-timer {
+  grid-area: timer;
+  text-shadow:
+    -1px -1px 2px #000,
+     1px -1px 2px #000,
+    -1px  1px 2px #000,
+     1px  1px 2px #000;
+}
+
+span.rs-filename {
+  grid-area: filename;
+  text-shadow:
+    -1px -1px 2px rgba(0,0,0,0.8),
+     1px -1px 2px rgba(0,0,0,0.8),
+    -1px  1px 2px rgba(0,0,0,0.8),
+     1px  1px 2px rgba(0,0,0,0.8);
+  width: 240px;
+  padding: 0 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  justify-self: center;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
+}
+
+span.rs-vs      { grid-area: vs; }
+span.rs-stocks1 { grid-area: p1stocks; }
+span.rs-stocks2 { grid-area: p2stocks; }
+span.rs-stocks1, span.rs-stocks2, span.rs-vs {
+  /*height: 100%;*/
+  /*height: 28px;*/
+  align-self: end;
+  /*background-color: rgba(0,0,0,0.5);*/
+  /*text-align: center;*/
+  /*vertical-align: middle;*/
+}
+
+span.rs-stocks1 img.dead, span.rs-stocks2 img.dead {
+  /*opacity: 1.0;*/
+  /*filter: none;*/
+  -webkit-filter: grayscale(100%);
+  -moz-filter:    grayscale(100%);
+  -ms-filter:     grayscale(100%);
+  -o-filter:      grayscale(100%);
+}
+
+span.rs-tag1, span.rs-tag2 {
+  /*background-color: black;*/
+  align-self: center;
+  padding: 4px 2px;
+  text-shadow:
+    -1px -1px 1px black,
+     1px -1px 1px black,
+    -1px  1px 1px black,
+     1px  1px 1px black;
+}
+
+/*span.rs-tag1 { background-image: linear-gradient(to right, rgba(0,0,0,0.5), transparent); }*/
+
+img.rs-win1, img.rs-win2 {
+  height: 24px;
+}
+img.rs-win1 { grid-area: p1win; justify-self: center; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
+img.rs-win2 { grid-area: p2win; justify-self: center; }
+
+span.rs-tag1 { grid-area: p1tag; text-align: left; }
+span.rs-tag2 { grid-area: p2tag; text-align: right; }
+
+span.rs-char1 img, span.rs-char2 img {
+  width: 50px;
+  height: auto;
+  /*background-color: rgba(0,0,0,0.25);*/
+  /*border: 1px solid black;*/
+  /*border-radius: 10px;*/
+}
+span.rs-char1 { grid-area: p1char; justify-self: start; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
+span.rs-char2 { grid-area: p2char; justify-self: end; }

@@ -218,7 +218,7 @@ def load_replay(rf):
                 p["tech_hit_pct"] = 100 * (p["techs"]+p["walltechs"]+p["walltechjumps"]) / (p["techs"]+p["walltechs"]+p["walltechjumps"]+p["missed_techs"])
             p["num_moves_landed"] = p["moves_landed"]["_total"]
             if p["tag_player"] == "":
-                p["tag_player"] = "[CPU]" if p["player_type"] == 1 else "[Human]"
+                p["tag_player"] = "[CPU Level ?]" if p["player_type"] == 1 else "[Port {}]".format(1+p["port"])
     return r
 
 def get_game_length(frames):
@@ -286,7 +286,7 @@ def upload_file():
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        dbugp(file)
+        # dbugp(file)
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
@@ -298,7 +298,7 @@ def upload_file():
             #     return redirect(request.url)
             filename = secure_filename(file.filename)
             opath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            dbugp(opath)
+            # dbugp(opath)
             file.save(opath)
             m     = md5file(opath)
             afile = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
