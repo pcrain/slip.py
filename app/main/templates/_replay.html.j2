@@ -1,44 +1,12 @@
 {% block content %}
     <div id="replayDataOuterGrid">
-        <table id="replayListing">
-        <tr>
-          {# <td rowspan="3"><a href="/replays/{{ r.__file.split('.')[0] }}">{{ r.__file }}</a></td> #}
-          <td class="align-left" colspan="2">{{ r.players[0].get("tag_player","YO") }}</td>
-          <td class="align-right" colspan="2">{{ r.players[1].get("tag_player","YO") }}</td>
-        </tr>
-        <tr>
-          {# <td>{{ r.__file.split(".")[0] }}</td> #}
-          <td>
-            {% for i in range(r.players[0].end_stocks,4) %}
-              <img class="dead" title="{{ r.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[0].char_name }}{{ r.players[0].color }}.png" />
-            {% endfor %}
-            {% for i in range(r.players[0].end_stocks) %}
-              <img title="{{ r.players[0].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[0].char_name }}{{ r.players[0].color }}.png" />
-            {% endfor %}
-          </td>
-          <td class="stage align-center" colspan="2" background="{{ url_for('static',filename='icons/stage') }}/{{ r.stage_name }}.png" title="{{ r.stage_name }}">
-            {{ r.__game_length }}
-          </td>
-          <td style="text-align: right;">
-            {% for i in range(r.players[1].end_stocks) %}
-              <img title="{{ r.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[1].char_name }}{{ r.players[1].color }}.png" />
-            {% endfor %}
-            {% for i in range(r.players[1].end_stocks,4) %}
-              <img class="dead" title="{{ r.players[1].char_name }}" src="{{ url_for('static',filename='icons/stock') }}/{{ r.players[1].char_name }}{{ r.players[1].color }}.png" />
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-          <td colspan="4">
-            <span class="stacked-bar-graph">
-              {% for k,v in r.players[0].interactions.items() %}
-                <span title="{{ k }}" style="width:{{100*v / r.__act_length}}%" class="interaction int_{{ k }}"></span>
-              {% endfor %}
-            </span>
-          </td>
-        </tr>
-        <tr class="padrow"><td colspan="4"></td></tr>
-        </table>
+        {% set replay = r %}
+        {% include '_replay-mini.html.j2' %}
+        <span id="intBreakdown" class="stacked-bar-graph">
+          {% for k,v in r.players[0].interactions.items() %}
+            <span title="{{ k }}" style="width:{{100*v / r.__act_length}}%" class="interaction int_{{ k }}"></span>
+          {% endfor %}
+        </span>
         <div id="replayDataGrid">
             <div class="heading" style="grid-area: overview">Overview</div>
                 <div style="grid-area: stocks">End Stocks</div>
@@ -219,7 +187,7 @@
                                 <span title="{{a}}" class="combomove">
                                     {{a["cancel_name"]+" " if a["move_name"] != "" else ""}}{{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
                                     {% if a["kill_dir"] != "NEUT" %}
-                                        <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}">
+                                        <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}"/>
                                     {% endif %}
                                 </span> {# combomove #}
                             </span> {# combomoveWrapper #}

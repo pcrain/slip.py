@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, csrf
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
@@ -22,4 +22,9 @@ class EditProfileForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField('Say something', validators=[
         DataRequired(), Length(min=1, max=2000)])
+    submit = SubmitField('Submit')
+
+class ReplaySearchForm(FlaskForm):
+    # query  = TextAreaField('Search', validators=[DataRequired(), Length(min=1, max=2000)])
+    query  = StringField('Search',render_kw={"placeholder": "Search Replays"})
     submit = SubmitField('Submit')

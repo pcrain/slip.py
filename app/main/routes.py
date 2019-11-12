@@ -7,7 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Replay
 from datetime import datetime
 from app.main import bp
-from app.main.forms import EditProfileForm, PostForm
+from app.main.forms import ReplaySearchForm
 
 import os, json, sys, subprocess, shlex, hashlib
 
@@ -35,7 +35,7 @@ def logfp(s,logf=None):
     print(col.WHT+"["+col.MGN+"  log"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
     if logf is not None: logf.write(str(s)+"\n")
 def dbugp(s):
-    print(col.WHT+"["+col.BLK+"debug"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
+    print(col.WHT+"["+col.BLK+"debug"+cfol.WHT+"] "+col.BLN+str(s),file=sys.stderr)
 def simup(s):
   if _simulate:
     print(col.WHT+"["+col.CYN+"simul"+col.WHT+"] "+col.BLN+str(s),file=sys.stderr)
@@ -151,35 +151,25 @@ def index():
 #     return render_template("index.html.j2", title='Explore', posts=posts.items,
 #                           next_url=next_url, prev_url=prev_url)
 
-@bp.route('/research')
-def research():
-    # with open("/home/pretzel/downloads/console-input.js",'r') as fin:
-    with open("/home/pretzel/workspace/slippc-viz/app/static/data/replays/Game_20191001T103257.slp.json",'r') as fin:
-        lines = [fin.read()]#.split("\n")
-    # lines = [""]
-    return render_template("research.html.j2", entries=lines)
-
-@bp.route('/cv')
-def cv():
-    return render_template("cv.html.j2")
-
-@bp.route('/thing')
-def thing():
-    return render_template("json-test.html.j2")
-
-@bp.route('/api/thing')
-def thing_api():
-    return jsonify({
-        "Time": str(datetime.now()),
-        })
+# @bp.route('/api/thing')
+# def thing_api():
+#     return jsonify({
+#         "Time": str(datetime.now()),
+#         })
 
 @bp.route('/replays')
+# @csrf.exempt
 def replays():
+    q        = request.args.get("query",None)
+    form     = ReplaySearchForm()
     rdir     = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
     page     = request.args.get('page', 1, type=int)
-    rdata    = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('main.replays', page=rdata.next_num) if rdata.has_next else None
-    prev_url = url_for('main.replays', page=rdata.prev_num) if rdata.has_prev else None
+    if q is None:
+        rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+    else:
+        rdata = Replay.search(q).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.replays', query=q, page=rdata.next_num) if rdata.has_next else None
+    prev_url = url_for('main.replays', query=q, page=rdata.prev_num) if rdata.has_prev else None
     replays  = []
     for r in rdata.items:
         rpath                         = os.path.join(rdir,r.checksum+".slp.json")
@@ -189,15 +179,17 @@ def replays():
         replay                        = load_replay(rpath)
         replay["__original_filename"] = r.filename
         replays.append(replay)
-    return render_template("replays.html.j2", title="Public Replays", replays=replays, next_url=next_url, prev_url=prev_url)
+    return render_template("replays.html.j2", title="Public Replays", form=form, replays=replays, next_url=next_url, prev_url=prev_url)
     # return render_template('index.html.j2', title='Home', form=form,
     #                        posts=posts.items, next_url=next_url,
     #                        prev_url=prev_url)
 
 @bp.route('/replays/<r>')
 def replay_viz(r):
+    rdata  = Replay.query.filter_by(checksum=r).first()
     rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
     replay = load_replay(rpath)
+    replay["__original_filename"] = rdata.filename
     return render_template("replays-single.html.j2", replays=[replay])
 
 def load_replay(rf):
@@ -217,8 +209,13 @@ def load_replay(rf):
             if p["missed_techs"] > 0:
                 p["tech_hit_pct"] = 100 * (p["techs"]+p["walltechs"]+p["walltechjumps"]) / (p["techs"]+p["walltechs"]+p["walltechjumps"]+p["missed_techs"])
             p["num_moves_landed"] = p["moves_landed"]["_total"]
-            if p["tag_player"] == "":
-                p["tag_player"] = "[CPU Level ?]" if p["player_type"] == 1 else "[Port {}]".format(1+p["port"])
+            if p["tag_player"] == "" or p["tag_player"] == "Player":
+                if p["player_type"] == 1:
+                    p["tag_player"] = "[Lv. {} CPU]".format(p["cpu_level"])
+                elif p["tag_css"].strip() != "" :
+                    p["tag_player"] = "[{}]".format(p["tag_css"].strip().upper())
+                else:
+                    p["tag_player"] = "[Port {}]".format(1+p["port"])
     return r
 
 def get_game_length(frames):

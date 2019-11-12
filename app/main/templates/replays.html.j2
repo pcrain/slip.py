@@ -1,9 +1,18 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-    {% for replay in replays %}
-        {% include '_replay-mini.html.j2' %}
-    {% endfor %}
-    {% if prev_url %} <a href="{{ prev_url }}">Newer Replays</a> {% endif %}
-    {% if next_url %} <a href="{{ next_url }}">Older Replays</a> {% endif %}
+    <span id="replayListingGrid">
+        {% if form %}
+          {% include '_search-bar.html.j2' %}
+        {% endif %}
+        <span id="replayListingInnerGrid">
+            {% for replay in replays %}
+                <span class="replayHoverWrapper">
+                  {% include '_replay-mini.html.j2' %}
+                </span>
+            {% endfor %}
+        </span>
+        {% if prev_url %} <a style="grid-area: previous" href="{{ prev_url }}">Newer Replays</a> {% endif %}
+        {% if next_url %} <a style="grid-area: next"     href="{{ next_url }}">Older Replays</a> {% endif %}
+    </span>
 {% endblock %}

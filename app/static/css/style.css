@@ -23,6 +23,41 @@ code {
   white-space: pre-wrap;
 }
 
+form {
+  margin: 0;
+}
+
+input {
+  height: 32px;
+  color: rgba(255,255,255,1);
+}
+
+input[type="text"], input[type="submit"] {
+  text-align: center;
+  border-top: none;
+  border-bottom: none;
+  border-right: 4px solid rgb(36,30,70);
+  border-left: 4px solid rgb(36,30,70);
+  background-color: darkslategray;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+input[type="submit"] {
+  font-weight: bold;
+}
+
+input[type="text"]::placeholder {
+  text-align: center;
+  color: rgba(255,255,255,1);
+  font-weight: bold;
+  opacity: 1;
+}
+
+input[type="text"]:focus::placeholder {
+  color: transparent;
+}
+
 #bodyWrapper {
   height        : auto;
   top           : 65px;
@@ -322,8 +357,20 @@ td.align-right {
 .int_NEUTRAL      { background-color: black; }
 .int_DEFENSIVE    { background-color: black; }
 
-table#replayListing {
-  grid-area: overview;
+span#replayListing {
+  display: grid;
+  grid-template-areas:
+    /*"overview overview  overview"*/
+    "p1grid   innergrid p2grid"
+}
+
+div#replayDataOuterGrid span.replaySummary {
+  grid-area: mini;
+  justify-self: center;
+}
+
+span#intBreakdown {
+  grid-area: breakdown;
 }
 
 div.comboGrid {
@@ -348,8 +395,9 @@ div#replayDataOuterGrid {
   grid-template-columns: 0.5fr 1fr 0.5fr;
   display: grid;
   grid-template-areas:
-    "overview overview  overview"
-    "p1grid   innergrid p2grid"
+    ".         mini      ."
+    "breakdown breakdown breakdown"
+    "p1grid    innergrid  p2grid"
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
@@ -541,7 +589,22 @@ span.replaySummary {
     ;
 }
 
+span.replaySummary:hover {
+  border: 4px solid rgba(128,128,255,0.5);
+}
+
+span.replayHoverWrapper {
+  display: inline-block;
+  /*overflow: hidden;*/
+}
+
+span.replayHoverWrapper:hover span.replayStageGrid {
+  /*transform: scale(1.1);*/
+  /*pointer-events: none;*/
+}
+
 span.replayStageGrid {
+  /*transition: 0.1s ease;*/
   width:  250px;
   height: 150px;
   /*background-color: gray;*/
@@ -645,5 +708,65 @@ span.op-POKING       { background-color: rgba(128,128,128,0.45); }
 span.op-POSITIONING  { background-color: rgba(128,128,128,0.45); }
 
 span.op-RECOVERING   { background-color: rgba(255,192,192,0.45); }
+span.op-PRESSURED    { background-color: rgba(255,192,192,0.45); }
 span.op-PUNISHED     { background-color: rgba(255,192,192,0.45); }
 span.op-ESCAPING     { background-color: rgba(255,192,192,0.45); }
+span.op-GROUNDING    { background-color: rgba(255,192,192,0.45); }
+
+.dd-selected {
+  padding: 4px !important;
+}
+.dd-option-image, .dd-selected-image {
+  height: 24px;
+  float: none !important;
+  margin-right: 0 !important;
+}
+.dd-selected-text {
+  line-height: inherit !important;
+  vertical-align: bottom;
+}
+
+#charDropDown1, #charDropDown2, #stageDropDown {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+span.dd-pointer-down {
+  border: none !important;
+}
+
+.hideUntilParentClicked {
+  display: inline-block;
+  height: 0px;
+  /*opacity: 0;*/
+  overflow: hidden;
+  transition: opacity 0.7s ease;
+  opacity: 0;
+  /*display: none;*/
+}
+
+#replaySearchBar {
+  display: inline-block;
+}
+
+#replaySearchBar .noLongerHidden {
+  opacity: 1;
+  height: initial;
+  overflow: initial;
+}
+
+#replayListingGrid {
+  display: grid;
+  grid-template-areas:
+    "search   search  search"
+    "replays  replays replays"
+    "previous .       next"
+}
+
+#replayListingGrid span#replaySearchBar {
+  grid-area: search;
+}
+
+#replayListingGrid span#replayListingInnerGrid {
+  grid-area: replays;
+}

@@ -88,6 +88,10 @@ class Replay(db.Model):
     uploaded  = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     is_public = db.Column(db.Boolean, default=True)
 
+    def search(q):
+        query = "%{}%".format(q)
+        return Replay.query.filter(Replay.filename.like(query)).order_by(Replay.uploaded.desc())
+
     def __repr__(self):
         return '<Replay {} {}>'.format(self.filename, self.checksum)
 
