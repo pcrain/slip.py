@@ -82,6 +82,10 @@ button.has-dropdown::after {
   color   : lightslategray;
 }
 
+button.has-dropdown.noarrow::after {
+  content: none;
+}
+
 input[type="submit"] {
   font-weight: bold;
   color: var(--form-bg);
@@ -114,6 +118,10 @@ input[type="text"]:focus {
 
 input[type="text"]:focus::placeholder {
   color: transparent;
+}
+
+button img {
+  max-height: 100%;
 }
 
 #bodyWrapper {
@@ -945,4 +953,52 @@ form#searchForm #s-submit { grid-area: submit; }
 
 .css-dropdown img {
   cursor: pointer;
+}
+
+.stage-dropdown {
+  /*Center under parent*/
+  left                  : calc(50% - var(--css-dropdown-width)/2);
+  width                 : var(--css-dropdown-width);
+
+  height                : 128px;
+  background-color      : black;
+  display               : inline-grid;
+  grid-template-columns : repeat(3, 1fr);
+
+  align-items           : center;
+  justify-items         : center;
+
+}
+
+.stage-dropdown img {
+  cursor: pointer;
+  width: calc(var(--css-dropdown-width) / 4);
+  border: 4px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+
+.sort-dropdown {
+  /*Center under parent*/
+  left                  : calc(50% - var(--css-dropdown-width)/2);
+  width                 : var(--css-dropdown-width);
+
+  background-color      : black;
+  display               : inline-grid;
+  grid-template-columns : repeat(1, 1fr);
+
+  align-items           : center;
+  justify-items         : center;
+
+}
+
+.sort-dropdown span {
+  width         : 100%;
+  padding       : 10px 0;
+  font-weight   : bold;
+  cursor        : pointer;
+  border-bottom : 1px solid rgba(255,255,255,0.5)
+}
+
+.sort-dropdown span:last-child {
+  border-bottom: none;
 }

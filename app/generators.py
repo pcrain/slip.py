@@ -6,13 +6,7 @@ def config_generators(app):
   def get_nav_icons():
     return dict(nav_icons=[
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",},
-      # {"name": "GitHub",    "src" : "/github",   "img" : "github-desktop.svg",},
-      # {"name": "Games",     "src" : "/games",    "img" : "spacefm.svg",},
       {"name": "Upload",    "src" : "/upload",   "img" : "header-matchups.png", "class" : "mu",},
-      # {"name": "CV",        "src" : "/cv",       "img" : "scinotes.svg",},
-      # {"name": "About",     "src" : "/about",    "img" : "preferences-desktop-emoticons.svg",},
-      # {"name": "Settings",  "src" : "/settings", "img" : "palapeli.svg",},
-      # {"name": "AJAX Test", "src" : "/thing",    "img" : "com.github.artemanufrij.hashit.svg",},
       ])
 
   @app.context_processor
@@ -47,6 +41,27 @@ def config_generators(app):
       {"id" : -1, "name" : "All Characters",   "intname" : "_NONE",   "csspos" : 26, },
       ]
     return dict(chardata=chardata)
+
+  @app.context_processor
+  def get_stages():
+    stagedata = [
+      { "id" :  32, "name" : "Final Destination",  "intname": "FINAL"     },
+      { "id" :  31, "name" : "Battlefield",        "intname": "BATTLE"    },
+      { "id" :  2 , "name" : "Fountain of Dreams", "intname": "FOUNTAIN"  },
+      { "id" :  8 , "name" : "Yoshi's Story",      "intname": "STORY"     },
+      { "id" :  3 , "name" : "Pokemon Stadium",    "intname": "STADIUM"   },
+      { "id" :  28, "name" : "Dream Land",         "intname": "DREAMLAND" },
+      { "id" : -1 , "name" : "Any Stage",          "intname": "_NONE0"    },
+      ]
+    return dict(stagedata=stagedata)
+
+  @app.context_processor
+  def get_sorts():
+    sortdata = [
+      { "name" : "Recently Played",    "intname": "play"     },
+      { "name" : "Recently Uploaded",  "intname": "upload"   },
+      ]
+    return dict(sortdata=sortdata)
 
   @app.context_processor
   def utility_functions():
