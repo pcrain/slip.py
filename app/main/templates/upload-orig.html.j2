@@ -1,0 +1,43 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    {# <title>Upload new File</title> #}
+    <h1>Upload New Replay</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file id=replay-file-upload>
+      <input type=submit value=Upload id=upload-button disabled>
+    </form>
+    <script>
+
+    var SLIPPIHEADER = "7b55037261775b24";
+    var fileReader   = new FileReader();
+    fileReader.onloadend = function(e) {
+      var arr = (new Uint8Array(e.target.result)).subarray(0, 8);
+      var header = "";
+      for(var i = 0; i < arr.length; i++) {
+         char = arr[i].toString(16);
+         if (char.length == 1) {
+           header += "0";
+         }
+         header += char;
+      }
+      // alert(header+"\n"+SLIPPIHEADER);
+      var ubutton = document.getElementById("upload-button");
+      if(header === SLIPPIHEADER) {
+        ubutton.disabled  = false;
+        ubutton.value     = "Upload";
+      } else {
+        ubutton.disabled  = true;
+        ubutton.value     = "Not a valid Slippi replay";
+      }
+    };
+    var control = document.getElementById("replay-file-upload");
+    control.addEventListener("change", function(event) {
+        // When the control has changed, there are new files
+        var files = control.files;
+        for (var i = 0; i < files.length; i++) {
+            fileReader.readAsArrayBuffer(files[i]);
+        }
+    }, false);
+    </script>
+{% endblock %}

@@ -152,7 +152,8 @@ button img {
   /*width: calc(100% - 100px); */
   max-width: 1200px;
   width: calc(100% - 55px);
-  display: inline-block;
+  /*display: inline-block;*/ /* Causes rendering issues */
+  display: inline;
   margin: 0;
   outline:none; /* Disable border when focused */
 }
@@ -991,4 +992,12 @@ form#searchForm #s-submit { grid-area: submit; }
 
 .sort-dropdown span:last-child {
   border-bottom: none;
+}
+
+span#uploadGrid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  align-items           : center;
+  justify-items         : center;
+  column-gap: 24px;
 }

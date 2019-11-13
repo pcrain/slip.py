@@ -139,19 +139,6 @@ def index():
 #     flash('You are not following {}.'.format(username))
 #     return redirect(url_for('main.user', username=username))
 
-# @bp.route('/explore')
-# @login_required
-# def explore():
-#     page = request.args.get('page', 1, type=int)
-#     posts = Post.query.order_by(Post.timestamp.desc()).paginate(
-#         page, current_app.config['POSTS_PER_PAGE'], False)
-#     next_url = url_for('main.explore', page=posts.next_num) \
-#         if posts.has_next else None
-#     prev_url = url_for('main.explore', page=posts.prev_num) \
-#         if posts.has_prev else None
-#     return render_template("index.html.j2", title='Explore', posts=posts.items,
-#                           next_url=next_url, prev_url=prev_url)
-
 # @bp.route('/api/thing')
 # def thing_api():
 #     return jsonify({
@@ -250,60 +237,82 @@ def shcall(comstring,inp="",ignoreErrors=False):
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # dbugp(file)
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file:
-            # if not allowed_file(file.filename):
-            #     flash('Invalid replay file')
-            #     return redirect(request.url)
-            filename = secure_filename(file.filename)
-            opath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            # dbugp(opath)
-            file.save(opath)
-            m     = md5file(opath)
-            afile = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
-            _,err = call([current_app.config['ANALYZER'],"-i",opath,"-a",afile],returnErrors=True)
-            if not os.path.exists(afile):
-              flash('Failed to parse replay; got the following error: <br/><code>'+err+'</code>')
-              return redirect(request.url)
+    #Populate a return JSON
+    jret = {
+      "error"        : "good",
+      "analysis-url" : "",
+      "filename"     : "",
+      }
 
-            if len(Replay.query.filter_by(checksum=m).all()) > 0:
-              flash('Replay already in database')
-              return redirect('replays/'+m)
+    # Just return upload form if this is a get request
+    if request.method == 'GET':
+      return render_template("upload.html.j2")
 
-            rdata = load_replay(afile)
+    # Error if no file attribute
+    if 'file' not in request.files:
+        jret["error"] = 'No file part'
+        return jsonify(jret)
+        # flash('No file part')
+        # return redirect(request.url)
 
-            replay = Replay(
-                checksum  = m,
-                filename  = filename,
-                user_id   = -1,
-                is_public = True,
-                played    = datetime.strptime(rdata["game_time"][:19], "%Y-%m-%dT%H:%M:%S"),
-                p1char    = rdata["players"][0]["char_id"],
-                p1color   = rdata["players"][0]["color"],
-                p1stocks  = rdata["players"][0]["end_stocks"],
-                p1metatag = rdata["players"][0]["tag_player"],
-                p1csstag  = rdata["players"][0]["tag_css"],
-                p1display = get_display_tag(rdata["players"][0]),
-                p2char    = rdata["players"][1]["char_id"],
-                p2color   = rdata["players"][1]["color"],
-                p2stocks  = rdata["players"][1]["end_stocks"],
-                p2metatag = rdata["players"][1]["tag_player"],
-                p2csstag  = rdata["players"][1]["tag_css"],
-                p2display = get_display_tag(rdata["players"][1]),
-                stage     = rdata["stage_id"],
-                )
-            db.session.add(replay)
-            db.session.commit()
-            return redirect('replays/'+m)
-    return render_template("upload.html.j2")
+    # Check if file is actually submitted
+    file = request.files['file']
+    if file.filename == '':
+        jret["error"] = 'No selected file'
+        return jsonify(jret)
+        # flash('No selected file')
+        # return redirect(request.url)
+
+    jret["filename"] = file.filename
+    return jsonify(jret)
+    # check if the post request has the file part
+    if file:
+        # if not allowed_file(file.filename):
+        #     flash('Invalid replay file')
+        #     return redirect(request.url)
+        filename = secure_filename(file.filename)
+        opath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        # dbugp(opath)
+        file.save(opath)
+        m     = md5file(opath)
+        afile = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
+        _,err = call([current_app.config['ANALYZER'],"-i",opath,"-a",afile],returnErrors=True)
+        if not os.path.exists(afile):
+          jret["error"] = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
+          return jsonify(jret)
+          # flash('Failed to parse replay; got the following error: <br/><code>'+err+'</code>')
+          # return redirect(request.url)
+
+        if len(Replay.query.filter_by(checksum=m).all()) > 0:
+          jret["error"] = 'Replay already in database'
+          return jsonify(jret)
+          # flash('Replay already in database')
+          # return redirect('replays/'+m)
+
+        rdata = load_replay(afile)
+
+        replay = Replay(
+            checksum  = m,
+            filename  = filename,
+            user_id   = -1,
+            is_public = True,
+            played    = datetime.strptime(rdata["game_time"][:19], "%Y-%m-%dT%H:%M:%S"),
+            p1char    = rdata["players"][0]["char_id"],
+            p1color   = rdata["players"][0]["color"],
+            p1stocks  = rdata["players"][0]["end_stocks"],
+            p1metatag = rdata["players"][0]["tag_player"],
+            p1csstag  = rdata["players"][0]["tag_css"],
+            p1display = get_display_tag(rdata["players"][0]),
+            p2char    = rdata["players"][1]["char_id"],
+            p2color   = rdata["players"][1]["color"],
+            p2stocks  = rdata["players"][1]["end_stocks"],
+            p2metatag = rdata["players"][1]["tag_player"],
+            p2csstag  = rdata["players"][1]["tag_css"],
+            p2display = get_display_tag(rdata["players"][1]),
+            stage     = rdata["stage_id"],
+            )
+        db.session.add(replay)
+        db.session.commit()
+        jret["analysis-url"] = 'replays/'+m
+        return jsonify(jret)
+        # return redirect('replays/'+m)

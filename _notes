@@ -9,8 +9,8 @@ Jinja2 Docs:
 Toastr Usage:
   https://github.com/CodeSeven/toastr
 
-ddSlick Usage:
-  https://designwithpc.com/Plugins/ddSlick#demo
+Possible caching solution:
+  https://pypi.org/project/Flask-SQLAlchemy-Caching/
 
 Resume Icons:
   https://github.com/konpa/devicon
