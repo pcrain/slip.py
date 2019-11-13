@@ -1,7 +1,7 @@
 <span class="replaySummary"><a class="nostyle" href="/replays/{{ replay.__file.split('.')[0] }}">
   <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ replay.stage_name }}.png)" title="{{ replay.stage_name }}">
 
-    {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
+{#     {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
       {% if (0 == replay.players[1].end_stocks) %}
         <img title="Winner" class="rs-win1" src="{{ url_for('static',filename='icons/winner.png')}}"/>
       {% endif %}
@@ -9,7 +9,8 @@
       {% if (0 == replay.players[0].end_stocks) %}
         <img title="Winner" class="rs-win2" src="{{ url_for('static',filename='icons/winner.png')}}"/>
       {% endif %}
-    {% endif %}
+    {% endif %} #}
+
     <span class="rs-tag1">{{ replay.players[0].get("tag_player","[?]") }}</span>
     <span class="rs-tag2">{{ replay.players[1].get("tag_player","[?]") }}</span>
 
@@ -26,7 +27,7 @@
     </span>
 
     <span title="{{ replay.__original_filename.split('.')[0] }}" class="rs-filename">{{ replay.__original_filename.split('.')[0] }}</span>
-    <span title="Game Length" class="rs-timer">{{ replay.__game_length }}</span>
+    {# <span title="Game Length" class="rs-timer">{{ replay.__game_length }}</span> #}
 
     <span class="rs-stocks2">
       {% for i in range(replay.players[1].end_stocks) %}

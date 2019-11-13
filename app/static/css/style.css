@@ -3,6 +3,18 @@
     src: url("/static/fonts/Proza-Regular.otf") format("opentype");
 }
 
+:root {
+  --form-fg:            rgba(255,255,255,1);
+  --form-bg:            rgba(24,20,24,1.00);
+  --form-fg-disabled:   rgba(255,255,255,0.5);
+  --form-bg-disabled:   rgba(24,20,24,0.5);
+  --form-border:        rgba(128,128,128,1);
+  --form-border-hl:     rgba(128,128,255,1);
+  --form-border-focus:  rgba(128,220,160,1);
+
+  --css-dropdown-width: 300px;
+}
+
 body {
   color            : white;
   background-color : rgba(48,40,48,1.00);
@@ -11,6 +23,12 @@ body {
 
 a {
   color: rgba(120,120,255,1.0);
+  outline: 0;
+}
+
+/* Get rid of dotted line on focus */
+input::-moz-focus-inner, button::-moz-focus-inner {
+  border: 0;
 }
 
 a:visited {
@@ -27,31 +45,71 @@ form {
   margin: 0;
 }
 
-input {
+input, button {
   height: 32px;
-  color: rgba(255,255,255,1);
+  color: var(--form-fg);
+  background-color: var(--form-bg);
+  text-align: center;
+  border-top    : none;
+  border-bottom : none;
+  border-right  : 4px solid var(--form-border);
+  border-left   : 4px solid var(--form-border);
+  border-radius : 4px;
+  margin: 4px 0;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-input[type="text"], input[type="submit"] {
-  text-align: center;
-  border-top: none;
-  border-bottom: none;
-  border-right: 4px solid rgb(36,30,70);
-  border-left: 4px solid rgb(36,30,70);
-  background-color: darkslategray;
-  border-radius: 4px;
-  margin: 4px 0;
+input:disabled, button:disabled {
+  color: var(--form-fg-disabled);
+  background-color: var(--form-bg-disabled);
+}
+
+input:hover:enabled, button:hover:enabled {
+  border-color: var(--form-border-hl);
+}
+
+input:focus, button:focus, input:hover:enabled:focus, button:hover:enabled:focus {
+  border-top:    1px dashed var(--form-border-focus);
+  border-bottom: 1px dashed var(--form-border-focus);
+  border-color: var(--form-border-focus);
+}
+
+button.has-dropdown::after {
+  content : "\25BC";
+  display : inline-block;
+  width   : 20px;
+  color   : lightslategray;
 }
 
 input[type="submit"] {
   font-weight: bold;
+  color: var(--form-bg);
+  background-color: var(--form-fg);
+  /*border-right  : 4px solid var(--form-border);*/
+  /*border-left   : 4px solid var(--form-border);*/
 }
 
+input[type="submit"]:disabled {
+  color: var(--form-bg-disabled);
+  background-color: var(--form-fg-disabled);
+  cursor: default;
+}
+
+
 input[type="text"]::placeholder {
-  text-align: center;
-  color: rgba(255,255,255,1);
+  /*color: rgba(255,255,255,0.75);*/
   font-weight: bold;
   opacity: 1;
+}
+
+input[type="text"].placeholderLabel::placeholder {
+  text-align: center;
+  font-size: 20px;
+}
+
+input[type="text"]:focus {
+  cursor: initial;
 }
 
 input[type="text"]:focus::placeholder {
@@ -86,7 +144,7 @@ input[type="text"]:focus::placeholder {
   max-width: 1200px;
   width: calc(100% - 55px);
   display: inline-block;
-  margin: 0 0 0 45px;
+  margin: 0;
   outline:none; /* Disable border when focused */
 }
 
@@ -138,9 +196,12 @@ hr {
   width: 100%;
 }
 
+.ni-home img { filter: drop-shadow(0px 0px 5px cyan)   drop-shadow(0px 0px 1px lightgray) ; }
+.ni-mu   img { filter: drop-shadow(0px 0px 5px red)    drop-shadow(0px 0px 1px lightgray) ; }
+
 .navbar_top .site_name {
   position       : fixed;
-  left           : 64px;
+  left           : 48px;
   top            : 12px;
 
   color          : white;
@@ -154,12 +215,12 @@ hr {
   position: fixed;
   left: 4px;
   top: 12px;
+  filter: drop-shadow(0px 0px 5px white)    drop-shadow(0px 0px 1px lightgray) ;
 }
 
 .navbar_top .site_header_icon img {
   max-height: 40px;
 }
-
 
 .navbar_bottom {
   color: white;
@@ -226,6 +287,30 @@ hr {
   opacity: 1;
 }
 
+.nav_top_label {
+  margin: 0 10px;
+}
+
+a.nav_top_link {
+  display: inline-grid;
+  grid-template-areas: "icon label";
+  margin: 0 10px;
+}
+a.nav_top_link img   {
+  grid-area: icon;
+}
+a.nav_top_link label {
+  grid-area      : label;
+  align-self     : center;
+  color          : white;
+  font-size      : 24px;
+  vertical-align : middle;
+  font-family    : 'Proza';
+  font-weight    : bold;
+  /*font-style     : italic;*/
+  cursor         : pointer;
+}
+
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
@@ -233,8 +318,11 @@ hr {
 }
 
 @media screen and (max-width: 1200px) {
-  .nav_top_link {
+  a.nav_top_link, label.nav_top_label {
     display: none;
+  }
+  #bodyContainer {
+    margin: 0 0 0 45px;  /* Adjust margin to account for sidenav */
   }
 }
 
@@ -590,7 +678,7 @@ span.replaySummary {
 }
 
 span.replaySummary:hover {
-  border: 4px solid rgba(128,128,255,0.5);
+  border: 4px solid var(--form-border-hl);
 }
 
 span.replayHoverWrapper {
@@ -611,14 +699,29 @@ span.replayStageGrid {
   /*background-blend-mode: multiply;*/
   grid-area: stagegrid;
   display: inline-grid;
-  grid-template-areas:
+/*  grid-template-areas:
     "filename filename filename filename filename filename filename"
     "p1char   p1tag    p1tag    p1tag    p1tag    p1tag    p2char"
     "p1char   p2tag    p2tag    p2tag    p2tag    p2tag    p2char"
     "p1win    .        timer    timer    timer    .        p2win"
     "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
+    ;*/
+  /*grid-template-areas:
+    "filename filename filename filename filename filename filename"
+    "p1char   p1win    .        .        .        p2win    p2char"
+    "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
+    "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
+    "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
+    ;*/
+  grid-template-areas:
+    "filename filename filename filename filename filename filename"
+    "p1char   .        .        .        .        .        p2char"
+    /*"p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"*/
+    "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
+    "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
     ;
   grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr 50px;
+  font-size: 14px;
 }
 
 a.nostyle:link {
@@ -680,20 +783,25 @@ span.rs-tag1, span.rs-tag2 {
   /*background-color: black;*/
   align-self: center;
   padding: 4px 2px;
+  white-space: nowrap;
+
+  /*width: 250px;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 img.rs-win1, img.rs-win2 {
   height: 24px;
 }
-img.rs-win1 { grid-area: p1win; justify-self: center; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
-img.rs-win2 { grid-area: p2win; justify-self: center; }
+img.rs-win1 { grid-area: p1win; align-self: center; justify-self: center; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
+img.rs-win2 { grid-area: p2win; align-self: center; justify-self: center; }
 
 span.rs-tag1 { grid-area: p1tag; text-align: left; }
 span.rs-tag2 { grid-area: p2tag; text-align: right; }
 
 span.rs-char1 img, span.rs-char2 img {
-  width: 50px;
-  height: auto;
+  width:  auto;
+  height: 80px;
 }
 span.rs-char1 { grid-area: p1char; justify-self: start; }
 span.rs-char2 { grid-area: p2char; justify-self: end; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
@@ -736,23 +844,32 @@ span.dd-pointer-down {
 }
 
 .hideUntilParentClicked {
-  display: inline-block;
-  height: 0px;
+  /*display: inline-block;*/
+  /*visibility: hidden;*/
+
   /*opacity: 0;*/
+  /*opacity: 0;*/
+  display: none;
+}
+
+.hideUntilParentClicked.unhiding {
+  display: initial;
+  opacity: 0;
+  /*width: 0px;*/
+  /*height: 0px;*/
   overflow: hidden;
   transition: opacity 0.7s ease;
-  opacity: 0;
-  /*display: none;*/
+}
+
+.hideUntilParentClicked.unhiding.noLongerHidden {
+  opacity: 1;
+  /*width: initial;*/
+  /*height: initial;*/
+  overflow: initial;
 }
 
 #replaySearchBar {
   display: inline-block;
-}
-
-#replaySearchBar .noLongerHidden {
-  opacity: 1;
-  height: initial;
-  overflow: initial;
 }
 
 #replayListingGrid {
@@ -769,4 +886,63 @@ span.dd-pointer-down {
 
 #replayListingGrid span#replayListingInnerGrid {
   grid-area: replays;
+}
+
+form#searchForm {
+  display: inline-grid;
+  grid-template-areas:
+    "search search search submit"
+    "p1     stage  p2     sort"
+    ;
+}
+
+form#searchForm.clicked {
+  grid-column-gap: 10px;
+}
+
+form#searchForm #s-query { grid-area: search; }
+form#searchForm #s-p1 { grid-area: p1; }
+form#searchForm #s-p2 { grid-area: p2; }
+form#searchForm #s-stage { grid-area: stage; }
+form#searchForm #s-sort { grid-area: sort; }
+form#searchForm #s-submit { grid-area: submit; }
+
+/* Magic dropdown CSS */
+.dropdown-wrapper {
+  position: relative; /* Give the dropdown somewhere to be positioned relative to */
+}
+.dropdown {
+  opacity        : 0;                 /* Hide ourselves */
+  pointer-events : none;              /* Make sure we can't interact with the dropdown while it's not visible */
+  position       : absolute;          /* Position it relative to the dropdown-wrapper */
+  z-index        : 5;                 /* Make sure we're above most other things */
+  top            : 100%;              /* By default, start it right under our parent */
+  transition     : opacity 0.3s ease; /* Add a nice transition :) */
+}
+.has-dropdown:focus+.dropdown {
+  opacity: 1;              /* Restore visibility */
+  pointer-events: initial; /* Restore pointer events */
+}
+.dropdown:hover {
+  /* MAGIC! We have pointer events while our has-dropdown sibling is focused,
+     but we can retain them after unfocusing the has-dropdown siblings with this magic pseudoselector*/
+  pointer-events: initial;
+}
+
+.css-dropdown {
+  /*Center under parent*/
+  left                  : calc(50% - var(--css-dropdown-width)/2);
+  width                 : var(--css-dropdown-width);
+
+  height                : 100px;
+  background-color      : black;
+  display               : inline-grid;
+  grid-template-columns : repeat(9, 1fr);
+
+  align-items           : center;
+  justify-items         : center;
+}
+
+.css-dropdown img {
+  cursor: pointer;
 }

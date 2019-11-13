@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from flask_wtf import FlaskForm, csrf
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User
 
@@ -26,5 +26,9 @@ class PostForm(FlaskForm):
 
 class ReplaySearchForm(FlaskForm):
     # query  = TextAreaField('Search', validators=[DataRequired(), Length(min=1, max=2000)])
-    query  = StringField('Search',render_kw={"placeholder": "Search Replays"})
-    submit = SubmitField('Submit')
+    query  = StringField('Search', id="s-query", render_kw={"placeholder": "Search Replays"})
+    p1char = HiddenField("P1",     id="s-p1-char", default=-1)
+    p2char = HiddenField("P2",     id="s-p2-char", default=-1)
+    stage  = HiddenField("Stage",  id="s-stage",   default=-1)
+    sort   = HiddenField("Sort",   id="s-sort",    default=0)
+    submit = SubmitField('Search', id="s-submit")

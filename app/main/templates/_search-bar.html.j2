@@ -4,99 +4,75 @@
         document.forms[0].submit();
      }
   }
+  function setPlayer(me,pnum) {
+    var cid   = $(me).data('cid');
+    var cname = $(me).data('cname');
+    var imurl = "{{ url_for('static',filename='icons/stock') }}/"+cname+"0.png"
+    $("#s-p"+pnum).html("<img src='"+imurl+"'/>");
+    $("#s-p"+pnum+"-char").val(cid);
+  }
 </script>
 
 {# <div onKeyPress="return checkSubmit(event)"/> #}
-
 <span id="replaySearchBar">
-  <form name="searchForm" action="" method="get" novalidate>
+  <form id="searchForm" name="searchForm" action="" method="get" novalidate autocomplete="off">
       {# {{ form.hidden_tag() }} #}
-      {# <span>Search Replays: </span> #}
-      {# <span> #}
-      {# </span> #}
-
-      {{ form.query() }}
-      <div></div>
-      <span class="hideUntilParentClicked">
-        <select id="charDropDown1"></select>
-        <select id="stageDropDown"></select>
-        <select id="charDropDown2"></select>
-        <div></div>
-        {{ form.submit() }}
+      {{ form.query(class="placeholderLabel") }}
+      <span class="dropdown-wrapper hideUntilParentClicked">
+        <button id="s-p1" type='button' class="has-dropdown">P1</button>
+        <span class="dropdown css-dropdown">{% for c in chardata %}
+          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
+        {% endfor %}</span>
       </span>
 
+      <span class="hideUntilParentClicked">
+        <button id="s-stage" type='button' class="has-dropdown">Stage</button>
+      </span>
+
+      <span class="dropdown-wrapper hideUntilParentClicked">
+        <button id="s-p2"    type='button' class="has-dropdown">P2</button>
+        <span class="dropdown css-dropdown">{% for c in chardata %}
+          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
+        {% endfor %}</span>
+      </span>
+
+      <span class="hideUntilParentClicked">
+        <button id="s-sort"  type='button' class="has-dropdown">Newest First</button>
+      </span>
+
+      {{ form.p1char() }}
+      {{ form.p2char() }}
+      {{ form.stage() }}
+      {{ form.sort() }}
+      {{ form.submit(class="hideUntilParentClicked") }}
   </form>
 </span>
 
 <script type="text/javascript">
-var ddChar = [
-    { texts: "_NONE",   value : -1  , imageSrc: "{{url_for('static',filename='icons/stock') }}/_NONE0.png"},
-    { texts: "BOWSER",  value :  5  , imageSrc: "{{url_for('static',filename='icons/stock') }}/BOWSER0.png"},
-    { texts: "CLIMBER", value :  14 , imageSrc: "{{url_for('static',filename='icons/stock') }}/CLIMBER0.png"},
-    { texts: "DOCTOR",  value :  22 , imageSrc: "{{url_for('static',filename='icons/stock') }}/DOCTOR0.png"},
-    { texts: "FALCO",   value :  20 , imageSrc: "{{url_for('static',filename='icons/stock') }}/FALCO0.png"},
-    { texts: "FALCON",  value :  0  , imageSrc: "{{url_for('static',filename='icons/stock') }}/FALCON0.png"},
-    { texts: "FOX",     value :  2  , imageSrc: "{{url_for('static',filename='icons/stock') }}/FOX0.png"},
-    { texts: "GANON",   value :  25 , imageSrc: "{{url_for('static',filename='icons/stock') }}/GANON0.png"},
-    { texts: "JIGGLY",  value :  15 , imageSrc: "{{url_for('static',filename='icons/stock') }}/JIGGLY0.png"},
-    { texts: "KIRBY",   value :  4  , imageSrc: "{{url_for('static',filename='icons/stock') }}/KIRBY0.png"},
-    { texts: "KONG",    value :  1  , imageSrc: "{{url_for('static',filename='icons/stock') }}/KONG0.png"},
-    { texts: "LINK",    value :  6  , imageSrc: "{{url_for('static',filename='icons/stock') }}/LINK0.png"},
-    { texts: "LUIGI",   value :  7  , imageSrc: "{{url_for('static',filename='icons/stock') }}/LUIGI0.png"},
-    { texts: "MARIO",   value :  8  , imageSrc: "{{url_for('static',filename='icons/stock') }}/MARIO0.png"},
-    { texts: "MARTH",   value :  9  , imageSrc: "{{url_for('static',filename='icons/stock') }}/MARTH0.png"},
-    { texts: "MEWTWO",  value :  10 , imageSrc: "{{url_for('static',filename='icons/stock') }}/MEWTWO0.png"},
-    { texts: "NESS",    value :  11 , imageSrc: "{{url_for('static',filename='icons/stock') }}/NESS0.png"},
-    { texts: "PEACH",   value :  12 , imageSrc: "{{url_for('static',filename='icons/stock') }}/PEACH0.png"},
-    { texts: "PICHU",   value :  24 , imageSrc: "{{url_for('static',filename='icons/stock') }}/PICHU0.png"},
-    { texts: "PIKACHU", value :  13 , imageSrc: "{{url_for('static',filename='icons/stock') }}/PIKACHU0.png"},
-    { texts: "ROY",     value :  23 , imageSrc: "{{url_for('static',filename='icons/stock') }}/ROY0.png"},
-    { texts: "SAMUS",   value :  16 , imageSrc: "{{url_for('static',filename='icons/stock') }}/SAMUS0.png"},
-    { texts: "SHEIK",   value :  19 , imageSrc: "{{url_for('static',filename='icons/stock') }}/SHEIK0.png"},
-    { texts: "WATCH",   value :  3  , imageSrc: "{{url_for('static',filename='icons/stock') }}/WATCH0.png"},
-    { texts: "YOSHI",   value :  17 , imageSrc: "{{url_for('static',filename='icons/stock') }}/YOSHI0.png"},
-    { texts: "YOUNG",   value :  21 , imageSrc: "{{url_for('static',filename='icons/stock') }}/YOUNG0.png"},
-    { texts: "ZELDA",   value :  18 , imageSrc: "{{url_for('static',filename='icons/stock') }}/ZELDA0.png"},
-  ];
-var ddStage = [
-    { texts: "_NONE",     value : -1  , imageSrc: "{{url_for('static',filename='icons/stage') }}/_NONE0.png"},
-    { texts: "FOUNTAIN",  value :  2  , imageSrc: "{{url_for('static',filename='icons/stage') }}/FOUNTAIN.png"},
-    { texts: "STADIUM",   value :  3  , imageSrc: "{{url_for('static',filename='icons/stage') }}/STADIUM.png"},
-    { texts: "STORY",     value :  8  , imageSrc: "{{url_for('static',filename='icons/stage') }}/STORY.png"},
-    { texts: "DREAMLAND", value :  28 , imageSrc: "{{url_for('static',filename='icons/stage') }}/DREAMLAND.png"},
-    { texts: "BATTLE",    value :  31 , imageSrc: "{{url_for('static',filename='icons/stage') }}/BATTLE.png"},
-    { texts: "FINAL",     value :  32 , imageSrc: "{{url_for('static',filename='icons/stage') }}/FINAL.png"},
-  ];
-
-$('#charDropDown1').ddslick({
-    data: ddChar,
-    selectText: "P1",
-    width: "80px",
-    height: "300px",
-    onSelected: function(selectedData){
-        //callback function: do something with selectedData;
-    }
-});
-$('#charDropDown2').ddslick({
-    data: ddChar,
-    selectText: "P2",
-    width: "80px",
-    height: "300px",
-    onSelected: function(selectedData){
-        //callback function: do something with selectedData;
-    }
-});
-$('#stageDropDown').ddslick({
-    data: ddStage,
-    selectText: "Stage",
-    width: "120px",
-    height: "300px",
-    onSelected: function(selectedData){
-        //callback function: do something with selectedData;
-    }
-});
-
 $("#replaySearchBar").click(function() {
-  $(".hideUntilParentClicked").addClass("noLongerHidden").css('opacity').removeClass("hideUntilParentClicked");
+  $("#s-query").attr("placeholder", "Enter search terms...").removeClass("placeholderLabel");
+  $(".hideUntilParentClicked").addClass("unhiding");
+  $("#searchForm").addClass("clicked");
+  setTimeout(function(){
+    $(".hideUntilParentClicked").addClass("noLongerHidden").css('opacity');
+  }, 100);
 });
+// var ddStage = [
+//     { texts: "_NONE",     value : -1  , imageSrc: "{{url_for('static',filename='icons/stage') }}/_NONE0.png"},
+//     { texts: "FOUNTAIN",  value :  2  , imageSrc: "{{url_for('static',filename='icons/stage') }}/FOUNTAIN.png"},
+//     { texts: "STADIUM",   value :  3  , imageSrc: "{{url_for('static',filename='icons/stage') }}/STADIUM.png"},
+//     { texts: "STORY",     value :  8  , imageSrc: "{{url_for('static',filename='icons/stage') }}/STORY.png"},
+//     { texts: "DREAMLAND", value :  28 , imageSrc: "{{url_for('static',filename='icons/stage') }}/DREAMLAND.png"},
+//     { texts: "BATTLE",    value :  31 , imageSrc: "{{url_for('static',filename='icons/stage') }}/BATTLE.png"},
+//     { texts: "FINAL",     value :  32 , imageSrc: "{{url_for('static',filename='icons/stage') }}/FINAL.png"},
+//   ];
+// $('#stageDropDown').ddslick({
+//     data: ddStage,
+//     selectText: "Stage",
+//     width: "120px",
+//     height: "300px",
+//     onSelected: function(selectedData){
+//         //callback function: do something with selectedData;
+//     }
+// });
 </script>
