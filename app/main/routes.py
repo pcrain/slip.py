@@ -10,6 +10,7 @@ from app.main import bp
 from app.main.forms import ReplaySearchForm
 
 import os, json, sys, subprocess, shlex, hashlib
+from datetime import datetime
 
 # Easy colors (print)
 class col:
@@ -161,28 +162,15 @@ def index():
 # @csrf.exempt
 def replays():
     q        = request.args.get("query",None)
-    form     = ReplaySearchForm()
     rdir     = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
     page     = request.args.get('page', 1, type=int)
     if q is None:
         rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     else:
-        rdata = Replay.search(q).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+        rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     next_url = url_for('main.replays', query=q, page=rdata.next_num) if rdata.has_next else None
     prev_url = url_for('main.replays', query=q, page=rdata.prev_num) if rdata.has_prev else None
-    replays  = []
-    for r in rdata.items:
-        rpath                         = os.path.join(rdir,r.checksum+".slp.json")
-        if not os.path.exists(rpath):
-            current_app.logger.warning('Replay {} is missing'.format(rpath))
-            continue
-        replay                        = load_replay(rpath)
-        replay["__original_filename"] = r.filename
-        replays.append(replay)
-    return render_template("replays.html.j2", title="Public Replays", form=form, replays=replays, next_url=next_url, prev_url=prev_url)
-    # return render_template('index.html.j2', title='Home', form=form,
-    #                        posts=posts.items, next_url=next_url,
-    #                        prev_url=prev_url)
+    return render_template("replays.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/replays/<r>')
 def replay_viz(r):
@@ -190,7 +178,16 @@ def replay_viz(r):
     rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
     replay = load_replay(rpath)
     replay["__original_filename"] = rdata.filename
-    return render_template("replays-single.html.j2", replays=[replay])
+    return render_template("replays-single.html.j2", rsummary=rdata, replay=replay)
+
+def get_display_tag(p):
+    if p["tag_player"] == "" or p["tag_player"] == "Player":
+        if p["player_type"] == 1:
+            return "[Lv. {} CPU]".format(p["cpu_level"])
+        if p["tag_css"].strip() != "" :
+            return "[{}]".format(p["tag_css"].strip().upper())
+        return "[Port {}]".format(1+p["port"])
+    return p["tag_player"]
 
 def load_replay(rf):
     with open(rf,'r') as jin:
@@ -201,21 +198,15 @@ def load_replay(rf):
         r["p"]             = r["players"]
         for p in r["p"]:
             for k,v in p["interactions"].items():
-                p["int"+k] = v
-            p["l_cancels_hit_pct"] = 0
+                p["__int"+k] = v
+            p["__l_cancels_hit_pct"] = 0
             if p["l_cancels_hit"] > 0:
-                p["l_cancels_hit_pct"] = 100 * p["l_cancels_hit"] / (p["l_cancels_hit"]+p["l_cancels_missed"])
-            p["tech_hit_pct"] = 100
+                p["__l_cancels_hit_pct"] = 100 * p["l_cancels_hit"] / (p["l_cancels_hit"]+p["l_cancels_missed"])
+            p["__tech_hit_pct"] = 100
             if p["missed_techs"] > 0:
-                p["tech_hit_pct"] = 100 * (p["techs"]+p["walltechs"]+p["walltechjumps"]) / (p["techs"]+p["walltechs"]+p["walltechjumps"]+p["missed_techs"])
+                p["__tech_hit_pct"] = 100 * (p["techs"]+p["walltechs"]+p["walltechjumps"]) / (p["techs"]+p["walltechs"]+p["walltechjumps"]+p["missed_techs"])
             p["num_moves_landed"] = p["moves_landed"]["_total"]
-            if p["tag_player"] == "" or p["tag_player"] == "Player":
-                if p["player_type"] == 1:
-                    p["tag_player"] = "[Lv. {} CPU]".format(p["cpu_level"])
-                elif p["tag_css"].strip() != "" :
-                    p["tag_player"] = "[{}]".format(p["tag_css"].strip().upper())
-                else:
-                    p["tag_player"] = "[Port {}]".format(1+p["port"])
+            p["__display_tag"] = get_display_tag(p)
     return r
 
 def get_game_length(frames):
@@ -259,24 +250,6 @@ def shcall(comstring,inp="",ignoreErrors=False):
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    # form = PostForm()
-    # if form.validate_on_submit():
-    #     post = Post(body=form.post.data, author=current_user)
-    #     db.session.add(post)
-    #     db.session.commit()
-    #     flash('Your post is now live!')
-    #     return redirect(url_for('main.index'))
-    # page = request.args.get('page', 1, type=int)
-    # posts = current_user.followed_posts().paginate(
-    #     page, current_app.config['POSTS_PER_PAGE'], False)
-    # next_url = url_for('main.index', page=posts.next_num) \
-    #     if posts.has_next else None
-    # prev_url = url_for('main.index', page=posts.prev_num) \
-    #     if posts.has_prev else None
-    # return render_template('index.html.j2', title='Home', form=form,
-    #                        posts=posts.items, next_url=next_url,
-    #                        prev_url=prev_url)
-
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -308,11 +281,27 @@ def upload_file():
               flash('Replay already in database')
               return redirect('replays/'+m)
 
+            rdata = load_replay(afile)
+
             replay = Replay(
                 checksum  = m,
                 filename  = filename,
                 user_id   = -1,
                 is_public = True,
+                played    = datetime.strptime(rdata["game_time"][:19], "%Y-%m-%dT%H:%M:%S"),
+                p1char    = rdata["players"][0]["char_id"],
+                p1color   = rdata["players"][0]["color"],
+                p1stocks  = rdata["players"][0]["end_stocks"],
+                p1metatag = rdata["players"][0]["tag_player"],
+                p1csstag  = rdata["players"][0]["tag_css"],
+                p1display = get_display_tag(rdata["players"][0]),
+                p2char    = rdata["players"][1]["char_id"],
+                p2color   = rdata["players"][1]["color"],
+                p2stocks  = rdata["players"][1]["end_stocks"],
+                p2metatag = rdata["players"][1]["tag_player"],
+                p2csstag  = rdata["players"][1]["tag_css"],
+                p2display = get_display_tag(rdata["players"][1]),
+                stage     = rdata["stage_id"],
                 )
             db.session.add(replay)
             db.session.commit()

@@ -4,6 +4,8 @@ from datetime          import datetime
 from app               import db, login
 from flask_login       import UserMixin, AnonymousUserMixin
 from hashlib           import md5
+from sqlalchemy        import or_, and_
+import sys
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -85,15 +87,58 @@ class Replay(db.Model):
     checksum  = db.Column(db.String(32))
     filename  = db.Column(db.String(128))
     user_id   = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
+    played    = db.Column(db.DateTime, index=True)
     uploaded  = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     is_public = db.Column(db.Boolean, default=True)
 
-    def search(q):
-        query = "%{}%".format(q)
-        return Replay.query.filter(Replay.filename.like(query)).order_by(Replay.uploaded.desc())
+    p1char    = db.Column(db.Integer)
+    p1color   = db.Column(db.Integer)
+    p1stocks  = db.Column(db.Integer)
+    p1metatag = db.Column(db.String(128))
+    p1csstag  = db.Column(db.String(8))
+    p1display = db.Column(db.String(128))
+    p2char    = db.Column(db.Integer)
+    p2color   = db.Column(db.Integer)
+    p2stocks  = db.Column(db.Integer)
+    p2metatag = db.Column(db.String(128))
+    p2csstag  = db.Column(db.String(8))
+    p2display = db.Column(db.String(128))
+    stage     = db.Column(db.Integer)
+
+    def search(args):
+        query  = args.get("query","")
+        p1char = int(args.get("p1char",-1))
+        p2char = int(args.get("p2char",-1))
+        stage  = int(args.get("stage",-1))
+
+        q = Replay.query
+        if p1char >= 0:
+            q = q.filter(or_(Replay.p1char == p1char,Replay.p2char == p1char))
+        if p2char >= 0:
+            q = q.filter(or_(Replay.p1char == p2char,Replay.p2char == p2char))
+        if stage >= 0:
+            q = q.filter(Replay.stage == stage)
+
+        for term in query.split(" "):
+            t = "%{}%".format(term)
+            q = q.filter(or_(
+                Replay.filename.like(t),
+                Replay.p1metatag.like(t),
+                Replay.p2metatag.like(t),
+                Replay.p1csstag.like(t),
+                Replay.p2csstag.like(t),
+                ))
+
+        if args.get("sort","upload") == "upload":
+            q = q.order_by(Replay.uploaded.desc())
+        else:
+            q = q.order_by(Replay.played.desc())
+
+        # sys.stderr.write(str(q))
+        return q
 
     def __repr__(self):
-        return '<Replay {} {}>'.format(self.filename, self.checksum)
+        return '<Replay {} [{}]>'.format(self.filename, self.checksum)
 
 @login.user_loader
 def load_user(id):

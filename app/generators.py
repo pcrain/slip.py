@@ -40,7 +40,8 @@ def config_generators(app):
       {"id" : 23, "name" : "Roy",              "intname" : "ROY",     "csspos" : 25, },
       {"id" : -1, "name" : "All Characters",   "intname" : "_NONE",   "csspos" : 26, },
       ]
-    return dict(chardata=chardata)
+    intchardata = { c["id"] : c for c in chardata}
+    return dict(chardata=chardata,intchardata=intchardata)
 
   @app.context_processor
   def get_stages():
@@ -53,7 +54,8 @@ def config_generators(app):
       { "id" :  28, "name" : "Dream Land",         "intname": "DREAMLAND" },
       { "id" : -1 , "name" : "Any Stage",          "intname": "_NONE0"    },
       ]
-    return dict(stagedata=stagedata)
+    intstagedata = { s["id"] : s for s in stagedata}
+    return dict(stagedata=stagedata,intstagedata=intstagedata)
 
   @app.context_processor
   def get_sorts():
