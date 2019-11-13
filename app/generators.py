@@ -45,7 +45,7 @@ def config_generators(app):
 
   @app.context_processor
   def get_stages():
-    stagedata = [
+    stagedata = [ #TODO: finish implementing
       { "id" :  32, "name" : "Final Destination",  "intname": "FINAL"     },
       { "id" :  31, "name" : "Battlefield",        "intname": "BATTLE"    },
       { "id" :  2 , "name" : "Fountain of Dreams", "intname": "FOUNTAIN"  },
@@ -53,6 +53,35 @@ def config_generators(app):
       { "id" :  3 , "name" : "Pokemon Stadium",    "intname": "STADIUM"   },
       { "id" :  28, "name" : "Dream Land",         "intname": "DREAMLAND" },
       { "id" : -1 , "name" : "Any Stage",          "intname": "_NONE0"    },
+
+      { "id" :  0, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  1, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  3, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  4, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  5, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  6, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  7, "name" : "???",                "intname": "_NONE0"     },
+      { "id" :  9, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 10, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 11, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 12, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 13, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 14, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 15, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 16, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 17, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 18, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 19, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 20, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 21, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 22, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 23, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 24, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 25, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 26, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 27, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 29, "name" : "???",                "intname": "_NONE0"     },
+      { "id" : 30, "name" : "???",                "intname": "_NONE0"     },
       ]
     intstagedata = { s["id"] : s for s in stagedata}
     return dict(stagedata=stagedata,intstagedata=intstagedata)

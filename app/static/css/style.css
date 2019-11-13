@@ -87,7 +87,7 @@ button.has-dropdown.noarrow::after {
   content: none;
 }
 
-input[type="submit"] {
+input[type="submit"], button.fake-submit {
   font-weight: bold;
   color: var(--form-bg);
   background-color: var(--form-fg);
@@ -95,7 +95,7 @@ input[type="submit"] {
   /*border-left   : 4px solid var(--form-border);*/
 }
 
-input[type="submit"]:disabled {
+input[type="submit"]:disabled, button.fake-submit:disabled {
   color: var(--form-bg-disabled);
   background-color: var(--form-fg-disabled);
   cursor: default;
@@ -491,7 +491,7 @@ div#replayPlayer2Grid div.comboGrid {
 div#replayDataOuterGrid {
   /*max-width: 1200px;*/
   grid-template-columns: 0.5fr 1fr 0.5fr;
-  display: grid;
+  display: inline-grid;
   grid-template-areas:
     ".         mini      ."
     "breakdown breakdown breakdown"

@@ -6,91 +6,107 @@
 
     <form id=replay-file-upload-form method=post enctype=multipart/form-data>
       <input type=file name=file id=replay-file-upload multiple/>
-      <input type=submit value="Upload All" id=upload-button disabled>
+      <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
     </form>
 
-    <span id="uploadGrid">
-    </span>
+    <span id="uploadGrid"></span>
 
     <script>
-    function submitReplay(index=-1) {
-      if (index < 0) {
-        return;
+      function submitReplay(index=-1) {
+        if (index < 0) {
+          for(var i = 0; i < uploadqueue.length; i++) {
+            submitReplay(i);
+          }
+          return;
+        }
+        var ubutton = document.getElementById("u-button-"+index);
+        if (!uploadqueue[index].valid || ubutton.disabled) {
+          return;
+        }
+        // alert(JSON.stringify(uploadqueue[index]));
+        // alert(index);
+        ubutton.disabled = true;
+        ubutton.innerText = "Pending";
+        var formData = new FormData();
+        formData.append('file', uploadqueue[index]["fdata"]);
+        $.ajax({
+          type        : "post",
+          url         : "/upload",
+          data        : formData,
+          contentType : false,
+          cache       : false,
+          processData : false,
+          success     : function(rjson) {
+            // $("#result").text(JSON.stringify(data));
+            ubutton.innerText = "Success";
+            ubutton.title     = JSON.stringify(rjson);
+            if ("analysis-url" in rjson) {
+              document.getElementById("u-filename-"+index).innerHTML = "<a href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
+            }
+          }
+        });
       }
-      alert(JSON.stringify(uploadqueue[index]));
-      var formData = new FormData();
-      formData.append('file', uploadqueue[index]["fdata"]);
-      $.ajax({
-        type        : "post",
-        url         : "/upload",
-        data        : formData,
-        contentType : false,
-        cache       : false,
-        processData : false,
-        success     : function(rjson) {
-          // $("#result").text(JSON.stringify(data));
-          alert(JSON.stringify(rjson));
-        }
-      });
-    }
 
-    function createUploadItem(u) {
-      var k = ' \
-        <span id="u-filename-'+u.id+'" class="u-filename">'+(u["filename"]||"[filename]")+'</span> \
-        <span id="u-status-'+u.id+'" class="u-status">'+(u["status"]||"Ready")+'</span> \
-        <button onclick="submitReplay('+u.id+')" id="u-button-'+u.id+'" class="u-button">'+(u["upload"]||"Upload")+'</button> \
-        ';
-        // <button onclick="submitReplay('+u+')" class="u-button" disabled>'+(u["upload"]||"Upload")+'</button> \
-      document.getElementById('uploadGrid').insertAdjacentHTML("beforeend", k);
-    }
-
-    function addTentativeUpload(udata, callback) {
-      return function(e) {
-        var arr = (new Uint8Array(e.target.result)).subarray(0, 8);
-        var header = "";
-        for(var i = 0; i < arr.length; i++) {
-           char = arr[i].toString(16);
-           if (char.length == 1) {
-             header += "0";
-           }
-           header += char;
-        }
-        var ubutton = document.getElementById("upload-button");
-        if(header === SLIPPIHEADER) {
-          ubutton.disabled  = true;
-          // ubutton.value     = "Upload";
-          udata["upload"]   = "Upload";
-        } else {
-          ubutton.disabled  = true;
-          // ubutton.value     = "Not a valid Slippi replay";
-          udata["status"]   = "Failed";
-          udata["upload"]   = "Not a valid Slippi replay";
-        }
-        createUploadItem(udata);
+      function createUploadItem(u) {
+        var k = ' \
+          <span id="u-filename-'+u.id+'" class="u-filename">'+(u["filename"]||"[filename]")+'</span> \
+          <span id="u-status-'+u.id+'" class="u-status">'+(u["status"]||"Ready")+'</span> \
+          <button onclick="submitReplay('+u.id+')" id="u-button-'+u.id+'" class="u-button">'+(u["upload"]||"Upload")+'</button> \
+          ';
+          // <button onclick="submitReplay('+u+')" class="u-button" disabled>'+(u["upload"]||"Upload")+'</button> \
+        document.getElementById('uploadGrid').insertAdjacentHTML("beforeend", k);
       }
-    }
-    var SLIPPIHEADER = "7b55037261775b24";
-    var control = document.getElementById("replay-file-upload");
-    var uploadqueue = [];
-    control.addEventListener("change", function(event) {
-        // When the control has changed, there are new files
-        document.getElementById('uploadGrid').innerHTML = "";
-        uploadqueue = [];
-        var files = control.files;
-        for (var i = 0; i < files.length; i++) {
-          var udata = {
-            id:       i,
-            status:   "Ready",
-            filename: files[i].name,
-            upload:   "",
-            fdata:    files[i],
-            };
-          uploadqueue.push(udata);
-          var fileReader = new FileReader();
-          fileReader.onloadend = addTentativeUpload(udata);
-          fileReader.readAsArrayBuffer(files[i]);
-        }
-    }, false);
 
+      function addTentativeUpload(udata, callback) {
+        return function(e) {
+          var arr = (new Uint8Array(e.target.result)).subarray(0, 8);
+          var header = "";
+          for(var i = 0; i < arr.length; i++) {
+             char = arr[i].toString(16);
+             if (char.length == 1) {
+               header += "0";
+             }
+             header += char;
+          }
+          createUploadItem(udata);
+         document.getElementById("upload-button").disabled = false;
+          var ubutton = document.getElementById("u-button-"+udata.id);
+          udata.valid = header === SLIPPIHEADER;
+          if(udata.valid) {
+            ubutton.disabled  = false;
+            ubutton.innerText = "Upload";
+            // udata["upload"]   = "Upload";
+          } else {
+            ubutton.disabled  = true;
+            ubutton.innerText = "Not a valid Slippi replay";
+            // udata["status"]   = "Failed";
+            // udata["upload"]   = "Not a valid Slippi replay";
+          }
+        }
+      }
+
+      var SLIPPIHEADER = "7b55037261775b24";
+      var control      = document.getElementById("replay-file-upload");
+      var uploadqueue;
+      control.addEventListener("change", function(event) {
+          // When the control has changed, there are new files
+          document.getElementById('uploadGrid').innerHTML = "";
+          uploadqueue = [];
+          var files = control.files;
+          for (var i = 0; i < files.length; i++) {
+            var udata = {
+              id:       i,
+              status:   "Ready",
+              filename: files[i].name,
+              upload:   "",
+              fdata:    files[i],
+              valid:    false,
+              };
+            uploadqueue.push(udata);
+            var fileReader       = new FileReader();
+            fileReader.onloadend = addTentativeUpload(udata);
+            fileReader.readAsArrayBuffer(files[i]);
+          }
+      }, false);
     </script>
 {% endblock %}

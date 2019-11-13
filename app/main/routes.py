@@ -264,7 +264,7 @@ def upload_file():
         # return redirect(request.url)
 
     jret["filename"] = file.filename
-    return jsonify(jret)
+    # return jsonify(jret)
     # check if the post request has the file part
     if file:
         # if not allowed_file(file.filename):
@@ -284,7 +284,8 @@ def upload_file():
           # return redirect(request.url)
 
         if len(Replay.query.filter_by(checksum=m).all()) > 0:
-          jret["error"] = 'Replay already in database'
+          jret["analysis-url"] = '/replays/'+m
+          jret["error"]        = 'Replay already in database'
           return jsonify(jret)
           # flash('Replay already in database')
           # return redirect('replays/'+m)
@@ -313,6 +314,6 @@ def upload_file():
             )
         db.session.add(replay)
         db.session.commit()
-        jret["analysis-url"] = 'replays/'+m
+        jret["analysis-url"] = '/replays/'+m
         return jsonify(jret)
         # return redirect('replays/'+m)
