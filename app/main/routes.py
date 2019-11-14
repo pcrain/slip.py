@@ -159,7 +159,8 @@ def replays():
     qdict             = dict(request.args)
     qdict["nextpage"] = rdata.next_num
     qdict["prevpage"] = rdata.prev_num
-    del qdict["page"]
+    if "page" in qdict:
+      del qdict["page"]
     next_url = url_for('main.replays', page=qdict["nextpage"], **qdict) if rdata.has_next else None
     prev_url = url_for('main.replays', page=qdict["prevpage"], **qdict) if rdata.has_prev else None
     return render_template("replays.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, next_url=next_url, prev_url=prev_url)
