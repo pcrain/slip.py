@@ -43,7 +43,7 @@
         formData.append('file', uploadqueue[index]["fdata"]);
         $.ajax({
           type        : "post",
-          url         : "/upload",
+          url         : "/api/upload",
           data        : formData,
           contentType : false,
           cache       : false,

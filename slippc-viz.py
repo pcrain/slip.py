@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from app import create_app, db, generators #, cli
-from app.models import User, Post
+from app.models import User, Replay
 
 app = create_app()
 generators.config_generators(app)

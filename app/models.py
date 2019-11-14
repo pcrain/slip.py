@@ -73,15 +73,6 @@ class User(UserMixin, db.Model):
         pubs = Replay.query.filter_by(is_public=1)
         return reps.union(pubs).order_by(Replay.uploaded.desc())
 
-class Post(db.Model):
-    id        = db.Column(db.Integer, primary_key=True)
-    body      = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id   = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post {}>'.format(self.body)
-
 class Replay(db.Model):
     id        = db.Column(db.Integer, primary_key=True)
     checksum  = db.Column(db.String(32))
