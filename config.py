@@ -19,7 +19,8 @@ class Config(object):
     MAIL_USERNAME                  = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD                  = os.environ.get('MAIL_PASSWORD')
     ADMINS                         = ['patrickacrain@gmail.com']
-    POSTS_PER_PAGE                 = 50
+    POSTS_PER_PAGE                 = 60
+    SIMULTANEOUS_UPLOADS           = 20
     STATIC_FOLDER                  = "{}/app/static/".format(basedir)
     UPLOAD_FOLDER                  = STATIC_FOLDER+"data/uploads"
     REPLAY_FOLDER                  = STATIC_FOLDER+"data/replays"

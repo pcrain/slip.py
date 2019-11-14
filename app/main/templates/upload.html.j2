@@ -2,18 +2,29 @@
 
 
 {% block content %}
-    <h1>Upload New Replay</h1>
+    <h1>Upload Replays</h1>
+    <h3>(Max {{SIMULTANEOUS_UPLOADS}} at time)</h3>
 
     <form id=replay-file-upload-form method=post enctype=multipart/form-data>
-      <input type=file name=file id=replay-file-upload multiple/>
-      <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
+      <span id="uploadGrid">
+        <div class="upload-btn-wrapper">
+          <button class="fake-submit">Select Replay(s)...</button>
+          <input type=file name=file id=replay-file-upload multiple/>
+        </div>
+        <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
+      </span>
     </form>
 
-    <span id="uploadGrid"></span>
 
     <script>
+      var MAX_UPLOADS  = parseInt("{{SIMULTANEOUS_UPLOADS}}");
+      var SLIPPIHEADER = "7b55037261775b24";
+      var control      = document.getElementById("replay-file-upload");
+      var uploadqueue  = [];
+
       function submitReplay(index=-1) {
         if (index < 0) {
+          document.getElementById("upload-button").disabled = true;
           for(var i = 0; i < uploadqueue.length; i++) {
             submitReplay(i);
           }
@@ -49,10 +60,10 @@
 
       function createUploadItem(u) {
         var k = ' \
-          <span id="u-filename-'+u.id+'" class="u-filename">'+(u["filename"]||"[filename]")+'</span> \
-          <span id="u-status-'+u.id+'" class="u-status">'+(u["status"]||"Ready")+'</span> \
-          <button onclick="submitReplay('+u.id+')" id="u-button-'+u.id+'" class="u-button">'+(u["upload"]||"Upload")+'</button> \
+          <span id="u-filename-'+u.id+'" class="transient u-filename">'+(u["filename"]||"[filename]")+'</span> \
+          <button type="button" onclick="submitReplay('+u.id+')" id="u-button-'+u.id+'" class="transient u-button">'+(u["upload"]||"Upload")+'</button> \
           ';
+          // <span id="u-status-'+u.id+'" class="u-status">'+(u["status"]||"Ready")+'</span> \
           // <button onclick="submitReplay('+u+')" class="u-button" disabled>'+(u["upload"]||"Upload")+'</button> \
         document.getElementById('uploadGrid').insertAdjacentHTML("beforeend", k);
       }
@@ -85,15 +96,21 @@
         }
       }
 
-      var SLIPPIHEADER = "7b55037261775b24";
-      var control      = document.getElementById("replay-file-upload");
-      var uploadqueue;
+      // When the control has changed, there are new files
       control.addEventListener("change", function(event) {
-          // When the control has changed, there are new files
-          document.getElementById('uploadGrid').innerHTML = "";
+          //Delete all old items
+          var elements = document.getElementById("uploadGrid").getElementsByClassName("transient");
+          while (elements[0]) {
+            elements[0].parentNode.removeChild(elements[0]);
+          }
+          //Reset the upload queue
           uploadqueue = [];
+
+          //Get the list of files
           var files = control.files;
-          for (var i = 0; i < files.length; i++) {
+
+          //Set the data for each file, add them to the queue, and validate their headres
+          for (var i = 0; i < Math.min(files.length,MAX_UPLOADS); i++) {
             var udata = {
               id:       i,
               status:   "Ready",

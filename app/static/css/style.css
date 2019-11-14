@@ -46,7 +46,7 @@ form {
   margin: 0;
 }
 
-input, button {
+input, button, .fake-button {
   height: 32px;
   color: var(--form-fg);
   background-color: var(--form-bg);
@@ -59,6 +59,15 @@ input, button {
   margin: 4px 0;
   cursor: pointer;
   font-weight: bold;
+}
+
+.btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 input:disabled, button:disabled {
@@ -87,7 +96,7 @@ button.has-dropdown.noarrow::after {
   content: none;
 }
 
-input[type="submit"], button.fake-submit {
+input[type="submit"], .fake-submit {
   font-weight: bold;
   color: var(--form-bg);
   background-color: var(--form-fg);
@@ -95,7 +104,7 @@ input[type="submit"], button.fake-submit {
   /*border-left   : 4px solid var(--form-border);*/
 }
 
-input[type="submit"]:disabled, button.fake-submit:disabled {
+input[type="submit"]:disabled, .fake-submit:disabled {
   color: var(--form-bg-disabled);
   background-color: var(--form-fg-disabled);
   cursor: default;
@@ -996,8 +1005,23 @@ form#searchForm #s-submit { grid-area: submit; }
 
 span#uploadGrid {
   display: inline-grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(2, auto);
   align-items           : center;
   justify-items         : center;
   column-gap: 24px;
+}
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.upload-btn-wrapper input[type=file] {
+  position  : absolute;
+  left      : 0;
+  top       : 0;
+  opacity   : 0;
+  cursor: pointer;
 }

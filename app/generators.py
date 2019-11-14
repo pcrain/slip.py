@@ -56,7 +56,6 @@ def config_generators(app):
 
       { "id" :  0, "name" : "???",                "intname": "_NONE0"     },
       { "id" :  1, "name" : "???",                "intname": "_NONE0"     },
-      { "id" :  3, "name" : "???",                "intname": "_NONE0"     },
       { "id" :  4, "name" : "???",                "intname": "_NONE0"     },
       { "id" :  5, "name" : "???",                "intname": "_NONE0"     },
       { "id" :  6, "name" : "???",                "intname": "_NONE0"     },

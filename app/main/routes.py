@@ -237,8 +237,10 @@ def shcall(comstring,inp="",ignoreErrors=False):
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    requestdate = datetime.utcnow();
     #Populate a return JSON
     jret = {
+      "time"         : requestdate,
       "error"        : "good",
       "analysis-url" : "",
       "filename"     : "",
@@ -297,6 +299,7 @@ def upload_file():
             filename  = filename,
             user_id   = -1,
             is_public = True,
+            uploaded  = requestdate,
             played    = datetime.strptime(rdata["game_time"][:19], "%Y-%m-%dT%H:%M:%S"),
             p1char    = rdata["players"][0]["char_id"],
             p1color   = rdata["players"][0]["color"],
