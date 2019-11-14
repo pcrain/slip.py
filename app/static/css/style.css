@@ -85,6 +85,10 @@ input:focus, button:focus, input:hover:enabled:focus, button:hover:enabled:focus
   border-color: var(--form-border-focus);
 }
 
+button:disabled {
+  cursor: default;
+}
+
 button.has-dropdown::after {
   content : "\25BC";
   display : inline-block;
@@ -894,10 +898,15 @@ span.dd-pointer-down {
 #replayListingGrid {
   display: grid;
   grid-template-areas:
-    "search   search  search"
+    "previous search  next"
     "replays  replays replays"
-    "previous .       next"
+    ;
+  grid-template-columns: 1fr auto 1fr;
+  grid-column-gap: 15px;
 }
+
+#replayListingGrid #prev { grid-area: previous; justify-self: right; }
+#replayListingGrid #next { grid-area: next;     justify-self: left; }
 
 #replayListingGrid span#replaySearchBar {
   grid-area: search;

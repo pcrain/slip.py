@@ -2,6 +2,24 @@
 
 {% block content %}
     <span id="replayListingGrid">
+        {% if prev_url %}
+            <a id="prev" class="nostyle" href="{{ prev_url }}"><button type="button">
+                &lt; Previous Page
+            </button></a>
+        {% else %}
+            <button id="prev" type="button" disabled>
+                &lt; Previous Page
+            </button>
+        {% endif %}
+        {% if next_url %}
+            <a id="next" class="nostyle" href="{{ next_url }}"><button type="button">
+                Next Page &gt;
+            </button></a>
+        {% else %}
+            <button id="next" type="button" disabled>
+                Next Page &gt;
+            </button>
+        {% endif %}
         {% if form %}
           {% include '_search-bar.html.j2' %}
         {% endif %}
@@ -12,7 +30,5 @@
                 </span>
             {% endfor %}
         </span>
-        {% if prev_url %} <a style="grid-area: previous" href="{{ prev_url }}">Newer Replays</a> {% endif %}
-        {% if next_url %} <a style="grid-area: next"     href="{{ next_url }}">Older Replays</a> {% endif %}
     </span>
 {% endblock %}
