@@ -57,7 +57,7 @@
       </span>
 
       <span class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-sort"  type='button' class="has-dropdown">Recently Uploaded</button>
+        <button id="b-sort"  type='button' class="has-dropdown">Recently Played</button>
         <span class="dropdown sort-dropdown">{% for s in sortdata %}
           <span data-sid="{{ s.intname }}" data-sname="{{ s.name }}" onclick="setSort(this)">{{ s.name }}</span>
         {% endfor %}</span>

@@ -30,5 +30,5 @@ class ReplaySearchForm(FlaskForm):
     p1char = HiddenField("P1",     id="s-p1-char", default=-1)
     p2char = HiddenField("P2",     id="s-p2-char", default=-1)
     stage  = HiddenField("Stage",  id="s-stage",   default=-1)
-    sort   = HiddenField("Sort",   id="s-sort",    default="upload")
+    sort   = HiddenField("Sort",   id="s-sort",    default="played")
     submit = SubmitField('Search', id="s-submit")
