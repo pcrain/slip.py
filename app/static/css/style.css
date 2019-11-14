@@ -70,6 +70,18 @@ input, button, .fake-button {
   cursor: pointer;
 }
 
+button.hasinfo, button.hasinfo:disabled {
+  cursor: help;
+}
+
+button.hasinfo::after {
+  /*content: " \25b6";*/
+  content: "*";
+  /*border-left: 1px solid rgba(255,255,255,0.25);*/
+  padding: 0 4px;
+  /*margin-left: 4px;*/
+}
+
 input:disabled, button:disabled {
   color: var(--form-fg-disabled);
   background-color: var(--form-bg-disabled);
@@ -79,7 +91,7 @@ input:hover:enabled, button:hover:enabled {
   border-color: var(--form-border-hl);
 }
 
-input:focus, button:focus, input:hover:enabled:focus, button:hover:enabled:focus {
+input:enabled:focus, button:enabled:focus, input:hover:enabled:focus, button:hover:enabled:focus {
   border-top:    1px dashed var(--form-border-focus);
   border-bottom: 1px dashed var(--form-border-focus);
   border-color: var(--form-border-focus);
@@ -1012,7 +1024,32 @@ form#searchForm #s-submit { grid-area: submit; }
   border-bottom: none;
 }
 
+span#uploadOuterGrid {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.25);
+  border: 4px solid rgba(0,0,0,0.25);
+  border-radius: 10px;
+  display: inline-grid;
+  grid-template-areas:
+    "title"
+    "limit"
+    "innergrid"
+    ;
+}
+
+span#uploadOuterGrid span.title {
+  grid-area: title;
+  font-size: 28px;
+}
+span#uploadOuterGrid span.subtitle {
+  grid-area: limit;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
 span#uploadGrid {
+  grid-area: innergrid;
   display: inline-grid;
   grid-template-columns: repeat(2, auto);
   align-items           : center;
@@ -1033,4 +1070,19 @@ span#uploadGrid {
   top       : 0;
   opacity   : 0;
   cursor: pointer;
+}
+
+a.nostyle.replay-link {
+  font-weight: bold;
+  color: lime;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+a.nostyle.replay-link::after {
+  content: "\2b00";
+  border-left: 1px solid rgba(255,255,255,0.25);
+  padding: 0 4px;
+  margin-left: 4px;
 }

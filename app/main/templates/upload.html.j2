@@ -2,18 +2,19 @@
 
 
 {% block content %}
-    <h1>Upload Replays</h1>
-    <h3>(Max {{SIMULTANEOUS_UPLOADS}} at time)</h3>
-
-    <form id=replay-file-upload-form method=post enctype=multipart/form-data>
-      <span id="uploadGrid">
-        <div class="upload-btn-wrapper">
-          <button class="fake-submit">Select Replay(s)...</button>
-          <input type=file name=file id=replay-file-upload multiple/>
-        </div>
-        <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
-      </span>
-    </form>
+    <span id="uploadOuterGrid">
+      <span class="title">Upload Replays</span>
+      <span class="subtitle">(Max {{SIMULTANEOUS_UPLOADS}} at time)</span>
+      <form id=replay-file-upload-form method=post enctype=multipart/form-data>
+        <span id="uploadGrid">
+          <div class="upload-btn-wrapper">
+            <button class="fake-submit">Select Replay(s)...</button>
+            <input type=file name=file id=replay-file-upload multiple/>
+          </div>
+          <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
+        </span>
+      </form>
+    </span>
 
 
     <script>
@@ -48,12 +49,16 @@
           cache       : false,
           processData : false,
           success     : function(rjson) {
-            // $("#result").text(JSON.stringify(data));
-            ubutton.innerText = "Success";
-            ubutton.title     = JSON.stringify(rjson);
+            ubutton.innerText  = "Success";
+            ubutton.title      = JSON.stringify(rjson);
+            ubutton.className += " hasinfo";
             if ("analysis-url" in rjson) {
-              document.getElementById("u-filename-"+index).innerHTML = "<a href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
+              document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
             }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            ubutton.innerText = "Failure";
+            ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
           }
         });
       }
