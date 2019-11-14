@@ -155,8 +155,13 @@ def replays():
         rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     else:
         rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('main.replays', query=q, page=rdata.next_num) if rdata.has_next else None
-    prev_url = url_for('main.replays', query=q, page=rdata.prev_num) if rdata.has_prev else None
+    #Copy GET args and set next / previous page
+    qdict             = dict(request.args)
+    qdict["nextpage"] = rdata.next_num
+    qdict["prevpage"] = rdata.prev_num
+    del qdict["page"]
+    next_url = url_for('main.replays', page=qdict["nextpage"], **qdict) if rdata.has_next else None
+    prev_url = url_for('main.replays', page=qdict["prevpage"], **qdict) if rdata.has_prev else None
     return render_template("replays.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/replays/<r>')
