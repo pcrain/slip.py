@@ -1,0 +1,13 @@
+#!/bin/bash
+#Clean up database
+
+echo "Removing old database"
+/bin/rm ./app.db
+echo "Copying empty database"
+cp ./app-empty.db ./app.db
+echo "Migrating and updating empty database"
+flask db upgrade
+echo "Clearing out uploads folder"
+/bin/rm ./app/static/data/uploads/*
+echo "Clearing out replays folder"
+/bin/rm ./app/static/data/replays/*

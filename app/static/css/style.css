@@ -451,12 +451,12 @@ div#replayDataGrid {
     "FOOTSIES1     FOOTSIES     FOOTSIES2"
     "POSITIONING1  POSITIONING  POSITIONING2"
     "POKING1       POKING       POKING2"
-    /*"TRADING1      TRADING      TRADING2"*/
-    /*"PRESSURED1    PRESSURED    PRESSURED2"*/
-    /*"GROUNDING1    GROUNDING    GROUNDING2"*/
-    /*"PUNISHED1     PUNISHED     PUNISHED2"*/
-    /*"ESCAPING1     ESCAPING     ESCAPING2"*/
-    /*"RECOVERING1   RECOVERING   RECOVERING2"*/
+    "TRADING1      TRADING      TRADING2"
+    "PRESSURED1    PRESSURED    PRESSURED2"
+    "GROUNDING1    GROUNDING    GROUNDING2"
+    "PUNISHED1     PUNISHED     PUNISHED2"
+    "ESCAPING1     ESCAPING     ESCAPING2"
+    "RECOVERING1   RECOVERING   RECOVERING2"
 
     "neutral        neutral       neutral"
     "neutwins1      neutwins      neutwins2"
@@ -468,11 +468,11 @@ div#replayDataGrid {
     "fullhops1      fullhops      fullhops2"
 
     "offense        offense       offense"
+    "damage1        damage        damage2"
     "openings1      openings      openings2"
     "mop1           mop           mop2"
     "mko1           mko           mko2"
     "mkp1           mkp           mkp2"
-    "damage1        damage        damage2"
     "moveslanded1   moveslanded   moveslanded2"
     "stabs1         stabs         stabs2"
     "breaks1        breaks        breaks2"
