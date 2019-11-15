@@ -49,7 +49,7 @@
           cache       : false,
           processData : false,
           success     : function(rjson) {
-            ubutton.innerText  = "Success";
+            ubutton.innerText  = rjson["status"];
             ubutton.title      = JSON.stringify(rjson);
             ubutton.className += " hasinfo";
             if ("analysis-url" in rjson) {
@@ -57,7 +57,7 @@
             }
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
-            ubutton.innerText = "Failure";
+            ubutton.innerText = "Error";
             ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
           }
         });

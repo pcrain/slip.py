@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from app import db, limiter
@@ -19,19 +19,22 @@ def api_upload_replay():
     #Populate a return JSON
     jret = {
       "time"         : requestdate,
-      "error"        : "Success!",
+      "status"       : "Success",
+      "error"        : "",
       "analysis-url" : "",
       "filename"     : "",
       }
 
     # Error if no file attribute
     if 'file' not in request.files:
-        jret["error"] = 'No file part'
+        jret["status"] = 'Failure'
+        jret["error"]  = 'No file part'
         return jsonify(jret)
 
     # Check if file is actually submitted
     file = request.files['file']
     if file.filename == '' or not file:
+        jret["status"] = 'Failure'
         jret["error"] = 'No selected file'
         return jsonify(jret)
 
@@ -41,12 +44,23 @@ def api_upload_replay():
     file.save(opath)
     m                = md5file(opath)
     afile            = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
+    if os.path.exists(afile):
+      jret["status"]       = 'Duplicate'
+      jret["analysis-url"] = '/replays/'+m
+      jret["error"]        = 'Replay already in database'
+      os.remove(opath)
+      return jsonify(jret)
+
     _,err            = call([current_app.config['ANALYZER'],"-i",opath,"-a",afile],returnErrors=True)
+    os.remove(opath)
     if not os.path.exists(afile):
+      jret["status"] = 'Failure'
       jret["error"] = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jsonify(jret)
 
+    #Should never get here theoretically, should fail at the afile check above
     if len(Replay.query.filter_by(checksum=m).all()) > 0:
+      jret["status"]       = 'Duplicate'
       jret["analysis-url"] = '/replays/'+m
       jret["error"]        = 'Replay already in database'
       return jsonify(jret)
@@ -77,3 +91,14 @@ def api_upload_replay():
     db.session.commit()
     jret["analysis-url"] = '/replays/'+m
     return jsonify(jret)
+
+@bp.route('/raw/<r>', methods=['GET'])
+def api_get_raw_analysis(r):
+    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
+    return send_from_directory(os.path.join(current_app.config['STATIC_FOLDER'], "data/replays"),r+".slp.json")
+    with open(rpath, 'r') as fin:
+      return json.loads(fin.read())
+    replay = load_replay(rpath)
+    rdata  = Replay.query.filter_by(checksum=r).first()
+    replay["__original_filename"] = rdata.filename
+    return jsonify(replay)
