@@ -21,12 +21,9 @@
     </script>
     <header>
       {% block nav_top %}
-        {% include "nav_top.html.j2" %}
+        {% include "_nav_top.html.j2" %}
       {% endblock %}
     </header>
-    {% block nav_side %}
-      {% include "nav_side.html.j2" %}
-    {% endblock %}
     <div id='bodyWrapper'>
       <div tabindex=1 id='bodyContainer'>
         {# <span onclick="openNav()">open</span> #}
@@ -46,7 +43,7 @@
     </div>
     <footer>
       {% block nav_bottom %}
-        {% include "nav_bottom.html.j2" %}
+        {% include "_nav_bottom.html.j2" %}
       {% endblock %}
     </footer>
   </body>

@@ -4,16 +4,22 @@
 }
 
 :root {
-  --form-fg:            rgba(255,255,255,1);
-  --form-bg:            rgba(24,20,24,1.00);
-  --form-fg-disabled:   rgba(255,255,255,0.5);
-  --form-bg-disabled:   rgba(24,20,24,0.5);
-  --form-border:        rgba(128,128,128,1);
-  --form-border-hl:     rgba(128,128,255,1);
-  --form-border-focus:  rgba(128,220,160,1);
+  --form-fg              : rgba(255,255,255,1);
+  --form-bg              : rgba(24,20,24,1.00);
+  --form-fg-disabled     : rgba(255,255,255,0.5);
+  --form-bg-disabled     : rgba(24,20,24,0.5);
+  --form-border          : rgba(128,128,128,1);
+  --form-border-hl       : rgba(128,128,255,1);
+  --form-border-focus    : rgba(128,220,160,1);
 
-  --css-dropdown-width:   300px;
-  --stage-dropdown-width: 450px;
+  --css-dropdown-width   : 300px;
+  --stage-dropdown-width : 450px;
+  --header-height        : 48px;
+}
+
+/* Get rid of dotted line on focus */
+input::-moz-focus-inner, button::-moz-focus-inner {
+  border: 0;
 }
 
 body {
@@ -25,11 +31,6 @@ body {
 a {
   color: rgba(120,120,255,1.0);
   outline: 0;
-}
-
-/* Get rid of dotted line on focus */
-input::-moz-focus-inner, button::-moz-focus-inner {
-  border: 0;
 }
 
 a:visited {
@@ -59,15 +60,6 @@ input, button, .fake-button {
   margin: 4px 0;
   cursor: pointer;
   font-weight: bold;
-}
-
-.btn {
-  border: 2px solid gray;
-  color: gray;
-  background-color: white;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 button.hasinfo, button.hasinfo:disabled {
@@ -184,11 +176,11 @@ button img {
 }
 
 header {
-  height           : 64px;
+  height           : var(--header-height);
 
   /*http           ://stackoverflow.com/questions/30548678/header-height-to-fit-background-image*/
   position         : fixed;
-  display          : flex;
+  display          : inline;
   flex-flow        : column nowrap;
   justify-content  : space-around;
   align-items      : center;
@@ -204,7 +196,7 @@ header {
 }
 
 header img {
-  height: 48px;
+  height: calc(var(--header-height) * 0.75);
 }
 
 footer {
@@ -234,92 +226,45 @@ hr {
 .ni-home img { filter: drop-shadow(0px 0px 5px cyan)   drop-shadow(0px 0px 1px lightgray) ; }
 .ni-mu   img { filter: drop-shadow(0px 0px 5px red)    drop-shadow(0px 0px 1px lightgray) ; }
 
-.navbar_top .site_name {
-  position       : fixed;
-  left           : 48px;
-  top            : 12px;
+.navbar_top {
+  display               : inline-grid;
+  grid-template-areas   : "ticon title links";
+  grid-template-columns : min-content auto auto;
+  align-items           : center;
+  width                 : 100%;
+  height                : 100%;
+  grid-column-gap       : 10px;
+}
+
+span#navbar_title {
+  grid-area: title;
+}
+
+span#navbar_links {
+  grid-area: links;
+  justify-self: right;
+  align-self: center;
+}
+
+#navbar_title {
+  grid-area: title;
+  justify-self: left;
 
   color          : white;
-  font-size      : 32px;
-  vertical-align : middle;
+  font-size      : calc(var(--header-height) / 2);
   font-family    : 'Proza';
   font-weight    : bold;
 }
 
-.navbar_top .site_header_icon {
-  position: fixed;
-  left: 4px;
-  top: 12px;
-  filter: drop-shadow(0px 0px 5px white)    drop-shadow(0px 0px 1px lightgray) ;
-}
-
-.navbar_top .site_header_icon img {
-  max-height: 40px;
+#site_header_icon {
+  justify-self: left;
+  grid-area: ticon;
+  filter: drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 1px lightgray) ;
+  margin-left: 10px;
 }
 
 .navbar_bottom {
   color: white;
-}
-
- /* The side navigation menu */
-.sidenav {
-  height           : calc(100% - 160px); /* 100% - [height of header and footer] - [padding-top] */
-  width            : 50px; /* 0 width - change this with JavaScript */
-  position         : fixed; /* Stay in place */
-  z-index          : 1; /* Stay on top */
-  top              : 64px; /* Stay at the top */
-  left             : 0;
-  background-color : rgba(0,0,0,0.85);
-  overflow-x       : hidden; /* Disable horizontal scroll */
-  padding-top      : 60px; /* Place content 60px from the top */
-  transition       : 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-}
-
-.sidenav.open {
-  width: 250px;
-}
-
-/* The navigation menu links */
-.sidenav a {
-  padding         : 8px 8px 8px 8px;
-  text-decoration : none;
-  font-size       : 25px;
-  color           : #818181;
-  display         : block;
-  transition      : 0.3s;
-}
-
-.sidenav a.nav_side_link:hover {
-  transform       : translateX(4px) scale(1.25);
-}
-
-/* When you mouse over the navigation links, change their color */
-.sidenav.open a.nav_side_link:hover {
-  color: #f1f1f1;
-  transform       : translateX(30px);
-}
-
-/* Position and style the close button (top right corner) */
-.sidenav .closebtn {
-  position    : absolute;
-  top         : 0;
-  right       : 5px;
-  font-size   : 36px;
-  margin-left : 50px;
-}
-
-.sidenav .nav_side_link {
-  /*display: inline-flex;  Makes everything line up magically? */
-  display: flex; /* Makes everything line up magically? */
-}
-
-.sidenav .nav_side_label {
-  transition: 0.3s;
-  opacity: 0;
-}
-
-.sidenav.open .nav_side_label {
-  opacity: 1;
 }
 
 .nav_top_label {
@@ -331,14 +276,16 @@ a.nav_top_link {
   grid-template-areas: "icon label";
   margin: 0 10px;
 }
+
 a.nav_top_link img   {
   grid-area: icon;
 }
+
 a.nav_top_link label {
   grid-area      : label;
   align-self     : center;
   color          : white;
-  font-size      : 24px;
+  font-size      : calc(var(--header-height) / 2);
   vertical-align : middle;
   font-family    : 'Proza';
   font-weight    : bold;
@@ -348,23 +295,23 @@ a.nav_top_link label {
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  /*.sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}*/
 }
 
 @media screen and (max-width: 1200px) {
-  a.nav_top_link, label.nav_top_label {
+  label.nav_top_label {
     display: none;
   }
-  #bodyContainer {
-    margin: 0 0 0 45px;  /* Adjust margin to account for sidenav */
+  .navbar_links {
+    justify-self: right;
   }
 }
 
 @media screen and (min-width: 1200px) {
-  .sidenav {
+  /*.sidenav {
     display: none;
-  }
+  }*/
 }
 
 /* https://css-tricks.com/removing-the-dotted-outline/ */
@@ -372,44 +319,13 @@ a {
    outline: 0;
 }
 
-.nav_side_link img {
-  min-width    : 32px;
-  min-height   : 32px;
-  max-width    : 32px;
-  max-height   : 32px;
-  margin-right : 8px;
-}
-
-.nav_side_link label {
-  white-space : nowrap;
-  display     : inline;
-  color       : white;
-  cursor      : pointer;
-}
-
 .left_aligned {
   text-align: left;
-}
-
-img.cv_icon {
-  max-height: 64px;
-  max-width: 64px;
-}
-
-span.cv_icon_wrapper {
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 8px;
-  margin: 0 2px;
-  max-width: 80px;
-  flex: 1;
 }
 
 span.flex-row {
   display: flex;
   justify-content: center;
-  /*align-items: center;*/
 }
 
 img.dead {
@@ -444,23 +360,19 @@ tr.padrow {
   height: 20px;
 }
 
-td.align-left {
-  text-align: left;
-}
-td.align-center {
-  text-align: center;
-}
-td.align-right {
-  text-align: right;
-}
+td.align-left   { text-align: left; }
+td.align-center { text-align: center; }
+td.align-right  { text-align: right; }
 
 .interaction {
   transition: opacity 0.5s;
   opacity: 0.3;
 }
+
 .interaction:hover {
   opacity: 1.0;
 }
+
 .int_EDGEGUARDING { background-image: linear-gradient(to top, indigo,     indigo     33%, lime           34%); }
 .int_TECHCHASING  { background-image: linear-gradient(to top, darkorchid, darkorchid 33%, lime           34%); }
 .int_PUNISHING    { background-image: linear-gradient(to top, blue,       blue       33%, lime           34%); }
@@ -483,7 +395,6 @@ td.align-right {
 span#replayListing {
   display: grid;
   grid-template-areas:
-    /*"overview overview  overview"*/
     "p1grid   innergrid p2grid"
 }
 
@@ -514,7 +425,6 @@ div#replayPlayer2Grid div.comboGrid {
 }
 
 div#replayDataOuterGrid {
-  /*max-width: 1200px;*/
   grid-template-columns: 0.5fr 1fr 0.5fr;
   display: inline-grid;
   grid-template-areas:
@@ -879,27 +789,18 @@ span.dd-pointer-down {
 }
 
 .hideUntilParentClicked {
-  /*display: inline-block;*/
-  /*visibility: hidden;*/
-
-  /*opacity: 0;*/
-  /*opacity: 0;*/
   display: none;
 }
 
 .hideUntilParentClicked.unhiding {
   display: initial;
   opacity: 0;
-  /*width: 0px;*/
-  /*height: 0px;*/
   overflow: hidden;
   transition: opacity 0.7s ease;
 }
 
 .hideUntilParentClicked.unhiding.noLongerHidden {
   opacity: 1;
-  /*width: initial;*/
-  /*height: initial;*/
   overflow: initial;
 }
 
@@ -919,6 +820,10 @@ span.dd-pointer-down {
 
 #replayListingGrid #prev { grid-area: previous; justify-self: right; }
 #replayListingGrid #next { grid-area: next;     justify-self: left; }
+
+.pagebutton {
+  width: 150px;
+}
 
 #replayListingGrid span#replaySearchBar {
   grid-area: search;

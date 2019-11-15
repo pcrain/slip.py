@@ -1,35 +1,16 @@
 #!/usr/bin/python
-from flask import render_template, flash, redirect, url_for, request, jsonify, current_app
+from flask import request, jsonify, current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from app import db, limiter
 from app.models import User, Replay
 from app.api import bp
+from app.main.helpers import *
 
-import os, json, sys, subprocess, shlex, hashlib
 from datetime import datetime
+import json
 
 REPLAY_UPLOAD_LIMIT = "600 per hour"
-
-#Compute md5sum for file
-def md5file(fname):
-  #http://stackoverflow.com/questions/3431825/generating-a-md5-checksum-of-a-file
-  hash_md5 = hashlib.md5()
-  with open(fname, "rb") as f:
-    for chunk in iter(lambda: f.read(4096), b""):
-      hash_md5.update(chunk)
-  return hash_md5.hexdigest()
-
-#Call a process and return its output
-def call(coms,inp="",ignoreErrors=False,returnErrors=False):
-  p = subprocess.Popen(coms, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  output, err = p.communicate(inp.encode("utf-8"))
-  oc = output.decode('utf-8',errors='replace' if ignoreErrors else 'strict')
-  return (oc,err.decode('utf-8')) if returnErrors else oc
-
-#Call a process and return its output using shell syntax
-def shcall(comstring,inp="",ignoreErrors=False,returnErrors=False):
-  return call(shlex.split(comstring),inp,ignoreErrors,returnErrors)
 
 @bp.route('/upload', methods=['POST'])
 @limiter.limit(REPLAY_UPLOAD_LIMIT)

@@ -3,14 +3,14 @@
 {% block content %}
     <span id="replayListingGrid">
         {% if prev_url %}
-            <a id="prev" class="nostyle" href="{{ prev_url }}"><button type="button">&lt; Previous Page</button></a>
+            <a id="prev" class="pagebutton nostyle" href="{{ prev_url }}"><button type="button">&lt; Previous Page</button></a>
         {% else %}
-            <button id="prev" type="button" disabled>&lt; Previous Page</button>
+            <button class="pagebutton" id="prev" type="button" disabled>&lt; Previous Page</button>
         {% endif %}
         {% if next_url %}
-            <a id="next" class="nostyle" href="{{ next_url }}"><button type="button">Next Page &gt;</button></a>
+            <a id="next" class="pagebutton nostyle" href="{{ next_url }}"><button type="button">Next Page &gt;</button></a>
         {% else %}
-            <button id="next" type="button" disabled>Next Page &gt;</button>
+            <button class="pagebutton" id="next" type="button" disabled>Next Page &gt;</button>
         {% endif %}
         {% if form %}
           {% include '_search-bar.html.j2' %}

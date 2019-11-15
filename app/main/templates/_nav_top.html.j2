@@ -1,13 +1,15 @@
 {% block nav_top %}
   <span class="navbar_top">
-    <a href="{{ url_for('main.replays') }}">
-      <span class="site_header_icon">
+    <span id="site_header_icon">
+      <a class="nostyle" href="{{ url_for('main.replays') }}">
         <img src="{{ url_for('static', filename='icons/header-home.png') }}" alt="{{ SITE_NAME }}">
-      </span>
-      <span class="site_name">
+      </a>
+    </span>
+    <span id="navbar_title">
+      <a class="nostyle" href="{{ url_for('main.replays') }}">
         {{ SITE_NAME }}
-      </span>
-    </a>
+      </a>
+    </span>
 
     {#
     <a href="{{ url_for('main.index') }}">Home</a>
@@ -20,8 +22,10 @@
     <a href="{{ url_for('main.explore') }}">Explore</a>
     #}
 
-    {% for navicon in nav_icons %}
-      {%- include '_navicon_top.html.j2' -%}
-    {% endfor %}
+    <span id="navbar_links">
+      {% for navicon in nav_icons %}
+        {%- include '_navicon_top.html.j2' -%}
+      {% endfor %}
+    </span>
   </span>
 {% endblock %}
