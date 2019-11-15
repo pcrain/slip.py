@@ -144,33 +144,24 @@ button img {
 
 #bodyWrapper {
   height        : auto;
-  top           : 65px;
+  top           : calc(var(--header-height) + 1px);
   bottom        : 40px;
   position      : fixed;
   width         : 100%;
 
   /*overflow-x    : hidden;*/
   overflow-y    : auto;
-  padding-right : 15px;
+  /*padding-right : 15px;*/
   text-align    : center;
-}
-
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#bodyWrapper {
-  /*transition: margin-left .5s;*/
-  margin-left: 0; /* Same as navbar width */
-  /*padding: 20px;*/
-  /*margin-left: 50px;*/
-  margin-right: 50px;
 }
 
 #bodyContainer {
   /* 100% - 2*(min-width of navbar) */
   /*width: calc(100% - 100px); */
-  max-width: 1200px;
-  width: calc(100% - 55px);
-  /*display: inline-block;*/ /* Causes rendering issues */
-  display: inline;
+  /*max-width: 1200px;*/
+  /*width: calc(100% - 55px);*/
+  display: inline-block; /* Causes rendering issues */
+  /*display: inline;*/
   margin: 0;
   outline:none; /* Disable border when focused */
 }
@@ -293,28 +284,6 @@ a.nav_top_link label {
   cursor         : pointer;
 }
 
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
-  /*.sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}*/
-}
-
-@media screen and (max-width: 1200px) {
-  label.nav_top_label {
-    display: none;
-  }
-  .navbar_links {
-    justify-self: right;
-  }
-}
-
-@media screen and (min-width: 1200px) {
-  /*.sidenav {
-    display: none;
-  }*/
-}
-
-/* https://css-tricks.com/removing-the-dotted-outline/ */
 a {
    outline: 0;
 }
@@ -398,11 +367,6 @@ span#replayListing {
     "p1grid   innergrid p2grid"
 }
 
-div#replayDataOuterGrid span.replaySummary {
-  grid-area: mini;
-  justify-self: center;
-}
-
 span#intBreakdown {
   grid-area: breakdown;
 }
@@ -425,19 +389,26 @@ div#replayPlayer2Grid div.comboGrid {
 }
 
 div#replayDataOuterGrid {
-  grid-template-columns: 0.5fr 1fr 0.5fr;
+  grid-template-columns: 1fr auto 1fr;
   display: inline-grid;
   grid-template-areas:
     ".         mini      ."
     "breakdown breakdown breakdown"
     "p1grid    innergrid  p2grid"
+    ;
+  margin: 0 8px;
+}
+
+div#replayDataOuterGrid span.replaySummary {
+  grid-area: mini;
+  justify-self: center;
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
-  max-width: 300px;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 32px auto;
+  width: 100%;
 }
 div#replayPlayer1Grid {
   grid-area: p1grid;
@@ -445,6 +416,7 @@ div#replayPlayer1Grid {
     "moves1"
     "movelist1"
     ;
+  justify-self: right;
 }
 
 div#replayPlayer2Grid {
@@ -453,6 +425,7 @@ div#replayPlayer2Grid {
     "moves2"
     "movelist2"
     ;
+  justify-self: left;
 }
 
 div#replayDataGrid {
@@ -461,6 +434,7 @@ div#replayDataGrid {
   max-width: 600px;
   display: grid;
   grid-area: innergrid;
+  grid-column-gap: 8px;
   grid-template-areas:
     "overview      overview     overview"
     "stocks1       stocks       stocks2"
@@ -821,9 +795,8 @@ span.dd-pointer-down {
 #replayListingGrid #prev { grid-area: previous; justify-self: right; }
 #replayListingGrid #next { grid-area: next;     justify-self: left; }
 
-.pagebutton {
-  width: 150px;
-}
+#replayListingGrid #prev::after  { content: " Prev. Page"; }
+#replayListingGrid #next::before { content: "Next Page "; }
 
 #replayListingGrid span#replaySearchBar {
   grid-area: search;
@@ -990,4 +963,26 @@ a.nostyle.replay-link::after {
   border-left: 1px solid rgba(255,255,255,0.25);
   padding: 0 4px;
   margin-left: 4px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  /*.sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}*/
+}
+
+@media screen and (max-width: 1200px) {
+  label.nav_top_label {
+    display: none;
+  }
+  .navbar_links {
+    justify-self: right;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  #replayListingGrid #prev::after, #replayListingGrid #next::before {
+    content: "";
+    min-width: 0;
+  }
 }

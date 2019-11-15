@@ -1,26 +1,26 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-    <span id="replayListingGrid">
-        {% if prev_url %}
-            <a id="prev" class="pagebutton nostyle" href="{{ prev_url }}"><button type="button">&lt; Previous Page</button></a>
-        {% else %}
-            <button class="pagebutton" id="prev" type="button" disabled>&lt; Previous Page</button>
-        {% endif %}
-        {% if next_url %}
-            <a id="next" class="pagebutton nostyle" href="{{ next_url }}"><button type="button">Next Page &gt;</button></a>
-        {% else %}
-            <button class="pagebutton" id="next" type="button" disabled>Next Page &gt;</button>
-        {% endif %}
-        {% if form %}
-          {% include '_search-bar.html.j2' %}
-        {% endif %}
-        <span id="replayListingInnerGrid">
-            {% for rsummary in replays %}
-                <span class="replayHoverWrapper">
-                  {% include '_replay-mini.html.j2' %}
-                </span>
-            {% endfor %}
+  <span id="replayListingGrid">
+    {% if prev_url %}
+      <a id="prev" class="pagebutton nostyle" href="{{ prev_url }}"><button type="button">&lt;</button></a>
+    {% else %}
+      <button class="pagebutton" id="prev" type="button" disabled>&lt;</button>
+    {% endif %}
+    {% if next_url %}
+      <a id="next" class="pagebutton nostyle" href="{{ next_url }}"><button type="button">&gt;</button></a>
+    {% else %}
+      <button class="pagebutton" id="next" type="button" disabled>&gt;</button>
+    {% endif %}
+    {% if form %}
+      {% include '_search-bar.html.j2' %}
+    {% endif %}
+    <span id="replayListingInnerGrid">
+      {% for rsummary in replays %}
+        <span class="replayHoverWrapper">
+          {% include '_replay-mini.html.j2' %}
         </span>
+      {% endfor %}
     </span>
+  </span>
 {% endblock %}
