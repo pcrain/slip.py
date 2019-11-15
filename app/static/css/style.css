@@ -403,6 +403,11 @@ div.comboGrid {
   grid-auto-rows: min-content;
 }
 
+div.p1item, div.p2item {
+  padding: 0 4px;
+  align-self: center;
+}
+
 div#replayPlayer1Grid div.comboGrid {
   grid-area: movelist1;
   grid-template-columns: 25px 1fr;
@@ -455,10 +460,6 @@ div#replayDataGrid .p2item  { grid-column: 3; }
 .hl-green { background-color: rgba(128,255,128,0.25); }
 .hl-red { background-color: rgba(255,128,128,0.25); }
 
-img.killicon {
-  width: 16px;
-}
-
 span.comboWrapper {
   /*display: inline-block;*/
   /*background-color: yellow;*/
@@ -497,6 +498,11 @@ div.empty {
 
 span.combomove img {
   white-space:nowrap;
+  vertical-align: text-bottom;
+}
+
+img.killicon {
+  height: 21px;
 }
 
 span.bigcombo {
@@ -655,9 +661,11 @@ span.op-PRESSURING   { background-color: rgba(255,255,128,0.45); }
 span.op-PUNISHING    { background-color: rgba(255,128,128,0.45); }
 span.op-TECHCHASING  { background-color: rgba(255,128,255,0.45); }
 span.op-SHARKING     { background-color: rgba(128,128,255,0.45); }
+span.op-DEATH        { background-color: rgba(255,255,255,0.45); }
 
 span.op-POKING       { background-color: rgba(128,128,128,0.45); }
 span.op-POSITIONING  { background-color: rgba(128,128,128,0.45); }
+span.op-FOOTSIES     { background-color: rgba(128,128,128,0.45); }
 
 span.op-RECOVERING   { background-color: rgba(255,192,192,0.45); }
 span.op-PRESSURED    { background-color: rgba(255,192,192,0.45); }

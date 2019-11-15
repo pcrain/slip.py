@@ -196,7 +196,9 @@
                                 <span title="{{a}}" class="combomove">
                                     {{a["cancel_name"]+" " if a["move_name"] != "" else ""}}{{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
                                     {% if a["kill_dir"] != "NEUT" %}
-                                        <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}"/>
+                                        </span></span>
+                                        <span class="combomoveWrapper op-DEATH"><span title="K.O. {{a['kill_dir']}}" class="combomove">
+                                        <img class="killicon" src="{{ url_for('static', filename='icons/sandbag.png') }}"/>
                                     {% endif %}
                                 </span> {# combomove #}
                             </span> {# combomoveWrapper #}
