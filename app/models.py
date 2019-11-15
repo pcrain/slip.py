@@ -7,11 +7,6 @@ from hashlib           import md5
 from sqlalchemy        import or_, and_
 import sys
 
-followers = db.Table('followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-    )
-
 class Anonymous(AnonymousUserMixin):
   def __init__(self):
     self.username = 'Guest'
@@ -104,8 +99,11 @@ class Replay(db.Model):
 
         q = Replay.query
         if p1char >= 0:
-            q = q.filter(or_(Replay.p1char == p1char,Replay.p2char == p1char))
-        if p2char >= 0:
+            if p2char == p1char:
+                q = q.filter(and_(Replay.p1char == p1char,Replay.p2char == p1char))
+            else:
+                q = q.filter(or_(Replay.p1char == p1char,Replay.p2char == p1char))
+        if p2char >= 0 and p1char != p2char:
             q = q.filter(or_(Replay.p1char == p2char,Replay.p2char == p2char))
         if stage >= 0:
             q = q.filter(Replay.stage == stage)
