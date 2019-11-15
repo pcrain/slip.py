@@ -1,7 +1,6 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-
   <div id="replayDataOuterGrid">
       {% set r = replay %}
       {% include '_replay-mini.html.j2' %}
@@ -11,153 +10,156 @@
         {% endfor %}
       </span>
       <div id="replayDataGrid">
-          <div class="heading" style="grid-area: overview">Overview</div>
-              <div style="grid-area: stocks">End Stocks</div>
-              <div style="grid-area: percent">End %</div>
-              <div style="grid-area: airborne">Time Airborne</div>
-              <div style="grid-area: ledgegrabs">Ledge Grabs</div>
+          <div class="heading">Overview</div>
+            <div class="stat">End Stocks</div>
+            <div class="stat">End %</div>
+            <div class="stat">Time Airborne</div>
+            <div class="stat">Ledge Grabs</div>
 
-          {# <div class="heading" style="grid-area: interactions">Interactions (% of match)</div> #}
-          <div class="heading" style="grid-area: interactions">Interactions (Damage Dealt)</div>
-          {# {% for k in INTERACTIONS[:8] %} #}
-          {% for k in INTERACTIONS %}
-              <div style="grid-area: {{k}}">{{k.title()}}</div>
-          {% endfor %}
+          <div class="heading">Interactions (Damage Dealt)</div>
+            {% for k in INTERACTIONS %}
+              <div class="stat">{{k.title()}}</div>
+            {% endfor %}
 
-          <div class="heading" style="grid-area: neutral">Neutral</div>
-              <div style="grid-area: neutwins">Neutral Wins</div>
-              <div style="grid-area: counters">Counterattacks</div>
-              <div style="grid-area: pokes">Pokes</div>
-              <div style="grid-area: reversals">Reverse Edgeguards</div>
-              <div style="grid-area: dashdances">Dashdances</div>
-              <div style="grid-area: shorthops">Short Hops</div>
-              <div style="grid-area: fullhops">Full Hops</div>
+          <div class="heading">Neutral</div>
+            <div class="stat">Neutral Wins</div>
+            <div class="stat">Counterattacks</div>
+            <div class="stat">Pokes</div>
+            <div class="stat">Reverse Edgeguards</div>
+            <div class="stat">Dashdances</div>
+            <div class="stat">Short Hops</div>
+            <div class="stat">Full Hops</div>
 
-          <div class="heading" style="grid-area: offense">Offense</div>
-              <div style="grid-area: damage">Damage Dealt</div>
-              <div style="grid-area: openings">Total Openings</div>
-              <div style="grid-area: mop">Damage / Opening</div>
-              <div style="grid-area: mko">Openings / Kill</div>
-              <div style="grid-area: mkp">Damage / Kill</div>
-              <div style="grid-area: moveslanded">Moves Landed</div>
-              <div style="grid-area: stabs">Shield Stabs</div>
-              <div style="grid-area: breaks">Shields Broken</div>
-              <div style="grid-area: grabs">Grabs Landed</div>
-              <div style="grid-area: stagespikes">Stage Spikes</div>
+          <div class="heading">Offense</div>
+            <div class="stat">Damage Dealt</div>
+            <div class="stat">Total Openings</div>
+            <div class="stat">Damage / Opening</div>
+            <div class="stat">Openings / Kill</div>
+            <div class="stat">Damage / Kill</div>
+            <div class="stat">Moves Landed</div>
+            <div class="stat">Shield Stabs</div>
+            <div class="stat">Shields Broken</div>
+            <div class="stat">Grabs Landed</div>
+            <div class="stat">Stage Spikes</div>
 
-          <div class="heading" style="grid-area: defense">Defense</div>
-              <div style="grid-area: airdodges">Airdodges</div>
-              <div style="grid-area: spotdodges">Spotdodges</div>
-              <div style="grid-area: rolls">Rolls</div>
-              <div style="grid-area: escapes">Grabs Escaped</div>
-              <div style="grid-area: shields">Attacks Shielded</div>
-              <div style="grid-area: powershields">Attacks Powershielded</div>
-              <div style="grid-area: techs">Floor Techs</div>
-              <div style="grid-area: walltechs">Wall Techs</div>
-              <div style="grid-area: jumptechs">Wall Tech Jumps</div>
-              <div style="grid-area: shield_time">Frames in Shield</div>
-              <div style="grid-area: shield_damage">Shield Damage Taken</div>
-              <div style="grid-area: shield_lowest">Lowest Shield Health</div>
+          <div class="heading">Defense</div>
+            <div class="stat">Airdodges</div>
+            <div class="stat">Spotdodges</div>
+            <div class="stat">Rolls</div>
+            <div class="stat">Grabs Escaped</div>
+            <div class="stat">Attacks Shielded</div>
+            <div class="stat">Attacks Powershielded</div>
+            <div class="stat">Floor Techs</div>
+            <div class="stat">Wall Techs</div>
+            <div class="stat">Wall Tech Jumps</div>
+            <div class="stat">Frames in Shield</div>
+            <div class="stat">Shield Damage Taken</div>
+            <div class="stat">Lowest Shield Health</div>
 
-          <div class="heading" style="grid-area: tech">Technique</div>
-              <div style="grid-area: lcancel">L Cancels Hit</div>
-              <div style="grid-area: techhit">Techs Hit</div>
-              <div style="grid-area: wavedashes">Wavedashes</div>
-              <div style="grid-area: wavelands">Wavelands</div>
-              <div style="grid-area: shielddrops">Shield Drops</div>
-              <div style="grid-area: nils">No Impact Lands</div>
-              <div style="grid-area: pivots">Pivots</div>
-              <div style="grid-area: ecaerials">Edge-cancelled Aerials</div>
-              <div style="grid-area: ecspecials">Edge-cancelled Specials</div>
-              <div style="grid-area: tcaerials">Teeter-cancelled Aerials</div>
-              <div style="grid-area: tcspecials">Teeter-cancelled Specials</div>
-              <div style="grid-area: mcancels">Meteor Cancels</div>
-              <div style="grid-area: ledgedashes">Intangible Ledgedashes</div>
-              <div style="grid-area: galint">Mean GALINT</div>
+          <div class="heading">Technique</div>
+            <div class="stat">L Cancels Hit</div>
+            <div class="stat">Techs Hit</div>
+            <div class="stat">Wavedashes</div>
+            <div class="stat">Wavelands</div>
+            <div class="stat">Shield Drops</div>
+            <div class="stat">No Impact Lands</div>
+            <div class="stat">Pivots</div>
+            <div class="stat">Edge-cancelled Aerials</div>
+            <div class="stat">Edge-cancelled Specials</div>
+            <div class="stat">Teeter-cancelled Aerials</div>
+            <div class="stat">Teeter-cancelled Specials</div>
+            <div class="stat">Meteor Cancels</div>
+            <div class="stat">Intangible Ledgedashes</div>
+            <div class="stat">Mean GALINT</div>
 
-          <div class="heading" style="grid-area: misc">Miscellaneous</div>
-              <div style="grid-area: taunts">Taunts</div>
-              <div style="grid-area: phantoms">Phantom Hits</div>
-              <div style="grid-area: sds">Self Destucts</div>
+          <div class="heading">Miscellaneous</div>
+            <div class="stat">Taunts</div>
+            <div class="stat">Phantom Hits</div>
+            <div class="stat">Self Destucts</div>
 
           {% for p in r.p %}
-              {% set outer_loop = loop %}
+            {% set outer_loop = loop %}
+            {% set pi = "p"+loop.index|string+"item" %}
+            {% macro _stat(statname,f="%.0f",suffix="") -%}
+                <div class="{{pi}}">{{ f|format(p[statname])+suffix }}</div>
+            {%- endmacro %}
+            {% macro _stathi(statname,f="%.0f",suffix="") -%}
+                <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">{{ f|format(p[statname])+suffix }}</div>
+            {%- endmacro %}
+            {% macro _statlo(statname,f="%.0f",suffix="") -%}
+                <div class="{{pi}} {{hl_if_lower(r,loop.index,statname)}}">{{ f|format(p[statname])+suffix }}</div>
+            {%- endmacro %}
 
-              {# Overview #}
-              <div class="{{hl_if_higher(r,loop.index,'end_stocks')}}" style="grid-area: stocks{{loop.index}}">{{ p["end_stocks"] }}</div>
-              <div style="grid-area: percent{{loop.index}}">{{ "%.0f"|format(p["end_pct"]) }}%</div>
-              <div style="grid-area: airborne{{loop.index}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>
-              <div style="grid-area: ledgegrabs{{loop.index}}">{{ p["ledge_grabs"] }}</div>
+            {# Overview #}
+            {{ _stathi("end_stocks" )}}
+            {{ _stat("end_pct","%.0f","%")}}
+            <div class="{{pi}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>
+            {{ _stat("ledge_grabs" )}}
 
-              {# Interactions #}
-              {# {% for k in INTERACTIONS[:8] %} #}
-              {% for k in INTERACTIONS %}
-                  {# <div class="{{hl_if_higher(r,outer_loop.index,'__int'+k)}}" style="grid-area: {{k}}{{outer_loop.index}}">{{ "%.2f"|format(100*p["interaction_frames"][k] / r["__act_length"]) }}%</div> #}
-                  <div class="{{hl_if_higher(r,outer_loop.index,'__dmg'+k)}}" style="grid-area: {{k}}{{outer_loop.index}}">{{ "%.0f"|format(p["interaction_damage"][k]) }}%</div>
-              {% endfor %}
+            {# Interactions #}
+            {% for k in INTERACTIONS %}
+                {{ _stathi('__dmg'+k,"%.0f","%")}}
+            {% endfor %}
 
-              {# Neutral #}
-              <div class="{{hl_if_higher(r,loop.index,'neutral_wins')}}" style="grid-area: neutwins{{loop.index}}">{{ p["neutral_wins"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'counters')}}" style="grid-area: counters{{loop.index}}">{{ p["counters"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'pokes')}}" style="grid-area: pokes{{loop.index}}">{{ p["pokes"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'reverse_edgeguards')}}" style="grid-area: reversals{{loop.index}}">{{ p["reverse_edgeguards"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'dashdances')}}" style="grid-area: dashdances{{loop.index}}">{{ p["dashdances"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'short_hops')}}" style="grid-area: shorthops{{loop.index}}">{{ p["short_hops"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'full_hops')}}" style="grid-area: fullhops{{loop.index}}">{{ p["full_hops"] }}</div>
+            {# Neutral #}
+            {{ _stathi("neutral_wins" )}}
+            {{ _stathi("counters" )}}
+            {{ _stathi("pokes" )}}
+            {{ _stathi("reverse_edgeguards" )}}
+            {{ _stathi("dashdances" )}}
+            {{ _stathi("short_hops" )}}
+            {{ _stathi("full_hops" )}}
 
-              {# Offense #}
-              <div class="{{hl_if_higher(r,loop.index,'damage_dealt')}}" style="grid-area: damage{{loop.index}}">{{ "%.2f"|format(p["damage_dealt"]) }}%</div>
-              <div class="{{hl_if_higher(r,loop.index,'num_moves_landed')}}" style="grid-area: moveslanded{{loop.index}}">{{ p["num_moves_landed"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'shield_stabs')}}" style="grid-area: stabs{{loop.index}}">{{ p["shield_stabs"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'shield_breaks')}}" style="grid-area: breaks{{loop.index}}">{{ p["shield_breaks"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'grabs')}}" style="grid-area: grabs{{loop.index}}">{{ p["grabs"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'stage_spikes')}}" style="grid-area: stagespikes{{loop.index}}">{{ p["stage_spikes"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'total_openings')}}" style="grid-area: openings{{loop.index}}">{{ p["total_openings"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'mean_opening_percent')}}" style="grid-area: mop{{loop.index}}">{{ p["mean_opening_percent"] }}</div>
-              <div class="{{hl_if_lower(r,loop.index,'mean_kill_openings')}}" style="grid-area: mko{{loop.index}}">{{ p["mean_kill_openings"] }}</div>
-              <div class="{{hl_if_lower(r,loop.index,'mean_kill_percent')}}" style="grid-area: mkp{{loop.index}}">{{ p["mean_kill_percent"] }}</div>
+            {# Offense #}
+            {{ _stathi("damage_dealt","%.2f","%")}}
+            {{ _stathi("total_openings" )}}
+            {{ _stathi("mean_opening_percent" )}}
+            {{ _statlo("mean_kill_openings" )}}
+            {{ _statlo("mean_kill_percent" )}}
+            {{ _stathi("num_moves_landed" )}}
+            {{ _stathi("shield_stabs" )}}
+            {{ _stathi("shield_breaks" )}}
+            {{ _stathi("grabs" )}}
+            {{ _stathi("stage_spikes" )}}
 
-              {# Defense #}
-              <div class="{{hl_if_higher(r,loop.index,'airdodges')}}" style="grid-area: airdodges{{loop.index}}">{{ p["airdodges"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'spotdodges')}}" style="grid-area: spotdodges{{loop.index}}">{{ p["spotdodges"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'rolls')}}" style="grid-area: rolls{{loop.index}}">{{ p["rolls"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'grab_escapes')}}" style="grid-area: escapes{{loop.index}}">{{ p["grab_escapes"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'hits_blocked')}}" style="grid-area: shields{{loop.index}}">{{ p["hits_blocked"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'powershields')}}" style="grid-area: powershields{{loop.index}}">{{ p["powershields"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'techs')}}" style="grid-area: techs{{loop.index}}">{{ p["techs"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'walltechs')}}" style="grid-area: walltechs{{loop.index}}">{{ p["walltechs"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'walltechjumps')}}" style="grid-area: jumptechs{{loop.index}}">{{ p["walltechjumps"] }}</div>
-              <div class="{{hl_if_lower(r,loop.index,'shield_time')}}" style="grid-area: shield_time{{loop.index}}">{{ p["shield_time"] }}</div>
-              <div class="{{hl_if_lower(r,loop.index,'shield_damage')}}" style="grid-area: shield_damage{{loop.index}}">{{ p["shield_damage"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'shield_lowest')}}" style="grid-area: shield_lowest{{loop.index}}">{{ p["shield_lowest"] }}</div>
+            {# Defense #}
+            {{ _stathi("airdodges") }}
+            {{ _stathi("spotdodges") }}
+            {{ _stathi("rolls") }}
+            {{ _stathi("grab_escapes") }}
+            {{ _stathi("hits_blocked") }}
+            {{ _stathi("powershields") }}
+            {{ _stathi("techs") }}
+            {{ _stathi("walltechs") }}
+            {{ _stathi("walltechjumps") }}
+            {{ _statlo("shield_time") }}
+            {{ _statlo("shield_damage") }}
+            {{ _stathi("shield_lowest") }}
 
-              {# Tech #}
-              <div class="{{hl_if_higher(r,loop.index,'__l_cancels_hit_pct')}}" style="grid-area: lcancel{{loop.index}}">
-                  {{ p["l_cancels_hit"] }} ({{ "%.2f%%"|format(p["__l_cancels_hit_pct"]) }})
-              </div>
-              <div class="{{hl_if_higher(r,loop.index,'__tech_hit_pct')}}" style="grid-area: techhit{{loop.index}}">
-                  {{ (p["techs"]+p["walltechs"]+p["walltechjumps"]) }} ({{ "%.2f%%"|format(p["__tech_hit_pct"]) }})
-              </div>
-              <div class="{{hl_if_higher(r,loop.index,'wavedashes')}}" style="grid-area: wavedashes{{loop.index}}">{{ p["wavedashes"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'wavelands')}}" style="grid-area: wavelands{{loop.index}}">{{ p["wavelands"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'shield_drops')}}" style="grid-area: shielddrops{{loop.index}}">{{ p["shield_drops"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'no_impact_lands')}}" style="grid-area: nils{{loop.index}}">{{ p["no_impact_lands"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'pivots')}}" style="grid-area: pivots{{loop.index}}">{{ p["pivots"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'edge_cancel_aerials')}}" style="grid-area: ecaerials{{loop.index}}">{{ p["edge_cancel_aerials"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'edge_cancel_specials')}}" style="grid-area: ecspecials{{loop.index}}">{{ p["edge_cancel_specials"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'teeter_cancel_aerials')}}" style="grid-area: tcaerials{{loop.index}}">{{ p["teeter_cancel_aerials"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'teeter_cancel_specials')}}" style="grid-area: tcspecials{{loop.index}}">{{ p["teeter_cancel_specials"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'meteor_cancels')}}" style="grid-area: mcancels{{loop.index}}">{{ p["meteor_cancels"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'galint_ledgedashes')}}" style="grid-area: ledgedashes{{loop.index}}">{{ p["galint_ledgedashes"] }}</div>
-              <div class="{{hl_if_higher(r,loop.index,'mean_galint')}}" style="grid-area: galint{{loop.index}}">{{ p["mean_galint"] }}</div>
+            {# Tech #}
+            <div class="{{pi}} {{hl_if_higher(r,loop.index,'__l_cancels_hit_pct')}}">{{ p["l_cancels_hit"] }} ({{ "%.0f%%"|format(p["__l_cancels_hit_pct"]) }})</div>
+            <div class="{{pi}} {{hl_if_higher(r,loop.index,'__tech_hit_pct')}}">{{ (p["techs"]+p["walltechs"]+p["walltechjumps"]) }} ({{ "%.0f%%"|format(p["__tech_hit_pct"]) }})</div>
+            {{ _stathi("wavedashes") }}
+            {{ _stathi("wavelands") }}
+            {{ _stathi("shield_drops") }}
+            {{ _stathi("no_impact_lands") }}
+            {{ _stathi("pivots") }}
+            {{ _stathi("edge_cancel_aerials") }}
+            {{ _stathi("edge_cancel_specials") }}
+            {{ _stathi("teeter_cancel_aerials") }}
+            {{ _stathi("teeter_cancel_specials") }}
+            {{ _stathi("meteor_cancels") }}
+            {{ _stathi("galint_ledgedashes") }}
+            {{ _stathi("mean_galint") }}
 
-              {# Miscellaneous #}
-              <div style="grid-area: taunts{{loop.index}}">{{ p["taunts"] }}</div>
-              <div style="grid-area: phantoms{{loop.index}}">{{ p["phantom_hits"] }}</div>
-              <div class="{{'hl-red' if p['self_destructs'] > 0}}" style="grid-area: sds{{loop.index}}">{{ p["self_destructs"] }}</div>
-
+            {# Miscellaneous #}
+            {{ _stat("taunts")}}
+            {{ _stat("phantom_hits")}}
+            <div class="{{pi}} {{'hl-red' if p['self_destructs'] > 0}}">{{ p["self_destructs"] }}</div>
           {% endfor %}
       </div> {# replayDataGrid #}
+
+      {# Move / Punish List #}
       {% for p in r.p %}
           {% set outer_loop = loop %}
           <div id="replayPlayer{{loop.index}}Grid">
@@ -170,36 +172,36 @@
                       </span>
                   {% endif %}
                   <span class="comboWrapper">
-                  {% for a in p["attacks"] %}
-                      {% if loop.index > 1 and a["punish_id"] != p["attacks"][loop.index0-1]["punish_id"] %}
-                          </span> {# comboWrapper #}
-                          {% if outer_loop.index == 1 %}
-                              {% set dam =
-                                  p["punishes"][a["punish_id"]]["end_pct"]-
-                                  p["punishes"][a["punish_id"]]["start_pct"]
-                              %}
-                          {% else %}
-                              {% set dam =
-                                  p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["end_pct"]-
-                                  p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["start_pct"]
-                              %}
-                          {% endif %}
-                          <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
-                              {{"%.0f"|format(dam)}}%
-                          </span>
-                          <span class="comboWrapper">
-                      {% endif %}
-                      {% if p["attacks"]|length == loop.index or a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
-                          <span class="combomoveWrapper op-{{a['opening']}}">
-                              <span title="{{a}}" class="combomove">
-                                  {{a["cancel_name"]+" " if a["move_name"] != "" else ""}}{{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
-                                  {% if a["kill_dir"] != "NEUT" %}
-                                      <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}"/>
-                                  {% endif %}
-                              </span> {# combomove #}
-                          </span> {# combomoveWrapper #}
-                      {% endif %}
-                  {% endfor %}
+                    {% for a in p["attacks"] %}
+                        {% if loop.index > 1 and a["punish_id"] != p["attacks"][loop.index0-1]["punish_id"] %}
+                            </span> {# comboWrapper #}
+                            {% if outer_loop.index == 1 %}
+                                {% set dam =
+                                    p["punishes"][a["punish_id"]]["end_pct"]-
+                                    p["punishes"][a["punish_id"]]["start_pct"]
+                                %}
+                            {% else %}
+                                {% set dam =
+                                    p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["end_pct"]-
+                                    p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["start_pct"]
+                                %}
+                            {% endif %}
+                            <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
+                                {{"%.0f"|format(dam)}}%
+                            </span>
+                            <span class="comboWrapper">
+                        {% endif %}
+                        {% if p["attacks"]|length == loop.index or a["hit_id"] >= p["attacks"][loop.index0+1]["hit_id"] %}
+                            <span class="combomoveWrapper op-{{a['opening']}}">
+                                <span title="{{a}}" class="combomove">
+                                    {{a["cancel_name"]+" " if a["move_name"] != "" else ""}}{{a["move_name"]}}{{' ('+a['hit_id']|string+')' if a['hit_id']>1}}
+                                    {% if a["kill_dir"] != "NEUT" %}
+                                        <img class="killicon" src="{{ url_for('static', filename='icons/smash-ball.png') }}"/>
+                                    {% endif %}
+                                </span> {# combomove #}
+                            </span> {# combomoveWrapper #}
+                        {% endif %}
+                    {% endfor %}
                   </span> {# comboWrapper #}
                   {% if outer_loop.index == 2 and p["punishes"]|length > 0 %}
                       {% set dam = p["punishes"][-1]["end_pct"]-p["punishes"][-1]["start_pct"] %}
@@ -207,9 +209,8 @@
                           {{"%.0f"|format(dam)}}%
                       </span>
                   {% endif %}
-              </div> {# movelist #}
-          </div>
+              </div> {# comboGrid #}
+          </div> {# replayPlayerXGrid #}
       {% endfor %}
   </div> {# replayDataOuterGrid #}
-
 {% endblock %}

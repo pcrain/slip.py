@@ -371,6 +371,31 @@ span#intBreakdown {
   grid-area: breakdown;
 }
 
+div#replayDataOuterGrid {
+  grid-template-columns: 1fr auto 1fr;
+  display: inline-grid;
+  grid-template-areas:
+    ".         mini      ."
+    "breakdown breakdown breakdown"
+    "p1grid    innergrid  p2grid"
+    ;
+  margin: 0 8px;
+}
+
+div#replayDataOuterGrid div.heading {
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.25);
+  border: 1px solid steelblue;
+  border-radius: 25px;
+  margin: 5px 0;
+  padding: 0;
+}
+
+div#replayDataOuterGrid span.replaySummary {
+  grid-area: mini;
+  justify-self: center;
+}
+
 div.comboGrid {
   display: grid;
   /*grid-column-gap: 0;*/
@@ -386,22 +411,6 @@ div#replayPlayer1Grid div.comboGrid {
 div#replayPlayer2Grid div.comboGrid {
   grid-area: movelist2;
   grid-template-columns: 1fr 25px;
-}
-
-div#replayDataOuterGrid {
-  grid-template-columns: 1fr auto 1fr;
-  display: inline-grid;
-  grid-template-areas:
-    ".         mini      ."
-    "breakdown breakdown breakdown"
-    "p1grid    innergrid  p2grid"
-    ;
-  margin: 0 8px;
-}
-
-div#replayDataOuterGrid span.replaySummary {
-  grid-area: mini;
-  justify-self: center;
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
@@ -429,103 +438,19 @@ div#replayPlayer2Grid {
 }
 
 div#replayDataGrid {
-  height: 0;
-  margin: 0 24px;
-  max-width: 600px;
-  display: grid;
-  grid-area: innergrid;
-  grid-column-gap: 8px;
-  grid-template-areas:
-    "overview      overview     overview"
-    "stocks1       stocks       stocks2"
-    "percent1      percent      percent2"
-    "airborne1     airborne     airborne2"
-    "ledgegrabs1   ledgegrabs   ledgegrabs2"
-
-    "interactions  interactions interactions"
-    "EDGEGUARDING1 EDGEGUARDING EDGEGUARDING2"
-    "TECHCHASING1  TECHCHASING  TECHCHASING2"
-    "PUNISHING1    PUNISHING    PUNISHING2"
-    "SHARKING1     SHARKING     SHARKING2"
-    "PRESSURING1   PRESSURING   PRESSURING2"
-    "FOOTSIES1     FOOTSIES     FOOTSIES2"
-    "POSITIONING1  POSITIONING  POSITIONING2"
-    "POKING1       POKING       POKING2"
-    "TRADING1      TRADING      TRADING2"
-    "PRESSURED1    PRESSURED    PRESSURED2"
-    "GROUNDING1    GROUNDING    GROUNDING2"
-    "PUNISHED1     PUNISHED     PUNISHED2"
-    "ESCAPING1     ESCAPING     ESCAPING2"
-    "RECOVERING1   RECOVERING   RECOVERING2"
-
-    "neutral        neutral       neutral"
-    "neutwins1      neutwins      neutwins2"
-    "counters1      counters      counters2"
-    "pokes1         pokes         pokes2"
-    "reversals1     reversals     reversals2"
-    "dashdances1    dashdances    dashdances2"
-    "shorthops1     shorthops     shorthops2"
-    "fullhops1      fullhops      fullhops2"
-
-    "offense        offense       offense"
-    "damage1        damage        damage2"
-    "openings1      openings      openings2"
-    "mop1           mop           mop2"
-    "mko1           mko           mko2"
-    "mkp1           mkp           mkp2"
-    "moveslanded1   moveslanded   moveslanded2"
-    "stabs1         stabs         stabs2"
-    "breaks1        breaks        breaks2"
-    "grabs1         grabs         grabs2"
-    "stagespikes1   stagespikes   stagespikes2"
-
-    "defense        defense       defense"
-    "airdodges1     airdodges     airdodges2"
-    "spotdodges1    spotdodges    spotdodges2"
-    "rolls1         rolls         rolls2"
-    "escapes1       escapes       escapes2"
-    "shields1       shields       shields2"
-    "powershields1  powershields  powershields2"
-    "techs1         techs         techs2"
-    "walltechs1     walltechs     walltechs2"
-    "jumptechs1     jumptechs     jumptechs2"
-    "shield_time1   shield_time   shield_time2"
-    "shield_damage1 shield_damage shield_damage2"
-    "shield_lowest1 shield_lowest shield_lowest2"
-
-    "tech           tech          tech"
-    "lcancel1       lcancel       lcancel2"
-    "techhit1       techhit       techhit2"
-    "wavedashes1    wavedashes    wavedashes2"
-    "wavelands1     wavelands     wavelands2"
-    "shielddrops1   shielddrops   shielddrops2"
-    "nils1          nils          nils2"
-    "pivots1        pivots        pivots2"
-    "ecaerials1     ecaerials     ecaerials2"
-    "ecspecials1    ecspecials    ecspecials2"
-    "tcaerials1     tcaerials     tcaerials2"
-    "tcspecials1    tcspecials    tcspecials2"
-    "mcancels1      mcancels      mcancels2"
-    "ledgedashes1   ledgedashes   ledgedashes2"
-    "galint1        galint        galint2"
-
-    "misc           misc          misc"
-    "taunts1        taunts        taunts2"
-    "phantoms1      phantoms      phantoms2"
-    "sds1           sds           sds2"
-
-
-    ;
+  height                : 0;
+  margin                : 0 24px;
+  max-width             : 600px;
+  display               : grid;
+  grid-area             : innergrid;
+  grid-column-gap       : 8px;
+  grid-template-columns : auto auto auto;
+  grid-auto-flow        : dense;
 }
-
-div#replayDataOuterGrid div.heading {
-  font-weight: bold;
-  background-color: rgba(0,0,0,0.25);
-  border: 1px solid steelblue;
-  border-radius: 25px;
-  margin: 5px 0;
-  padding: 0;
-}
+div#replayDataGrid .heading { grid-column: 1 / 4; }
+div#replayDataGrid .p1item  { grid-column: 1; }
+div#replayDataGrid .stat    { grid-column: 2; }
+div#replayDataGrid .p2item  { grid-column: 3; }
 
 .hl-green { background-color: rgba(128,255,128,0.25); }
 .hl-red { background-color: rgba(255,128,128,0.25); }
