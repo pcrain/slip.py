@@ -725,11 +725,11 @@ span.dd-pointer-down {
   grid-column-gap: 15px;
 }
 
-#replayListingGrid #prev { grid-area: previous; justify-self: right; }
-#replayListingGrid #next { grid-area: next;     justify-self: left; }
+#replayListingGrid button#prev { grid-area: previous; justify-self: right; }
+#replayListingGrid button#next { grid-area: next;     justify-self: left; }
 
-#replayListingGrid #prev::after  { content: " Prev. Page"; }
-#replayListingGrid #next::before { content: "Next Page "; }
+#replayListingGrid button#prev::after  { content: " Prev. Page"; }
+#replayListingGrid button#next::before { content: "Next Page "; }
 
 #replayListingGrid span#replaySearchBar {
   grid-area: search;
@@ -914,7 +914,7 @@ a.nostyle.replay-link::after {
 }
 
 @media screen and (max-width: 800px) {
-  #replayListingGrid #prev::after, #replayListingGrid #next::before {
+  #replayListingGrid button#prev::after, #replayListingGrid button#next::before {
     content: "";
     min-width: 0;
   }

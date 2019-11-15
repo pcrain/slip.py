@@ -96,9 +96,7 @@ def api_upload_replay():
 def api_get_raw_analysis(r):
     rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
     return send_from_directory(os.path.join(current_app.config['STATIC_FOLDER'], "data/replays"),r+".slp.json")
-    with open(rpath, 'r') as fin:
-      return json.loads(fin.read())
-    replay = load_replay(rpath)
-    rdata  = Replay.query.filter_by(checksum=r).first()
-    replay["__original_filename"] = rdata.filename
-    return jsonify(replay)
+    # replay = load_replay(rpath)
+    # rdata  = Replay.query.filter_by(checksum=r).first()
+    # replay["__original_filename"] = rdata.filename
+    # return jsonify(replay)
