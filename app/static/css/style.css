@@ -725,8 +725,12 @@ span.dd-pointer-down {
   grid-column-gap: 15px;
 }
 
-#replayListingGrid button#prev { grid-area: previous; justify-self: right; }
-#replayListingGrid button#next { grid-area: next;     justify-self: left; }
+#replayListingGrid button#prev:disabled, #replayListingGrid a#prev-a {
+  grid-area: previous; justify-self: right;
+}
+#replayListingGrid button#next:disabled, #replayListingGrid a#next-a {
+  grid-area: next;     justify-self: left;
+}
 
 #replayListingGrid button#prev::after  { content: " Prev. Page"; }
 #replayListingGrid button#next::before { content: "Next Page "; }

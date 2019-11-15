@@ -3,12 +3,12 @@
 {% block content %}
   <span id="replayListingGrid">
     {% if prev_url %}
-      <button id="prev" type="button"><a class="nostyle" href="{{ prev_url }}">&lt;</a></button>
+      <a id="prev-a" class="nostyle" href="{{ prev_url }}"><button id="prev" type="button">&lt;</button></a>
     {% else %}
       <button id="prev" type="button" disabled>&lt;</button>
     {% endif %}
     {% if next_url %}
-      <button id="next" type="button"><a class="nostyle" href="{{ next_url }}">&gt;</a></button>
+      <a id="next-a" class="nostyle" href="{{ next_url }}"><button id="next" type="button">&gt;</button></a>
     {% else %}
       <button id="next" type="button" disabled>&gt;</button>
     {% endif %}
