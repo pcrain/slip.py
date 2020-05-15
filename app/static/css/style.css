@@ -15,6 +15,17 @@
   --css-dropdown-width   : 300px;
   --stage-dropdown-width : 450px;
   --header-height        : 48px;
+
+  --combomove-border     : rgba(112,112,112,1.0);
+
+  --color-EDGEGUARDING   : hsla(120,100%,75%,0.45);
+  --color-PRESSURING     : hsla(60,100%,75%,0.45);
+  --color-PUNISHING      : hsla(30,100%,75%,0.45);
+  --color-TECHCHASING    : hsla(300,100%,75%,0.45);
+  --color-SHARKING       : hsla(240,100%,75%,0.45);
+  --color-DEATH          : hsla(0,0%,100%,0.45);
+  --color-POKING         : hsla(0,0%,50%,0.45);
+  --color-DEFENSE        : hsla(0,100%,75%,0.45);
 }
 
 /* Get rid of dotted line on focus */
@@ -128,6 +139,7 @@ input[type="text"]::placeholder {
 input[type="text"].placeholderLabel::placeholder {
   text-align: center;
   font-size: 20px;
+  color: white;
 }
 
 input[type="text"]:focus {
@@ -216,6 +228,7 @@ hr {
 
 .ni-home img { filter: drop-shadow(0px 0px 5px cyan)   drop-shadow(0px 0px 1px lightgray) ; }
 .ni-mu   img { filter: drop-shadow(0px 0px 5px red)    drop-shadow(0px 0px 1px lightgray) ; }
+.ni-scan img { filter: drop-shadow(0px 0px 5px yellow) drop-shadow(0px 0px 1px lightgray) ; }
 
 .navbar_top {
   display               : inline-grid;
@@ -388,7 +401,7 @@ div#replayDataOuterGrid div.heading {
   border: 1px solid steelblue;
   border-radius: 25px;
   margin: 5px 0;
-  padding: 0;
+  padding: 0 8px;
 }
 
 div#replayDataOuterGrid span.replaySummary {
@@ -410,12 +423,12 @@ div.p1item, div.p2item {
 
 div#replayPlayer1Grid div.comboGrid {
   grid-area: movelist1;
-  grid-template-columns: 25px 1fr;
+  grid-template-columns: 44px 1fr;
 }
 
 div#replayPlayer2Grid div.comboGrid {
   grid-area: movelist2;
-  grid-template-columns: 1fr 25px;
+  grid-template-columns: 1fr 44px;
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
@@ -471,13 +484,23 @@ span.comboWrapper {
 span.comboResult {
   align-self: center;
   justify-self: center;
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8);
+   border: 1px solid black;
+   border-radius: 6px;
+   background-color: rgba(255,255,255,0.2);
+   padding: 2px;
+   width: 100%;
 }
 
 span.combomoveWrapper {
   display: inline-block;
   transform: skewX(-10deg);
   /*border: 1px solid black;*/
-  border: 1px solid slateblue;
+  border: 1px solid var(--combomove-border);
   /*border-radius: 4px;*/
   padding: 2px 8px;
   margin: -1px -2px 0 -2px;
@@ -490,6 +513,11 @@ span.combomove {
   /*margin: 1px 0;*/
   /*clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);*/
   /*line-height: 32px;*/
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8);
 }
 
 div.empty {
@@ -656,22 +684,22 @@ span.rs-char1 img, span.rs-char2 img {
 span.rs-char1 { grid-area: p1char; justify-self: start; }
 span.rs-char2 { grid-area: p2char; justify-self: end; -webkit-transform: scaleX(-1); transform: scaleX(-1); }
 
-span.op-EDGEGUARDING { background-color: rgba(128,255,128,0.45); }
-span.op-PRESSURING   { background-color: rgba(255,255,128,0.45); }
-span.op-PUNISHING    { background-color: rgba(255,128,128,0.45); }
-span.op-TECHCHASING  { background-color: rgba(255,128,255,0.45); }
-span.op-SHARKING     { background-color: rgba(128,128,255,0.45); }
-span.op-DEATH        { background-color: rgba(255,255,255,0.45); }
+.op-EDGEGUARDING { background-color: var(--color-EDGEGUARDING); }
+.op-PRESSURING   { background-color: var(--color-PRESSURING); }
+.op-PUNISHING    { background-color: var(--color-PUNISHING); }
+.op-TECHCHASING  { background-color: var(--color-TECHCHASING); }
+.op-SHARKING     { background-color: var(--color-SHARKING); }
+.op-DEATH        { background-color: var(--color-DEATH); }
 
-span.op-POKING       { background-color: rgba(128,128,128,0.45); }
-span.op-POSITIONING  { background-color: rgba(128,128,128,0.45); }
-span.op-FOOTSIES     { background-color: rgba(128,128,128,0.45); }
+.op-POKING       { background-color: var(--color-POKING); }
+.op-POSITIONING  { background-color: var(--color-POKING); }
+.op-FOOTSIES     { background-color: var(--color-POKING); }
 
-span.op-RECOVERING   { background-color: rgba(255,192,192,0.45); }
-span.op-PRESSURED    { background-color: rgba(255,192,192,0.45); }
-span.op-PUNISHED     { background-color: rgba(255,192,192,0.45); }
-span.op-ESCAPING     { background-color: rgba(255,192,192,0.45); }
-span.op-GROUNDING    { background-color: rgba(255,192,192,0.45); }
+.op-RECOVERING   { background-color: var(--color-DEFENSE); }
+.op-PRESSURED    { background-color: var(--color-DEFENSE); }
+.op-PUNISHED     { background-color: var(--color-DEFENSE); }
+.op-ESCAPING     { background-color: var(--color-DEFENSE); }
+.op-GROUNDING    { background-color: var(--color-DEFENSE); }
 
 .dd-selected {
   padding: 4px !important;

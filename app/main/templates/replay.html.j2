@@ -4,11 +4,11 @@
   <div id="replayDataOuterGrid">
       {% set r = replay %}
       {% include '_replay-mini.html.j2' %}
-      <span id="intBreakdown" class="stacked-bar-graph">
+      {# <span id="intBreakdown" class="stacked-bar-graph">
         {% for k,v in r.players[0].interaction_frames.items() %}
           <span title="{{ k }}" style="width:{{100*v / r.__act_length}}%" class="interaction int_{{ k }}"></span>
         {% endfor %}
-      </span>
+      </span> #}
       <div id="replayDataGrid">
           <div class="heading">Overview</div>
             <div class="stat">End Stocks</div>
@@ -18,7 +18,7 @@
 
           <div class="heading">Interactions (Damage Dealt)</div>
             {% for k in INTERACTIONS %}
-              <div class="stat">{{k.title()}}</div>
+              <div class="stat op-{{k}}">{{k.title()}}</div>
             {% endfor %}
 
           <div class="heading">Neutral</div>

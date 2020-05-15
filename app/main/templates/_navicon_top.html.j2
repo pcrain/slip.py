@@ -1,4 +1,4 @@
-<a class="nostyle nav_top_link ni-{{ navicon.class }}" href="{{ navicon.src }}">
+<a class="nostyle nav_top_link ni-{{ navicon.class }}" href="{{ navicon.src }}" onclick="{{ navicon.click }}">
   <img title="{{ navicon.name }}" src="{{ url_for('static',filename='icons') }}/{{ navicon.img }}"/>
   <label class="nav_top_label">{{ navicon.name }}</label>
 </a>

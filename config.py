@@ -21,6 +21,7 @@ class Config(object):
     ADMINS                         = ['patrickacrain@gmail.com']
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
+    FORCE_COMPRESSION              = False
     STATIC_FOLDER                  = "{}/app/static/".format(basedir)
     UPLOAD_FOLDER                  = STATIC_FOLDER+"data/uploads"
     REPLAY_FOLDER                  = STATIC_FOLDER+"data/replays"

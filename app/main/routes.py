@@ -48,3 +48,9 @@ def replay_viz(r):
 @bp.route('/upload', methods=['GET'])
 def upload_page():
   return render_template("upload.html.j2")
+
+@bp.route('/scan', methods=['GET'])
+def scan_page():
+  lbase = os.path.join(current_app.config['STATIC_FOLDER'], "data/local")
+  ldirs = [f for f in os.listdir(lbase) if os.path.isdir(os.path.join(lbase, f))]
+  return render_template("scan.html.j2", scandirs=ldirs)

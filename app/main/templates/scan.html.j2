@@ -2,31 +2,28 @@
 
 {% block content %}
     <span id="uploadOuterGrid">
-      <span class="title">Upload Replays</span>
-      <span class="subtitle">(Max {{SIMULTANEOUS_UPLOADS}} at time)</span>
+      <span class="title">Scan Local Folders</span>
+      {# <span class="subtitle">(Max {{SIMULTANEOUS_UPLOADS}} at time)</span> #}
       <form id=replay-file-upload-form method=post enctype=multipart/form-data>
         <span id="uploadGrid">
           <div class="upload-btn-wrapper">
-            <button class="fake-submit">Select Replay(s)...</button>
+            <button class="fake-submit">Add Directory</button>
             <input type=file name=file id=replay-file-upload multiple/>
           </div>
-          <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Upload All</button>
+          <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Scan All</button>
+          {% for s in scandirs %}
+            <span id="u-filename-0" class ="transient u-filename">{{ s }}</span>
+            <button type="button" onclick="" id="u-butto-0" class="transient u-button">Scan</button>
+          {% endfor %}
         </span>
       </form>
     </span>
 
     {# <script src="{{ url_for('static', filename='js/lzma-min.js') }}"></script> #}
-    <script src="{{ url_for('static', filename='js/lzma_worker-min.js') }}"></script>
     <script>
-      var MAX_UPLOADS  = parseInt("{{SIMULTANEOUS_UPLOADS}}");
-      var COMPRESS     = "{{FORCE_COMPRESSION}}" == "True" ? true : false;
       var SLIPPIHEADER = "7b55037261775b24";
       var control      = document.getElementById("replay-file-upload");
       var uploadqueue  = [];
-
-      // var lzma         = new LZMA("{{ url_for('static', filename='js/lzma_worker-min.js') }}");
-      // lzma.disableEndMark = true; //File becomes corrupt if this is not enabled
-      LZMA.disableEndMark = true; //File becomes corrupt if this is not enabled
 
       function skipCompression(array, mode, cb_result, cb_progress) {
         return cb_result(array,null);
@@ -53,13 +50,7 @@
         var reader = new FileReader();
         reader.onload = function(e) {
           var fileByteArray = new Uint8Array(e.target.result);
-          if (COMPRESS) {
-            ubutton.innerText = "Compressing 0%";
-            processor = LZMA.compress;
-          } else {
-            processor = skipCompression;
-          }
-          processor(fileByteArray, 6, function(result, error) {
+          skipCompression(fileByteArray, 6, function(result, error) {
             ubutton.innerText = "Converting";
             compressed_replay = new File(
                 [new Blob([new Uint8Array(result)], {type: "application/octet-stream"})],
@@ -148,7 +139,7 @@
           //Get the list of files
           var files = control.files;
 
-          //Set the data for each file, add them to the queue, and validate their headres
+          //Set the data for each file, add them to the queue, and validate their headers
           for (var i = 0; i < Math.min(files.length,MAX_UPLOADS); i++) {
             var udata = {
               id:       i,

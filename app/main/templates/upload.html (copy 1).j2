@@ -1,5 +1,6 @@
 {% extends "header.html.j2" %}
 
+
 {% block content %}
     <span id="uploadOuterGrid">
       <span class="title">Upload Replays</span>
@@ -15,21 +16,19 @@
       </form>
     </span>
 
-    {# <script src="{{ url_for('static', filename='js/lzma-min.js') }}"></script> #}
-    <script src="{{ url_for('static', filename='js/lzma_worker-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lzma-min.js') }}"></script>
     <script>
       var MAX_UPLOADS  = parseInt("{{SIMULTANEOUS_UPLOADS}}");
-      var COMPRESS     = "{{FORCE_COMPRESSION}}" == "True" ? true : false;
       var SLIPPIHEADER = "7b55037261775b24";
       var control      = document.getElementById("replay-file-upload");
       var uploadqueue  = [];
+      var lzma         = new LZMA("{{ url_for('static', filename='js/lzma_worker-min.js') }}");
 
-      // var lzma         = new LZMA("{{ url_for('static', filename='js/lzma_worker-min.js') }}");
-      // lzma.disableEndMark = true; //File becomes corrupt if this is not enabled
-      LZMA.disableEndMark = true; //File becomes corrupt if this is not enabled
-
-      function skipCompression(array, mode, cb_result, cb_progress) {
-        return cb_result(array,null);
+      function processFile(theFile){
+        return function(e) {
+          var fileByteArray = [];
+          fileByteArray.push(e.target.result);
+        }
       }
 
       function submitReplay(index=-1) {
@@ -48,53 +47,37 @@
         // alert(index);
         ubutton.disabled = true;
 
-        ubutton.innerText = "Processing";
+        ubutton.innerText = "Compressing";
         var files = uploadqueue[index]["fdata"];
         var reader = new FileReader();
-        reader.onload = function(e) {
-          var fileByteArray = new Uint8Array(e.target.result);
-          if (COMPRESS) {
-            ubutton.innerText = "Compressing 0%";
-            processor = LZMA.compress;
-          } else {
-            processor = skipCompression;
-          }
-          processor(fileByteArray, 6, function(result, error) {
-            ubutton.innerText = "Converting";
-            compressed_replay = new File(
-                [new Blob([new Uint8Array(result)], {type: "application/octet-stream"})],
-                uploadqueue[index]["filename"]+(COMPRESS ? ".lzma" : ""));
-
-            ubutton.innerText = "Uploading";
-            var formData = new FormData();
-            formData.append('file', compressed_replay);
-            // formData.append('file', uploadqueue[index]["fdata"]);
-            $.ajax({
-              type        : "post",
-              url         : "/api/upload",
-              data        : formData,
-              contentType : false,
-              cache       : false,
-              processData : false,
-              success     : function(rjson) {
-                ubutton.innerText  = rjson["status"];
-                ubutton.title      = JSON.stringify(rjson);
-                ubutton.className += " hasinfo";
-                if ("analysis-url" in rjson) {
-                  document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
-                }
-              },
-              error: function(XMLHttpRequest, textStatus, errorThrown) {
-                ubutton.innerText = "Error";
-                ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
-              }
-            });
-          }, function(percent) {
-            // alert("progress");
-            ubutton.innerText = "Compressing "+Math.round(percent*100)+"%";
-          });
-        }
+        reader.onload = processFile(files);
         reader.readAsArrayBuffer(files);
+        alert(reader.result);
+        // my_lzma.compress(string || byte_array, mode, on_finish(result, error) {}, on_progress(percent) {});
+
+        ubutton.innerText = "Uploading";
+        var formData = new FormData();
+        formData.append('file', uploadqueue[index]["fdata"]);
+        $.ajax({
+          type        : "post",
+          url         : "/api/upload",
+          data        : formData,
+          contentType : false,
+          cache       : false,
+          processData : false,
+          success     : function(rjson) {
+            ubutton.innerText  = rjson["status"];
+            ubutton.title      = JSON.stringify(rjson);
+            ubutton.className += " hasinfo";
+            if ("analysis-url" in rjson) {
+              document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            ubutton.innerText = "Error";
+            ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
+          }
+        });
       }
 
       function createUploadItem(u) {
