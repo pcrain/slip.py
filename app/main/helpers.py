@@ -42,6 +42,10 @@ def recvp(s):
 def passp(s):
     return getpass(col.WHT+"["+col.BLU+"paswd"+col.WHT+"] "+str(s)+col.BLN,file=sys.stderr)
 
+#Compute md5sum for string
+def md5(string):
+  return hashlib.md5(string.encode('utf-8')).hexdigest()
+
 #Compute md5sum for file
 def md5file(fname):
   #http://stackoverflow.com/questions/3431825/generating-a-md5-checksum-of-a-file
@@ -104,3 +108,18 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ["slp"]
 
+#Fallback in case we can't parse time from a .slp file
+def try_parse_time(t):
+  try:
+    return datetime.strptime(t, "%Y-%m-%dT%H:%M:%S")
+  except:
+    return datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+
+#Recursively list slippi files in directory
+def get_all_slippi_files(topdir,files):
+  for f in os.listdir(topdir):
+    path = os.path.join(topdir,f)
+    if os.path.isfile(path) and path[-4:] == ".slp":
+      files.append(path)
+    elif os.path.isdir(path):
+      get_all_slippi_files(path,files)

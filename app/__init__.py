@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_executor import Executor
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
@@ -14,6 +15,7 @@ db               = SQLAlchemy()
 migrate          = Migrate()
 login            = LoginManager()
 limiter          = Limiter(key_func=get_remote_address)
+executor         = Executor()
 login.login_view = 'auth.login'
 
 def create_app(config_class=Config):
@@ -24,6 +26,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login.init_app(app)
     limiter.init_app(app)
+    executor.init_app(app)
 
     from app.errors import bp as errors_bp
     from app.auth import bp as auth_bp

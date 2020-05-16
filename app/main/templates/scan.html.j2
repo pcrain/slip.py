@@ -10,10 +10,11 @@
             <button class="fake-submit">Add Directory</button>
             <input type=file name=file id=replay-file-upload multiple/>
           </div>
-          <button type="button" disabled id=upload-button class="fake-submit" onclick='submitReplay(-1)'>Scan All</button>
+          {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
+          <button type="button" id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button>
           {% for s in scandirs %}
             <span id="u-filename-0" class ="transient u-filename">{{ s }}</span>
-            <button type="button" onclick="" id="u-butto-0" class="transient u-button">Scan</button>
+            <button type="button" onclick="" id="u-button-0" class="transient u-button">Scan</button>
           {% endfor %}
         </span>
       </form>
@@ -27,6 +28,56 @@
 
       function skipCompression(array, mode, cb_result, cb_progress) {
         return cb_result(array,null);
+      }
+
+      function beginScan() {
+        var index    = 0;
+        var ubutton  = document.getElementById("u-button-"+index);
+        var formData = new FormData();
+        var token    = "abcd1234";
+
+        function checkProgress() {
+          $.ajax({
+              type        : "post",
+              url         : "/api/scan/progress",
+              data        : JSON.stringify({"token" : token}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                ubutton.innerText = "Scanning " + rjson["status"];// first set the value
+              },
+              complete: function (rjson) {
+                if (!("done" in rjson["responseJSON"])) {
+                  setTimeout(checkProgress, 500);
+                }
+              }
+          });
+        }
+
+        $.ajax({
+          type        : "post",
+          url         : "/api/scan",
+          data        : formData,
+          contentType : false,
+          cache       : false,
+          processData : false,
+          success     : function(rjson) {
+            ubutton.title      = "Scanning " + JSON.stringify(rjson);
+            ubutton.innerText  = rjson["status"];
+            token              = rjson["token"];
+            setTimeout(checkProgress, 500);
+            // ubutton.className += " hasinfo";
+            // if ("analysis-url" in rjson) {
+            //   document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
+            // }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            ubutton.innerText = "Error";
+            ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
+          }
+        });
       }
 
       function submitReplay(index=-1) {
@@ -60,6 +111,7 @@
             var formData = new FormData();
             formData.append('file', compressed_replay);
             // formData.append('file', uploadqueue[index]["fdata"]);
+
             $.ajax({
               type        : "post",
               url         : "/api/upload",
