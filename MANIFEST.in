@@ -1,0 +1,2 @@
+graft app/*
+global-exclude *.pyc
