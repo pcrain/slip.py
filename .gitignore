@@ -8,3 +8,4 @@ app/errors/__pycache__
 app/main/__pycache__
 app.db
 app-empty.db
+migrations
