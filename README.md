@@ -6,10 +6,5 @@
     - Download "get-pip.py" from https://www.liquidweb.com/kb/install-pip-windows/
     - Double click the file to install it
   - Install slippi_viz
-    - Open a command prompt (Win+R -> "cmd" -> Enter)
-    - Navigate to this directory
-    - Run "pip install --user ."
-  - To Launch
-    - Navigate to C:\Users\yourusername\AppData\Roaming\Python\Python38\site-packages\slippi-viz
-    - Double-click "_run-win.bat"
-    - Should work, hopefully
+    - Double-click "_install-win.bat"
+    - If the installation is successful, a Desktop shortcut will be created at "slippi-viz.bat"
