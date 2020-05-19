@@ -1,12 +1,12 @@
 #!/bin/bash
 #Launch my website
 
-export FLASK_APP=slippc-viz
+export FLASK_APP=slippi-viz
 export FLASK_DEBUG=1
 #Setup db
 flask db init
 #Run locally
-FLASK_APP=slippc-viz FLASK_DEBUG=1 flask run
+FLASK_APP=slippi-viz FLASK_DEBUG=1 flask run
 # tmux new-session -ds slippc-viz "FLASK_APP=slippc-viz FLASK_DEBUG=1 flask run"
 #Run in production
 # FLASK_APP=slippc-viz FLASK_DEBUG=1 flask run --host=0.0.0.0

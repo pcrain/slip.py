@@ -102,7 +102,6 @@ def analyze_replay(local_file,jret,nokeep=False):
       for r in samemd5:
         r.filedir  = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),"")
         r.filename = jret["filename_secure"]
-        print("DDDD"+r.filedir)
         # db.session.flush()
         db.session.commit()
 
