@@ -5,13 +5,53 @@
      }
   }
   function setPlayer(me,pnum) {
-    var cid   = $(me).data('cid');
-    var cname = $(me).data('cname');
-    var imurl = "{{ url_for('static',filename='icons/stock') }}/"+cname+"0.png"
+    var cid    = $(me).data('cid');
+    var cname  = $(me).data('cname');
+    var costid = $("#b-p"+pnum+"cost").data('id');
+    if (costid == "-1") {
+      costid = 0;
+    }
+    var imurl  = "{{ url_for('static',filename='icons/stock') }}/"+cname+costid+".png"
     $("#b-p"+pnum).prop('title',cname);
     $("#b-p"+pnum).html("<img src='"+imurl+"'/>");
     $("#b-p"+pnum).addClass("noarrow");
+
+    $("#b-p"+pnum).data("id",cid);
+    $("#b-p"+pnum).data("name",cname);
     $("#s-p"+pnum+"-char").val(cid);
+
+    $("#b-p"+pnum+"cost").removeAttr('disabled');
+
+    for(i = 0; i < 6; i+=1) {
+      costurl = "{{ url_for('static',filename='icons/stock') }}/"+cname+i+".png";
+      // alert(costurl);
+     $("#cost"+pnum+"-"+i).attr("src",costurl);
+    }
+  }
+  function setCostume(me,pnum) {
+    var costid   = $(me).data('costid');
+    var costname = $(me).data('costname');
+    var cname    = $("#b-p"+pnum).data('name');
+    if (costid == "-1") {
+      var imurl    = "{{ url_for('static',filename='icons/stock') }}/"+cname+"0.png"
+    } else {
+      var imurl    = "{{ url_for('static',filename='icons/stock') }}/"+cname+costid+".png"
+    }
+    $("#b-p"+pnum+"cost").prop('title',costid);
+    $("#b-p"+pnum+"cost").html(costname);
+    $("#b-p"+pnum).html("<img src='"+imurl+"'/>");
+
+    $("#b-p"+pnum+"cost").data("id",costid);
+    $("#s-p"+pnum+"-cost").val(costid);
+  }
+  function setStocks(me,pnum) {
+    var nstocks  = $(me).data('stockid');
+    var sname    = $(me).data('stockname');
+    $("#b-p"+pnum+"stock").prop('title',nstocks);
+    $("#b-p"+pnum+"stock").html(sname);
+
+    $("#b-p"+pnum+"cost").data("id",nstocks);
+    $("#s-p"+pnum+"-stock").val(nstocks);
   }
   function setStage(me) {
     var sid   = $(me).data('sid');
@@ -20,12 +60,16 @@
     $("#b-stage").html("<img src='"+imurl+"'/>");
     $("#b-stage").prop('title',sname);
     $("#b-stage").addClass("noarrow");
+
+    $("#b-stage").data("id",sid);
     $("#s-stage").val(sid);
   }
   function setSort(me) {
     var sid   = $(me).data('sid');
     var sname = $(me).data('sname');
     $("#b-sort").html(sname);
+
+    $("#b-sort").data("id",sid);
     $("#s-sort").val(sid);
   }
 </script>
@@ -35,39 +79,78 @@
   <form id="searchForm" name="searchForm" action="" method="get" novalidate autocomplete="off">
       {# {{ form.hidden_tag() }} #}
       {{ form.query(class="placeholderLabel") }}
-      <span class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p1" type='button' class="has-dropdown">P1</button>
+
+      <span id="dd-p1" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p1" data-id="-1" data-name="" type='button' class="has-dropdown">P1</button>
         <span class="dropdown css-dropdown">{% for c in chardata %}
           <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
         {% endfor %}</span>
       </span>
+      {{ form.p1char() }}
 
-      <span class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-stage"    type='button' class="has-dropdown">Stage</button>
+      <span id="dd-stage" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-stage"  data-id="-1" data-name="" type='button' class="has-dropdown">Stage</button>
         <span class="dropdown stage-dropdown">{% for s in stagedata[:6] %}
           <img title="{{ s.name }}" data-sid="{{ s.id }}" data-sname="{{ s.intname }}" onclick="setStage(this)" src="{{ url_for('static',filename='icons/stage') }}/{{ s.intname }}.png"/>
         {% endfor %}</span>
       </span>
+      {{ form.stage() }}
 
-      <span class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p2"    type='button' class="has-dropdown">P2</button>
+      <span id="dd-p2" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p2" data-id="-1" data-name="" type='button' class="has-dropdown">P2</button>
         <span class="dropdown css-dropdown">{% for c in chardata %}
           <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
         {% endfor %}</span>
       </span>
+      {{ form.p2char() }}
 
-      <span class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-sort"  type='button' class="has-dropdown">Recently Played</button>
+      <span id="dd-sort" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-sort" data-id="play" type='button' class="has-dropdown">Newly Played</button>
         <span class="dropdown sort-dropdown">{% for s in sortdata %}
           <span data-sid="{{ s.intname }}" data-sname="{{ s.name }}" onclick="setSort(this)">{{ s.name }}</span>
         {% endfor %}</span>
       </span>
-
-      {{ form.p1char() }}
-      {{ form.p2char() }}
-      {{ form.stage() }}
       {{ form.sort() }}
-      {{ form.submit(class="hideUntilParentClicked") }}
+
+      <span id="dd-p1cost" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p1cost" data-id="-1" type='button' class="has-dropdown" disabled>P1 C</button>
+        <span class="dropdown sort-dropdown">{% for c in costdata %}
+          <img id="cost1-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.name }}0.png"/>
+          {# <span data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,1)"> #}
+            {# {{ c.name }} #}
+          {# </span> #}
+        {% endfor %}</span>
+      </span>
+      {{ form.p1cost() }}
+
+      <span id="dd-p2cost" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p2cost" data-id="-1" type='button' class="has-dropdown" disabled>P2 C</button>
+        <span class="dropdown sort-dropdown">{% for c in costdata %}
+          <img id="cost2-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.name }}0.png"/>
+          {# <span data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,2)">{{ c.name }}</span> #}
+        {% endfor %}</span>
+      </span>
+      {{ form.p2cost() }}
+
+      <span id="dd-p1stock" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p1stock" data-id="0" type='button' class="has-dropdown">P1 S</button>
+        <span class="dropdown sort-dropdown">{% for s in stockdata %}
+          <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,1)">{{ s.name }}</span>
+        {% endfor %}</span>
+      </span>
+      {{ form.p1stock() }}
+
+      <span id="dd-p2stock" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-p2stock" data-id="0" type='button' class="has-dropdown">P2 S</button>
+        <span class="dropdown sort-dropdown">{% for s in stockdata %}
+          <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,2)">{{ s.name }}</span>
+        {% endfor %}</span>
+      </span>
+      {{ form.p2stock() }}
+
+      <span id="sf-submit" class="dropdown-wrapper hideUntilParentClicked">
+        {{ form.submit(class="hideUntilParentClicked") }}
+      </span>
   </form>
 </span>
 

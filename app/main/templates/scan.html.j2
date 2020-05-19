@@ -11,10 +11,10 @@
             <input type=file name=file id=replay-file-upload multiple/>
           </div>
           {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
-          <button type="button" id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button>
+          <button type="button" id=upload-button class="fake-submit" onclick='beginScan()'>Begin Scan</button>
           {% for s in scandirs %}
+            <button type="button" onclick="" id="u-button-0" class="transient u-button">Remove Directory</button>
             <span id="u-filename-0" class ="transient u-filename">{{ s }}</span>
-            <button type="button" onclick="" id="u-button-0" class="transient u-button">Scan</button>
           {% endfor %}
         </span>
       </form>
@@ -31,10 +31,12 @@
       }
 
       function beginScan() {
+
         var index    = 0;
-        var ubutton  = document.getElementById("u-button-"+index);
-        var formData = new FormData();
-        var token    = "abcd1234";
+        var ubutton  = document.getElementById("upload-button");
+        var token    = "";
+
+        ubutton.disabled = true;
 
         function checkProgress() {
           $.ajax({
@@ -59,7 +61,7 @@
         $.ajax({
           type        : "post",
           url         : "/api/scan",
-          data        : formData,
+          data        : new FormData(),
           contentType : false,
           cache       : false,
           processData : false,

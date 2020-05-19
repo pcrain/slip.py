@@ -21,12 +21,36 @@ def before_request():
 @bp.route('/replays')
 def replays():
     q        = request.args.get("query",None)
+    ddir     = request.args.get("path","")
     rdir     = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
     page     = request.args.get('page', 1, type=int)
-    if q is None:
+    if (q is None) and (ddir == ""):
         rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     else:
         rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+
+    dfull = os.path.join(current_app.config['STATIC_FOLDER'], "data/local",ddir)
+    ddata = []
+    for d in os.listdir(dfull):
+        p = os.path.join(dfull,d)
+        if os.path.isdir(p):
+            ndirs  = 0
+            nfiles = 0
+            for s in os.listdir(p):
+                f = os.path.join(p,s)
+                if os.path.isdir(f):
+                    ndirs += 1
+                elif f[-4:] == ".slp":
+                    nfiles += 1
+            ddata.append({
+                "name"  : d,
+                "path"  : os.path.join(ddir,d),
+                "dirs"  : ndirs,
+                "files" : nfiles,
+                })
+
+    # ddata = [{"name" : "dir1"},{"name" : "dir2"},{"name" : "dir3"},{"name" : "dir4"},{"name" : "dir5"},{"name" : "dir6"},{"name" : "dir7"}]
+
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)
     qdict["nextpage"] = rdata.next_num
@@ -35,7 +59,12 @@ def replays():
       del qdict["page"]
     next_url = url_for('main.replays', page=qdict["nextpage"], **qdict) if rdata.has_next else None
     prev_url = url_for('main.replays', page=qdict["prevpage"], **qdict) if rdata.has_prev else None
-    return render_template("index.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, next_url=next_url, prev_url=prev_url)
+    return render_template("index.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, dirs=ddata, next_url=next_url, prev_url=prev_url)
+
+# @bp.route('/', defaults={'path': ''})
+# @bp.route('/<path:path>')
+# def get_dir(path):
+#     return path
 
 @bp.route('/replays/<r>')
 def replay_viz(r):

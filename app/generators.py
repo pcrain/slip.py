@@ -6,9 +6,9 @@ def config_generators(app):
   def get_nav_icons():
     return dict(nav_icons=[
       # {"name": "Scan",      "src" : "/scan",     "img" : "header-search.png",   "class" : "scan",   "click" : "alert('hi')"},
-      {"name": "Scan",      "src" : "/scan",     "img" : "header-search.png",   "class" : "scan",   "click" : ""},
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",   "click" : ""},
       {"name": "Upload",    "src" : "/upload",   "img" : "header-matchups.png", "class" : "mu",     "click" : ""},
+      {"name": "Scan",      "src" : "/scan",     "img" : "header-search.png",   "class" : "scan",   "click" : ""},
       ])
 
   @app.context_processor
@@ -90,10 +90,35 @@ def config_generators(app):
   @app.context_processor
   def get_sorts():
     sortdata = [
-      { "name" : "Recently Played",    "intname": "play"     },
-      { "name" : "Recently Uploaded",  "intname": "upload"   },
+      { "name" : "Newly Played",    "intname": "play"     },
+      { "name" : "Newly Uploaded",  "intname": "upload"   },
       ]
     return dict(sortdata=sortdata)
+
+  @app.context_processor
+  def get_costumes():
+    costdata = [
+      {"id" : -1, "name" : "Any",       },
+      {"id" : 0,  "name" : "Default",   },
+      {"id" : 1,  "name" : "Alt 1",     },
+      {"id" : 2,  "name" : "Alt 2",     },
+      {"id" : 3,  "name" : "Alt 3",     },
+      {"id" : 4,  "name" : "Alt 4",     },
+      {"id" : 5,  "name" : "Alt 5",     },
+      ]
+    return dict(costdata=costdata)
+
+  @app.context_processor
+  def get_stockdata():
+    stockdata = [
+      {"id" : -1, "name" : "Any", },
+      {"id" : 0,  "name" : "0",   },
+      {"id" : 1,  "name" : "1",   },
+      {"id" : 2,  "name" : "2",   },
+      {"id" : 3,  "name" : "3",   },
+      {"id" : 4,  "name" : "4",   },
+      ]
+    return dict(stockdata=stockdata)
 
   @app.context_processor
   def utility_functions():

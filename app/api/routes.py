@@ -51,6 +51,7 @@ def analyze_replay(local_file,jret,nokeep=False):
     replay = Replay(
         checksum  = m,
         filename  = jret["filename_secure"],
+        filedir   = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),""),
         user_id   = -1,
         is_public = True,
         uploaded  = jret["time"],
@@ -131,6 +132,7 @@ def scan_job(token):
       "status"          : "Success",
       "error"           : "",
       "analysis-url"    : "",
+      "filedir"         : ntpath.dirname(r),
       "filename"        : ntpath.basename(r),
       "filename_secure" : ntpath.basename(r),
       }
