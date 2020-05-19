@@ -22,7 +22,23 @@ _scan_jobs = {
 }
 
 def analyze_replay(local_file,jret,nokeep=False):
-    m                = md5file(local_file)
+    #If we've already analyzed a replay with the same md5, update its info and call it a day
+    m       = md5file(local_file)
+    samemd5 = Replay.query.filter_by(checksum=m).all()
+    if NODUPES and len(samemd5) > 0:
+
+      for r in samemd5:
+        r.filedir  = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),"")
+        r.filename = jret["filename_secure"]
+        print("DDDD"+r.filedir)
+        db.session.commit()
+
+      jret["status"]       = 'Duplicate'
+      jret["analysis-url"] = '/replays/'+m
+      jret["error"]        = 'Replay already in database'
+      return jret
+
+    #If an analysis of this file already exists, don't bother analyzing it and call it a day
     afile            = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
     if NODUPES and os.path.exists(afile):
       jret["status"]       = 'Duplicate'
@@ -32,6 +48,7 @@ def analyze_replay(local_file,jret,nokeep=False):
         os.remove(local_file)
       return jret
 
+    #Try to actually analyze the replay; if we can't, call it a day
     _,err            = call([current_app.config['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
     if nokeep:
       os.remove(local_file)
@@ -40,13 +57,7 @@ def analyze_replay(local_file,jret,nokeep=False):
       jret["error"]  = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jret
 
-    #Should never get here theoretically, should fail at the afile check above
-    if NODUPES and len(Replay.query.filter_by(checksum=m).all()) > 0:
-      jret["status"]       = 'Duplicate'
-      jret["analysis-url"] = '/replays/'+m
-      jret["error"]        = 'Replay already in database'
-      return jret
-
+    #Add the replay to the database
     rdata  = load_replay(afile)
     replay = Replay(
         checksum  = m,
