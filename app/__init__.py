@@ -29,9 +29,9 @@ def create_app(config_class=Config):
     executor.init_app(app)
 
     from app.errors import bp as errors_bp
-    from app.auth import bp as auth_bp
-    from app.api  import bp as api_bp
-    from app.main import bp as main_bp
+    from app.auth   import bp as auth_bp
+    from app.api    import bp as api_bp
+    from app.main   import bp as main_bp
 
     limiter.exempt(errors_bp)
     limiter.exempt(auth_bp)

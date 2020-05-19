@@ -61,6 +61,7 @@ def api_scan_dir():
     "posted"   : datetime.utcnow(),
     "progress" : -1,
     "total"    : 0,
+    "adds"     : [],
     }
   executor.submit(scan_job,token)
   return jsonify({"status" : "Scan Started", "token" : token})
@@ -74,6 +75,9 @@ def api_scan_progress():
   tmpfile                     = os.path.join(current_app.config['STATIC_FOLDER'], "data/_tmp/"+token)
   if d < t:
     return jsonify({"status" : f"{d}/{t}"})
+  # db.session.flush()
+  # db.session.commit()
+  # db.session.close()
   del _scan_jobs[token]
   logline(tmpfile,f"Scan job deleted")
   return jsonify({"status" : "Done!", "done" : True})
@@ -88,6 +92,8 @@ def api_get_raw_analysis(r):
     # return jsonify(replay)
 
 def analyze_replay(local_file,jret,nokeep=False):
+    global _scan_jobs
+
     #If we've already analyzed a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
     samemd5 = Replay.query.filter_by(checksum=m).all()
@@ -97,6 +103,7 @@ def analyze_replay(local_file,jret,nokeep=False):
         r.filedir  = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),"")
         r.filename = jret["filename_secure"]
         print("DDDD"+r.filedir)
+        # db.session.flush()
         db.session.commit()
 
       jret["status"]       = 'Duplicate'
@@ -147,8 +154,10 @@ def analyze_replay(local_file,jret,nokeep=False):
         p2display = get_display_tag(rdata["players"][1]),
         stage     = rdata["stage_id"],
         )
-    db.session.add(replay) #TODO: maybe defer these for batch uploads?
-    db.session.commit()
+    # db.session.add(replay) #TODO: maybe defer these for batch uploads?
+    _scan_jobs[jret["token"]]["adds"].append(replay)
+    # db.session.flush()
+    # db.session.commit()
     jret["analysis-url"] = '/replays/'+m
     return jret
 
@@ -173,6 +182,7 @@ def scan_job(token):
       break
     _scan_jobs[token]["progress"] = i
     jret = {
+      "token"           : token,
       "time"            : datetime.utcnow(),
       "status"          : "Success",
       "error"           : "",
@@ -183,5 +193,8 @@ def scan_job(token):
       }
     rstat = analyze_replay(r,jret,nokeep=False)
     rdata.append(rstat)
+  logline(tmpfile,"Committing {} new entries".format(len(_scan_jobs[token]["adds"])))
+  db.session.add_all(_scan_jobs[token]["adds"])
+  db.session.commit()
   logline(tmpfile,f"Scan completed")
   return jsonify({"status" : "ok", "details" : rdata})
