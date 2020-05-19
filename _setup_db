@@ -1,9 +1,0 @@
-#!/bin/bash
-#Setup database for website
-
-export FLASK_APP=slippc-viz
-flask db init
-
-#Migrating and updating the database
-#  flask db migrate -m "users table" # -m = commit message
-#  flask db upgrade

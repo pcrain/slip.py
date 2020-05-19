@@ -1,5 +1,0 @@
-#!/bin/bash
-#Launch my website's shell
-
-export FLASK_APP=slippc-viz
-flask shell

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 from flask import request, jsonify, current_app, send_from_directory
-from flask_login import current_user, login_user, logout_user, login_required
 
 from werkzeug.utils import secure_filename
-from app import db, limiter, executor
+from app import db, executor
+# from app import db, limiter, executor
 from app.models import User, Replay
 from app.api import bp
 from app.main.helpers import *
@@ -13,8 +13,8 @@ from datetime import datetime
 import json, glob, ntpath, time, os
 
 REPLAY_UPLOAD_LIMIT = "600 per hour"
-NODUPES = True  #Set to True to not allow duplicate reuploads
-NOKEEP  = False #Set to True to delete files after uploading
+NODUPES             = True  #Set to True to not allow duplicate reuploads
+NOKEEP              = False #Set to True to delete files after uploading
 
 #Dictionary of job timers
 _scan_jobs = {
@@ -22,7 +22,7 @@ _scan_jobs = {
 }
 
 @bp.route('/upload', methods=['POST'])
-@limiter.limit(REPLAY_UPLOAD_LIMIT)
+# @limiter.limit(REPLAY_UPLOAD_LIMIT)
 def api_upload_replay():
     #Populate a return JSON
     jret = {

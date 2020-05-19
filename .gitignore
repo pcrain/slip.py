@@ -7,3 +7,4 @@ app/auth/__pycache__
 app/errors/__pycache__
 app/main/__pycache__
 app.db
+app-empty.db
