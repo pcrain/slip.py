@@ -123,3 +123,8 @@ def get_all_slippi_files(topdir,files):
       files.append(path)
     elif os.path.isdir(path):
       get_all_slippi_files(path,files)
+
+#Write a line to a log file
+def logline(l,text,new=False):
+  with open(l,"w" if new else "a") as log:
+    log.write(f"[{datetime.utcnow()}] {text}\n")

@@ -21,6 +21,72 @@ _scan_jobs = {
 
 }
 
+@bp.route('/upload', methods=['POST'])
+@limiter.limit(REPLAY_UPLOAD_LIMIT)
+def api_upload_replay():
+    #Populate a return JSON
+    jret = {
+      "time"            : datetime.utcnow(),
+      "status"          : "Success",
+      "error"           : "",
+      "analysis-url"    : "",
+      "filename"        : "",
+      "filename_secure" : "",
+      }
+
+    # Error if no file attribute
+    if 'file' not in request.files:
+        jret["status"] = 'Failure'
+        jret["error"]  = 'No file part'
+        return jsonify(jret)
+
+    # Check if file is actually submitted
+    file = request.files['file']
+    if file.filename == '' or not file:
+        jret["status"] = 'Failure'
+        jret["error"]  = 'No selected file'
+        return jsonify(jret)
+
+    jret["filename"]        = file.filename
+    jret["filename_secure"] = secure_filename(file.filename)
+    opath                   = os.path.join(current_app.config['UPLOAD_FOLDER'], jret["filename_secure"])
+    file.save(opath)
+    return analyze_replay(opath,jret,nokeep=NOKEEP)
+
+@bp.route('/scan', methods=['POST'])
+def api_scan_dir():
+  global _scan_jobs
+  token             = md5(str(datetime.utcnow()))[:8]
+  _scan_jobs[token] = {
+    "posted"   : datetime.utcnow(),
+    "progress" : -1,
+    "total"    : 0,
+    }
+  executor.submit(scan_job,token)
+  return jsonify({"status" : "Scan Started", "token" : token})
+
+@bp.route('/scan/progress', methods=['POST'])
+def api_scan_progress():
+  token                       = request.get_json()["token"]
+  _scan_jobs[token]["posted"] = datetime.utcnow() #Update our posted time
+  d                           = _scan_jobs[token]["progress"]+1
+  t                           = _scan_jobs[token]["total"]
+  tmpfile                     = os.path.join(current_app.config['STATIC_FOLDER'], "data/_tmp/"+token)
+  if d < t:
+    return jsonify({"status" : f"{d}/{t}"})
+  del _scan_jobs[token]
+  logline(tmpfile,f"Scan job deleted")
+  return jsonify({"status" : "Done!", "done" : True})
+
+@bp.route('/raw/<r>', methods=['GET'])
+def api_get_raw_analysis(r):
+    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
+    return send_from_directory(os.path.join(current_app.config['STATIC_FOLDER'], "data/replays"),r+".slp.json")
+    # replay = load_replay(rpath)
+    # rdata  = Replay.query.filter_by(checksum=r).first()
+    # replay["__original_filename"] = rdata.filename
+    # return jsonify(replay)
+
 def analyze_replay(local_file,jret,nokeep=False):
     #If we've already analyzed a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
@@ -86,38 +152,6 @@ def analyze_replay(local_file,jret,nokeep=False):
     jret["analysis-url"] = '/replays/'+m
     return jret
 
-@bp.route('/upload', methods=['POST'])
-@limiter.limit(REPLAY_UPLOAD_LIMIT)
-def api_upload_replay():
-    #Populate a return JSON
-    jret = {
-      "time"            : datetime.utcnow(),
-      "status"          : "Success",
-      "error"           : "",
-      "analysis-url"    : "",
-      "filename"        : "",
-      "filename_secure" : "",
-      }
-
-    # Error if no file attribute
-    if 'file' not in request.files:
-        jret["status"] = 'Failure'
-        jret["error"]  = 'No file part'
-        return jsonify(jret)
-
-    # Check if file is actually submitted
-    file = request.files['file']
-    if file.filename == '' or not file:
-        jret["status"] = 'Failure'
-        jret["error"]  = 'No selected file'
-        return jsonify(jret)
-
-    jret["filename"]        = file.filename
-    jret["filename_secure"] = secure_filename(file.filename)
-    opath                   = os.path.join(current_app.config['UPLOAD_FOLDER'], jret["filename_secure"])
-    file.save(opath)
-    return analyze_replay(opath,jret,nokeep=NOKEEP)
-
 def scan_job(token):
   global _scan_jobs
 
@@ -151,53 +185,3 @@ def scan_job(token):
     rdata.append(rstat)
   logline(tmpfile,f"Scan completed")
   return jsonify({"status" : "ok", "details" : rdata})
-
-@bp.route('/scan', methods=['POST'])
-def api_scan_dir():
-  global _scan_jobs
-  token             = md5(str(datetime.utcnow()))[:8]
-  _scan_jobs[token] = {
-    "posted"   : datetime.utcnow(),
-    "progress" : -1,
-    "total"    : 0,
-    }
-  executor.submit(scan_job,token)
-  return jsonify({"status" : "Scan Started", "token" : token})
-
-def dump(obj):
-  for attr in dir(obj):
-    try:    print("obj.%s = %r" % (attr, getattr(obj, attr)))
-    except: print("obj.%s = %s" % (attr, "error"))
-
-@bp.route('/scan/progress', methods=['POST'])
-def api_scan_progress():
-  token                       = request.get_json()["token"]
-  _scan_jobs[token]["posted"] = datetime.utcnow() #Update our posted time
-  d                           = _scan_jobs[token]["progress"]+1
-  t                           = _scan_jobs[token]["total"]
-  tmpfile                     = os.path.join(current_app.config['STATIC_FOLDER'], "data/_tmp/"+token)
-  if d < t:
-    return jsonify({"status" : f"{d}/{t}"})
-  del _scan_jobs[token]
-  logline(tmpfile,f"Scan job deleted")
-  return jsonify({"status" : "Done!", "done" : True})
-
-@bp.route('/raw/<r>', methods=['GET'])
-def api_get_raw_analysis(r):
-    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
-    return send_from_directory(os.path.join(current_app.config['STATIC_FOLDER'], "data/replays"),r+".slp.json")
-    # replay = load_replay(rpath)
-    # rdata  = Replay.query.filter_by(checksum=r).first()
-    # replay["__original_filename"] = rdata.filename
-    # return jsonify(replay)
-
-def lastline(fname):
-  try:
-    with open(fname, 'r') as f:
-      return f.readlines()[-1]
-  except:
-    return ""
-
-def logline(l,text,new=False):
-  with open(l,"w" if new else "a") as log:
-    log.write(f"[{datetime.utcnow()}] {text}\n")

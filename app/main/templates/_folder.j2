@@ -1,0 +1,43 @@
+<span class="replaySummary"><a class="nostyle" href="/replays/{{ rsummary.checksum }}">
+  <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ intstagedata[rsummary.stage]['intname'] }}.png)" title="{{ intstagedata[rsummary.stage]['intname'] }}">
+
+{#     {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
+      {% if (0 == replay.players[1].end_stocks) %}
+        <img title="Winner" class="rs-win1" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
+    {% elif (replay.players[0].end_stocks < replay.players[1].end_stocks) %}
+      {% if (0 == replay.players[0].end_stocks) %}
+        <img title="Winner" class="rs-win2" src="{{ url_for('static',filename='icons/winner.png')}}"/>
+      {% endif %}
+    {% endif %} #}
+
+    {% set p1char = intchardata[rsummary.p1char]['intname'] %}
+    {% set p2char = intchardata[rsummary.p2char]['intname'] %}
+
+    <span class="rs-tag1">{{ rsummary.p1display }}</span>
+    <span class="rs-tag2">{{ rsummary.p2display }}</span>
+
+    <span class="rs-char1"><img title="{{ p1char }}" src="{{ url_for('static',filename='icons/css') }}/{{ p1char }}{{ rsummary.p1color }}.png" /></span>
+    <span class="rs-char2"><img title="{{ p2char }}" src="{{ url_for('static',filename='icons/css') }}/{{ p2char }}{{ rsummary.p2color }}.png" /></span>
+
+    <span class="rs-stocks1">
+      {% for i in range(rsummary.p1stocks,4) %}
+        <img class="dead" title="{{ p1char }}" src="{{ url_for('static',filename='icons/stock') }}/{{ p1char }}{{ rsummary.p1color }}.png" />
+      {% endfor %}
+      {% for i in range(rsummary.p1stocks) %}
+        <img title="{{ p1char }}" src="{{ url_for('static',filename='icons/stock') }}/{{ p1char }}{{ rsummary.p1color }}.png" />
+      {% endfor %}
+    </span>
+
+    <span title="{{ rsummary.filename.split('.')[0] }}" class="rs-filename">{{ rsummary.filename.split('.')[0] }}</span>
+
+    <span class="rs-stocks2">
+      {% for i in range(rsummary.p2stocks) %}
+        <img title="{{ p2char }}" src="{{ url_for('static',filename='icons/stock') }}/{{ p2char }}{{ rsummary.p2color }}.png" />
+      {% endfor %}
+      {% for i in range(rsummary.p2stocks,4) %}
+        <img class="dead" title="{{ p2char }}" src="{{ url_for('static',filename='icons/stock') }}/{{ p2char }}{{ rsummary.p2color }}.png" />
+      {% endfor %}
+    </span>
+  </span>
+</a></span>
