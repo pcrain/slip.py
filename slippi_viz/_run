@@ -5,6 +5,8 @@ export FLASK_APP=slippi_viz
 export FLASK_DEBUG=1
 #Setup db
 flask db init
+flask db migrate
+flask db upgrade
 #Run locally
 FLASK_APP=slippi_viz FLASK_DEBUG=1 flask run
 # tmux new-session -ds slippi_viz "FLASK_APP=slippi_viz FLASK_DEBUG=1 flask run"

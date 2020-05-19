@@ -22,14 +22,14 @@ def before_request():
 def replays():
     q        = request.args.get("query",None)
     ddir     = request.args.get("path","")
-    rdir     = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays")
+    rdir     = current_app.config['REPLAY_FOLDER']
     page     = request.args.get('page', 1, type=int)
     if (q is None) and (ddir == ""):
         rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     else:
         rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
-    dfull = os.path.join(current_app.config['STATIC_FOLDER'], "data/local",ddir)
+    dfull = os.path.join(current_app.config['SCAN_FOLDER'],ddir)
     ddata = []
     for d in os.listdir(dfull):
         p = os.path.join(dfull,d)
@@ -69,7 +69,7 @@ def replays():
 @bp.route('/replays/<r>')
 def replay_viz(r):
     rdata  = Replay.query.filter_by(checksum=r).first()
-    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
+    rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
     replay = load_replay(rpath)
     replay["__original_filename"] = rdata.filename
     return render_template("replay.html.j2", rsummary=rdata, replay=replay)
@@ -80,6 +80,6 @@ def upload_page():
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():
-  lbase = os.path.join(current_app.config['STATIC_FOLDER'], "data/local")
+  lbase = current_app.config['SCAN_FOLDER']
   ldirs = [f for f in os.listdir(lbase) if os.path.isdir(os.path.join(lbase, f))]
   return render_template("scan.html.j2", scandirs=ldirs)

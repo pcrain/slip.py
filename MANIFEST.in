@@ -1,7 +1,8 @@
-graft slippi-viz/app/*
-include slippi-viz/config.py
-include slippi-viz/slippi-viz.py
-include slippi-viz/_run
-include slippi-viz/_purge-db
+graft slippi_viz/app/*
+include slippi_viz/app/*
+include slippi_viz/config.py
+include slippi_viz/slippi-viz.py
+include slippi_viz/_run
+include slippi_viz/_purge-db
 global-exclude *.pyc
-prune slippi-viz/app/static/data*
+prune slippi_viz/app/static/data*

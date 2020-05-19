@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 # basedir = app.root_path
@@ -9,8 +8,6 @@ class Config(object):
     SITE_NAME                      = "Slippi Replay Analysis"
 
     #Other config options
-    SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
     SECRET_KEY                     = os.environ.get('SECRET_KEY') or 'i-like-pretzels'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER                    = os.environ.get('MAIL_SERVER')
@@ -22,9 +19,13 @@ class Config(object):
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
     FORCE_COMPRESSION              = False
-    STATIC_FOLDER                  = "{}/app/static/".format(basedir)
-    UPLOAD_FOLDER                  = STATIC_FOLDER+"data/uploads"
-    REPLAY_FOLDER                  = STATIC_FOLDER+"data/replays"
+    STATIC_FOLDER                  = os.path.join(basedir,"app","static")
+    DATA_FOLDER                    = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
+    UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
+    REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
+    SCAN_FOLDER                    = os.path.join(DATA_FOLDER,"local")
+    TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")
+    SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
     ANALYZER                       = "/home/pretzel/workspace/slippc/slippc"
 
     INTERACTIONS = [

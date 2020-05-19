@@ -72,7 +72,7 @@ def api_scan_progress():
   _scan_jobs[token]["posted"] = datetime.utcnow() #Update our posted time
   d                           = _scan_jobs[token]["progress"]+1
   t                           = _scan_jobs[token]["total"]
-  tmpfile                     = os.path.join(current_app.config['STATIC_FOLDER'], "data/_tmp/"+token)
+  tmpfile                     = os.path.join(current_app.config['TMP_FOLDER'],token)
   if d < t:
     return jsonify({"status" : f"{d}/{t}"})
   # db.session.flush()
@@ -84,8 +84,8 @@ def api_scan_progress():
 
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
-    rpath  = os.path.join(current_app.config['STATIC_FOLDER'], "data/replays", r+".slp.json")
-    return send_from_directory(os.path.join(current_app.config['STATIC_FOLDER'], "data/replays"),r+".slp.json")
+    return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
+    # rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
     # replay = load_replay(rpath)
     # rdata  = Replay.query.filter_by(checksum=r).first()
     # replay["__original_filename"] = rdata.filename
@@ -100,7 +100,7 @@ def analyze_replay(local_file,jret,nokeep=False):
     if NODUPES and len(samemd5) > 0:
 
       for r in samemd5:
-        r.filedir  = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),"")
+        r.filedir  = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],"")
         r.filename = jret["filename_secure"]
         # db.session.flush()
         db.session.commit()
@@ -129,12 +129,13 @@ def analyze_replay(local_file,jret,nokeep=False):
       jret["error"]  = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jret
 
+
     #Add the replay to the database
     rdata  = load_replay(afile)
     replay = Replay(
         checksum  = m,
         filename  = jret["filename_secure"],
-        filedir   = jret.get("filedir","").replace(os.path.join(current_app.config['STATIC_FOLDER'], "data"),""),
+        filedir   = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],""),
         user_id   = -1,
         is_public = True,
         uploaded  = jret["time"],
@@ -153,22 +154,19 @@ def analyze_replay(local_file,jret,nokeep=False):
         p2display = get_display_tag(rdata["players"][1]),
         stage     = rdata["stage_id"],
         )
-    # db.session.add(replay) #TODO: maybe defer these for batch uploads?
     _scan_jobs[jret["token"]]["adds"].append(replay)
-    # db.session.flush()
-    # db.session.commit()
     jret["analysis-url"] = '/replays/'+m
     return jret
 
 def scan_job(token):
   global _scan_jobs
 
-  tmpdir  = os.path.join(current_app.config['STATIC_FOLDER'], "data/_tmp")
+  tmpdir  = current_app.config['TMP_FOLDER']
   tmpfile = os.path.join(tmpdir,token)
   os.makedirs(tmpdir,exist_ok=True)
   logline(tmpfile,f"Starting scan",new=True)
 
-  lbase   = os.path.join(current_app.config['STATIC_FOLDER'], "data/local")
+  lbase   = current_app.config['SCAN_FOLDER']
   replays = []
   get_all_slippi_files(lbase,replays)
   rdata   = []
