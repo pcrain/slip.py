@@ -20,13 +20,17 @@ class Config(object):
     SIMULTANEOUS_UPLOADS           = 100
     FORCE_COMPRESSION              = False
     STATIC_FOLDER                  = os.path.join(basedir,"app","static")
-    DATA_FOLDER                    = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
+    if os.name == 'nt':
+      DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")
+      ANALYZER                     = "slippc.exe"
+    else:
+      DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
+      ANALYZER                     = os.path.join(os.path.expanduser("~"),"workspace/slippc/slippc")
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
     SCAN_FOLDER                    = os.path.join(DATA_FOLDER,"local")
     TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")
     SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
-    ANALYZER                       = "/home/pretzel/workspace/slippc/slippc"
 
     INTERACTIONS = [
       "EDGEGUARDING",

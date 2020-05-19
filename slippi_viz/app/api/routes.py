@@ -129,7 +129,6 @@ def analyze_replay(local_file,jret,nokeep=False):
       jret["error"]  = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jret
 
-
     #Add the replay to the database
     rdata  = load_replay(afile)
     replay = Replay(
