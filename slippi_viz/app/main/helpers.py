@@ -1,7 +1,9 @@
 #!/usr/bin/python
 from flask import current_app
-import os, json, sys, subprocess, shlex, hashlib
 from datetime import datetime
+import os, json, sys, subprocess, shlex, hashlib, stat, ntpath
+if os.name == 'nt':
+    import win32api, win32con
 
 # Easy colors (print)
 class col:
@@ -128,3 +130,71 @@ def get_all_slippi_files(topdir,files):
 def logline(l,text,new=False):
   with open(l,"w" if new else "a") as log:
     log.write(f"[{datetime.utcnow()}] {text}\n")
+
+#Check if a file is hidden (X-platform)
+def is_hidden(filepath):
+  if os.name== 'nt':
+    attribute = win32api.GetFileAttributes(filepath)
+    return attribute & (win32con.FILE_ATTRIBUTE_HIDDEN | win32con.FILE_ATTRIBUTE_SYSTEM)
+  else:
+    return ntpath.basename(filepath).startswith('.')
+
+#Get info about slippi files in a directory (no recursion)
+def check_for_slippi_files(path,nav=False):
+  ddata = []
+  if nav: #Add navigations to current / previous folder
+    b = os.path.dirname(path)
+    c = count_slippi_files(b)
+    ddata.append({
+      "name"  : "[Up]",
+      "path"  : b,
+      "dirs"  : c["dirs"],
+      "files" : c["files"],
+      "class" : "updir",
+      "click" : "travel",
+      "sort"  : 1,
+      })
+    c = count_slippi_files(path)
+    ddata.append({
+      "name"  : "Add "+path,
+      "path"  : path,
+      "dirs"  : c["dirs"],
+      "files" : c["files"],
+      "class" : "curdir",
+      "click" : "travel",
+      "sort"  : 2,
+      })
+  for f in os.listdir(path):
+      data = check_single_folder_for_slippi_files(path,f)
+      if data is not None:
+        ddata.append(data)
+  return ddata
+
+#Scan one folder for Slippi files
+def check_single_folder_for_slippi_files(parent,base,*,click=None):
+  p = os.path.join(parent,base)
+  if os.path.isdir(p) and os.access(p, os.R_OK) and (not is_hidden(p)):
+    c = count_slippi_files(p)
+    return {
+        "name"  : base,
+        "path"  : p,
+        "dirs"  : c["dirs"],
+        "files" : c["files"],
+        "class" : "",
+        "click" : "travel" if click is None else click,
+        "sort"  : 4,
+      }
+    return None
+
+#Count slippi files / subdirectories at a path
+def count_slippi_files(path):
+  ndirs  = 0
+  nfiles = 0
+  for f in os.listdir(path):
+    s = os.path.join(path,f)
+    if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
+        ndirs += 1
+    elif f[-4:] == ".slp":
+        nfiles += 1
+  return {"dirs" : ndirs, "files" : nfiles}
+

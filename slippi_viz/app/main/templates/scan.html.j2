@@ -13,8 +13,9 @@
         <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>Begin Scan</button>
         {# <span id="cur-scans"> #}
           {% for s in scandirs %}
-            <button type="button" onclick="delScanDir('{{ s }}')" id="u-button-0" class="transient u-button">Remove Directory</button>
-            <span id="u-filename-0" class ="transient u-filename">{{ s }}</span>
+            <button type="button" onclick="delScanDir('{{ s.name }}')" id="u-button-0" class="transient u-button">Remove Directory</button>
+            {% set dsummary = s.stats %}
+            {% include '_folder.html.j2' %}
           {% endfor %}
         {# </span> #}
         <span id="browseList">
@@ -22,16 +23,7 @@
       </span>
     </span>
 
-    {# <script src="{{ url_for('static', filename='js/lzma-min.js') }}"></script> #}
     <script>
-      var SLIPPIHEADER = "7b55037261775b24";
-      var control      = document.getElementById("replay-file-upload");
-      var uploadqueue  = [];
-
-      function skipCompression(array, mode, cb_result, cb_progress) {
-        return cb_result(array,null);
-      }
-
       function addScanDir(d) {
         if (! confirm("Add directory "+d+" to scan list?")) {
           return;
@@ -80,38 +72,15 @@
             cache       : false,
             processData : false,
             success: function (rjson) {
-              var parent = rjson["parent"];
-              var first = '<span class="title">Choose a Folder to Add</span><hr/>';
-              if (parent != "/") {
-                var confirm = '<span class="scanConfirmEntry" onclick="addScanDir(\''
-                + parent + '\')"> ADD ' + parent +  '</span>';
-              } else {
-                var confirm = "";
-              }
-              var p1  = '<span class="scanAddEntry" onclick="browseDir(\'';
-              var p1b = '<span class="scanBackEntry" onclick="browseDir(\'';
-              var p2  = '\')">';
-              var p3  = '</span>';
-              var ss  = '';
-              for (var i = -1; i < rjson["subs"].length; i++) {
-                if (i == -1) {
-                  if (parent != "/") {
-                    ss += p1b+rjson["back"]+p2+"[Back]"+p3;
-                  }
-                } else {
-                  var r = rjson["subs"][i]["name"];
-                  ss += p1+parent+"','"+r+p2+r+p3;
-                }
-              }
-              var b = document.getElementById("browseList");
-              b.innerHTML = first+confirm+ss;
-            },
-            complete: function (rjson) {
-              // if (!("done" in rjson["responseJSON"])) {
-              //   setTimeout(checkProgress, 500);
-              // }
+              var b       = document.getElementById("browseList");
+              var first   = '<hr/><span class="title">Choose a Folder to Add</span><div></div>';
+              b.innerHTML = first+rjson["render"];
             }
         });
+      }
+
+      function scanExists(d) {
+        toastr.info(d+" is already scanned!")
       }
 
       function beginScan() {
@@ -168,66 +137,6 @@
             window.onbeforeunload = null;
           }
         });
-      }
-
-      function submitReplay(index=-1) {
-        if (index < 0) {
-          document.getElementById("upload-button").disabled = true;
-          for(var i = 0; i < uploadqueue.length; i++) {
-            submitReplay(i);
-          }
-          return;
-        }
-        var ubutton = document.getElementById("u-button-"+index);
-        if (!uploadqueue[index].valid || ubutton.disabled) {
-          return;
-        }
-        // alert(JSON.stringify(uploadqueue[index]));
-        // alert(index);
-        ubutton.disabled = true;
-
-        ubutton.innerText = "Processing";
-        var files = uploadqueue[index]["fdata"];
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var fileByteArray = new Uint8Array(e.target.result);
-          skipCompression(fileByteArray, 6, function(result, error) {
-            ubutton.innerText = "Converting";
-            compressed_replay = new File(
-                [new Blob([new Uint8Array(result)], {type: "application/octet-stream"})],
-                uploadqueue[index]["filename"]+(COMPRESS ? ".lzma" : ""));
-
-            ubutton.innerText = "Uploading";
-            var formData = new FormData();
-            formData.append('file', compressed_replay);
-            // formData.append('file', uploadqueue[index]["fdata"]);
-
-            $.ajax({
-              type        : "post",
-              url         : "/api/upload",
-              data        : formData,
-              contentType : false,
-              cache       : false,
-              processData : false,
-              success     : function(rjson) {
-                ubutton.innerText  = rjson["status"];
-                ubutton.title      = JSON.stringify(rjson);
-                ubutton.className += " hasinfo";
-                if ("analysis-url" in rjson) {
-                  document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
-                }
-              },
-              error: function(XMLHttpRequest, textStatus, errorThrown) {
-                ubutton.innerText = "Error";
-                ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
-              }
-            });
-          }, function(percent) {
-            // alert("progress");
-            ubutton.innerText = "Compressing "+Math.round(percent*100)+"%";
-          });
-        }
-        reader.readAsArrayBuffer(files);
       }
     </script>
 {% endblock %}

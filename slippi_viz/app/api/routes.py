@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask import request, jsonify, current_app, send_from_directory
+from flask import request, jsonify, current_app, send_from_directory, render_template
 
 from werkzeug.utils import secure_filename
 from app import db, executor
@@ -87,23 +87,30 @@ def api_scan_del():
 
 @bp.route('/scan/browse', methods=['POST'])
 def api_scan_browse():
+  curscans = set()
+  for f in os.listdir(current_app.config['SCAN_FOLDER']):
+    curscans.add(os.readlink(os.path.join(current_app.config['SCAN_FOLDER'],f)))
   d       = request.get_json()["dir"]
   s       = request.get_json()["subdir"]
   p       = d if s == "" else os.path.join(d,s)
-  listing = []
-  for f in os.listdir(p):
-    path = os.path.join(p,f)
-    if os.path.isdir(path) and os.access(path, os.R_OK):
-      listing.append({
-        "name" : f,
-        })
-  listing = sorted(listing, key = lambda i: i['name'])
+  listing = check_for_slippi_files(p,nav=(p!="/"))
+  listing = sorted(listing, key = lambda i: (i["sort"],i['name']))
+  for item in listing:
+    if item["class"] == "curdir":
+      item["click"] = "addScanDir"
+    else:
+      item["click"] = "browseDir"
+    if item["path"] in curscans:
+      item["class"] += " scanned"
+      item["click"] = "scanExists"
   j = {
     "status" : "ok",
     "back"   : os.path.dirname(p),
     "parent" : p,
     "subs"   : listing,
+    "render" : render_template("_folder_list.html.j2",dirs=listing)
     }
+  # print(j["render"])
   return jsonify(j)
 
 @bp.route('/scan/progress', methods=['POST'])

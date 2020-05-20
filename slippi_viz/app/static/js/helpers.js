@@ -31,3 +31,7 @@ function URL_add_parameter(url, param, value){
 function travel(path) {
   location.href = URL_add_parameter(location.href,"path",path);
 }
+
+function doNothing() {
+    return;
+}

@@ -1009,6 +1009,18 @@ span.dirSummary {
     ;
 }
 
+span.dirSummary.updir {
+  background-color    : rgba(128,0,0,0.5);
+}
+
+span.dirSummary.curdir {
+  background-color    : rgba(0,0,128,0.5);
+}
+
+span.dirSummary.scanned {
+  background-color    : rgba(0,128,0,0.5);
+}
+
 span.dirSummary:hover {
   border: 2px solid var(--form-border-hl);
 }

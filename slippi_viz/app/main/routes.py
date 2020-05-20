@@ -30,24 +30,9 @@ def replays():
         rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
     dfull = os.path.join(current_app.config['SCAN_FOLDER'],ddir)
-    ddata = []
-    for d in os.listdir(dfull):
-        p = os.path.join(dfull,d)
-        if os.path.isdir(p):
-            ndirs  = 0
-            nfiles = 0
-            for s in os.listdir(p):
-                f = os.path.join(p,s)
-                if os.path.isdir(f):
-                    ndirs += 1
-                elif f[-4:] == ".slp":
-                    nfiles += 1
-            ddata.append({
-                "name"  : d,
-                "path"  : os.path.join(ddir,d),
-                "dirs"  : ndirs,
-                "files" : nfiles,
-                })
+    ddata = check_for_slippi_files(dfull)
+    for d in ddata: #Get relative paths to scan directory suitable for URL use
+        d["path"] = os.path.relpath(d["path"],current_app.config['SCAN_FOLDER'])
 
     # ddata = [{"name" : "dir1"},{"name" : "dir2"},{"name" : "dir3"},{"name" : "dir4"},{"name" : "dir5"},{"name" : "dir6"},{"name" : "dir7"}]
 
@@ -81,5 +66,11 @@ def upload_page():
 @bp.route('/scan', methods=['GET'])
 def scan_page():
   lbase = current_app.config['SCAN_FOLDER']
-  ldirs = [f for f in os.listdir(lbase) if os.path.isdir(os.path.join(lbase, f))]
+  ldirs = []
+  for f in os.listdir(lbase):
+    if os.path.isdir(os.path.join(lbase, f)):
+        ldirs.append({
+            "name"  : f,
+            "stats" : check_single_folder_for_slippi_files(lbase,f,click="void")
+            })
   return render_template("scan.html.j2", scandirs=ldirs)

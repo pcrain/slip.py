@@ -1,0 +1,6 @@
+{% for dsummary in dirs %}
+  {% include '_folder.html.j2' %}
+  {% if dsummary.sort == 2 %}
+    <div></div>
+  {% endif %}
+{% endfor %}

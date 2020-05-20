@@ -16,15 +16,15 @@ def init_slippi_viz():
   os.makedirs(app.config["LOG_FOLDER"],exist_ok=True)
   os.makedirs(app.config["TMP_FOLDER"],exist_ok=True)
 
-  if os.name == 'nt':
-    default_slippi_path = os.path.join(os.path.expanduser("~"),"Desktop","FM-v5.9-Slippi-r18-Win","Slippi")
-  else:
-    default_slippi_path = os.path.join(os.path.expanduser("~"),"Slippi")
+  # if os.name == 'nt':
+  #   default_slippi_path = os.path.join(os.path.expanduser("~"),"Desktop","FM-v5.9-Slippi-r18-Win","Slippi")
+  # else:
+  #   default_slippi_path = os.path.join(os.path.expanduser("~"),"Slippi")
 
-  if os.path.exists(default_slippi_path):
-    default_slippi_link = os.path.join(app.config["SCAN_FOLDER"],"Slippi")
-    if not os.path.exists(default_slippi_link):
-      os.symlink(default_slippi_path,default_slippi_link)
+  # if os.path.exists(default_slippi_path):
+  #   default_slippi_link = os.path.join(app.config["SCAN_FOLDER"],"Slippi")
+  #   if not os.path.exists(default_slippi_link):
+  #     os.symlink(default_slippi_path,default_slippi_link)
 
 @app.shell_context_processor
 def make_shell_context():
