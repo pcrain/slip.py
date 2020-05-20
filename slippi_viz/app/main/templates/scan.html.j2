@@ -4,20 +4,22 @@
     <span id="uploadOuterGrid">
       <span class="title">Scan Local Folders</span>
       {# <span class="subtitle">(Max {{SIMULTANEOUS_UPLOADS}} at time)</span> #}
-      <form id=replay-file-upload-form method=post enctype=multipart/form-data>
-        <span id="uploadGrid">
-          <div class="upload-btn-wrapper">
-            <button class="fake-submit">Add Directory</button>
-            <input type=file name=file id=replay-file-upload multiple/>
-          </div>
-          {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
-          <button type="button" id=upload-button class="fake-submit" onclick='beginScan()'>Begin Scan</button>
+      <span id="scanGrid">
+        <div id="add-button" class="upload-btn-wrapper">
+          <button onclick='browseDir()' class="fake-submit">Add Directory</button>
+          {# <input  id=replay-file-scan-add/> #}
+        </div>
+        {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
+        <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>Begin Scan</button>
+        <span id="cur-scans">
           {% for s in scandirs %}
-            <button type="button" onclick="" id="u-button-0" class="transient u-button">Remove Directory</button>
+            <button type="button" onclick="delScanDir('{{ s }}')" id="u-button-0" class="transient u-button">Remove Directory</button>
             <span id="u-filename-0" class ="transient u-filename">{{ s }}</span>
           {% endfor %}
         </span>
-      </form>
+        <span id="browseList">
+        </span>
+      </span>
     </span>
 
     {# <script src="{{ url_for('static', filename='js/lzma-min.js') }}"></script> #}
@@ -30,10 +32,80 @@
         return cb_result(array,null);
       }
 
+      function addScanDir(d) {
+        alert(d);
+        $.ajax({
+            type        : "post",
+            url         : "/api/scan/add",
+            data        : JSON.stringify({"dir" : d}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+              window.location.href = window.location.href;
+            }
+        });
+      }
+
+      function delScanDir(d) {
+        alert(d);
+        $.ajax({
+            type        : "post",
+            url         : "/api/scan/del",
+            data        : JSON.stringify({"dir" : d}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+              window.location.href = window.location.href;
+            }
+        });
+      }
+
+      function browseDir(d="/",s="") {
+        // TODO: not sure if we're safe against quoted directory names
+        // b = $("#browseList");
+        $.ajax({
+            type        : "post",
+            url         : "/api/scan/browse",
+            data        : JSON.stringify({"dir" : d,"subdir" : s}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+              var parent = rjson["parent"];
+              var confirm = '<span class="scanConfirmEntry" onclick="addScanDir(\''
+                + parent + '\')"> ADD ' + parent +  '</span>';
+              var p1 = '<span class="scanAddEntry" onclick="browseDir(\'';
+              var p2 = '\')">';
+              var p3 = '</span>';
+              var ss = '';
+              for (var i = -1; i < rjson["subs"].length; i++) {
+                if (i == -1) {
+                  ss += p1+rjson["back"]+p2+"[Back]"+p3;
+                } else {
+                  var r = rjson["subs"][i]["name"];
+                  ss += p1+parent+"','"+r+p2+r+p3;
+                }
+              }
+              var b = document.getElementById("browseList");
+              b.innerHTML = confirm+ss;
+            },
+            complete: function (rjson) {
+              // if (!("done" in rjson["responseJSON"])) {
+              //   setTimeout(checkProgress, 500);
+              // }
+            }
+        });
+      }
+
       function beginScan() {
 
         var index    = 0;
-        var ubutton  = document.getElementById("upload-button");
+        var ubutton  = document.getElementById("scan-button");
         var token    = "";
 
         ubutton.disabled = true;

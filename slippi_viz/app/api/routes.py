@@ -66,6 +66,46 @@ def api_scan_dir():
   executor.submit(scan_job,token)
   return jsonify({"status" : "Scan Started", "token" : token})
 
+@bp.route('/scan/add', methods=['POST'])
+def api_scan_add():
+  d       = request.get_json()["dir"]
+  base    = ntpath.basename(d)
+  newlink = os.path.join(current_app.config['SCAN_FOLDER'],base)
+  if not os.path.exists(newlink):
+    os.symlink(d,newlink)
+  return jsonify({"status" : "ok"})
+
+@bp.route('/scan/del', methods=['POST'])
+def api_scan_del():
+  d       = request.get_json()["dir"]
+  base    = ntpath.basename(d)
+  oldlink = os.path.join(current_app.config['SCAN_FOLDER'],base)
+  #Make sure it's a symlink so we don't accidentally delete files
+  if os.path.exists(oldlink) and os.path.islink(oldlink):
+    os.remove(oldlink)
+  return jsonify({"status" : "ok"})
+
+@bp.route('/scan/browse', methods=['POST'])
+def api_scan_browse():
+  d       = request.get_json()["dir"]
+  s       = request.get_json()["subdir"]
+  p       = d if s == "" else os.path.join(d,s)
+  listing = []
+  for f in os.listdir(p):
+    path = os.path.join(p,f)
+    if os.path.isdir(path) and os.access(path, os.R_OK):
+      listing.append({
+        "name" : f,
+        })
+  listing = sorted(listing, key = lambda i: i['name'])
+  j = {
+    "status" : "ok",
+    "back"   : os.path.dirname(p),
+    "parent" : p,
+    "subs"   : listing,
+    }
+  return jsonify(j)
+
 @bp.route('/scan/progress', methods=['POST'])
 def api_scan_progress():
   token                       = request.get_json()["token"]

@@ -29,6 +29,7 @@ class Config(object):
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
     SCAN_FOLDER                    = os.path.join(DATA_FOLDER,"local")
+    LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
     TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")
     SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
 

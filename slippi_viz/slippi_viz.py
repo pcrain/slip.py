@@ -13,6 +13,7 @@ def init_slippi_viz():
   os.makedirs(app.config["UPLOAD_FOLDER"],exist_ok=True)
   os.makedirs(app.config["REPLAY_FOLDER"],exist_ok=True)
   os.makedirs(app.config["SCAN_FOLDER"],exist_ok=True)
+  os.makedirs(app.config["LOG_FOLDER"],exist_ok=True)
   os.makedirs(app.config["TMP_FOLDER"],exist_ok=True)
 
   if os.name == 'nt':
@@ -24,7 +25,6 @@ def init_slippi_viz():
     default_slippi_link = os.path.join(app.config["SCAN_FOLDER"],"Slippi")
     if not os.path.exists(default_slippi_link):
       os.symlink(default_slippi_path,default_slippi_link)
-      pass
 
 @app.shell_context_processor
 def make_shell_context():

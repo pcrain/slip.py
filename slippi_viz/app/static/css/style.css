@@ -1033,3 +1033,43 @@ span.dirSummary span.dsReplays {
   grid-area: r;
   opacity: 0.5;
 }
+
+span#scanGrid {
+  grid-area: innergrid;
+  display: inline-grid;
+  grid-template-areas:
+    "add      begin"
+    "scandirs scandirs"
+    "adddirs  adddirs"
+    ;
+  align-items           : center;
+  justify-items         : center;
+  column-gap: 24px;
+}
+
+span#scanGrid button#add-button {
+  grid-area: add;
+}
+
+span#scanGrid button#scan-button {
+  grid-area: begin;
+}
+
+span#scanGrid span#cur-scans{
+  grid-area: scandirs;
+}
+
+span#browseList {
+  grid-area: adddirs;
+}
+
+span.scanAddEntry, span.scanConfirmEntry {
+  display    : inline-block;
+  background : rgba(0,255,0,0.5);
+  margin     : 4px;
+  cursor     : pointer;
+}
+
+span.scanConfirmEntry {
+  background : rgba(0,0,255,0.5);
+}
