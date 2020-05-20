@@ -71,6 +71,6 @@ def scan_page():
     if os.path.isdir(os.path.join(lbase, f)):
         ldirs.append({
             "name"  : f,
-            "stats" : check_single_folder_for_slippi_files(lbase,f,click="void")
+            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir")
             })
   return render_template("scan.html.j2", scandirs=ldirs)

@@ -2,24 +2,26 @@
 
 {% block content %}
     <span id="uploadOuterGrid">
-      <span class="title">Currently Scanned Folders</span>
-      {# <span class="subtitle">(Max {{SIMULTANEOUS_UPLOADS}} at time)</span> #}
+      <span class="title">Scan Folders for .slp files</span>
+      <span class="subtitle">Currently Scanned Folders: {{scandirs|length}}</span>
       <span id="scanGrid">
-        <div id="add-button" class="upload-btn-wrapper">
-          <button onclick='browseDir()' class="fake-submit">Add Directory</button>
-          {# <input  id=replay-file-scan-add/> #}
-        </div>
-        {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
-        <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>Begin Scan</button>
-        {# <span id="cur-scans"> #}
+        <span id="scan-buttons">
+          <button onclick='browseDir()' class="fake-submit">
+            Add Folder
+          </button>
+          {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
+          <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>
+            Begin Scan
+          </button>
+        </span>
+        <span id="cur-scans">
           {% for s in scandirs %}
-            <button type="button" onclick="delScanDir('{{ s.name }}')" id="u-button-0" class="transient u-button">Remove Directory</button>
             {% set dsummary = s.stats %}
             {% include '_folder.html.j2' %}
           {% endfor %}
-        {# </span> #}
-        <span id="browseList">
         </span>
+      </span>
+      <span id="browseList">
       </span>
     </span>
 
@@ -73,7 +75,7 @@
             processData : false,
             success: function (rjson) {
               var b       = document.getElementById("browseList");
-              var first   = '<hr/><span class="title">Choose a Folder to Add</span><div></div>';
+              var first   = '<hr/><span class="subtitle">Choose a Folder to Add</span><div></div>';
               b.innerHTML = first+rjson["render"];
             }
         });
@@ -125,16 +127,10 @@
             ubutton.innerText  = rjson["status"];
             token              = rjson["token"];
             setTimeout(checkProgress, 500);
-            // ubutton.className += " hasinfo";
-            // if ("analysis-url" in rjson) {
-            //   document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
-            // }
-            window.onbeforeunload = null;
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
             ubutton.innerText = "Error";
             ubutton.title     = "Status: " + textStatus+"\nError: " + errorThrown;
-            window.onbeforeunload = null;
           }
         });
       }

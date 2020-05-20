@@ -1057,10 +1057,11 @@ span.dirSummary span.dsReplays.has0 {
 span#scanGrid {
   grid-area: innergrid;
   display: inline-grid;
-  grid-template-columns: repeat(2, auto);
+  /*grid-template-columns: repeat(1, auto);*/
   align-items           : center;
   justify-items         : center;
   column-gap: 24px;
+  margin: auto;
 }
 
 span#scanGrid span#browseList {

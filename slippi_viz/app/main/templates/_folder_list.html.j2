@@ -1,5 +1,6 @@
 {% for dsummary in dirs %}
   {% include '_folder.html.j2' %}
+  {# Add a div between our Add / Up buttons and the rest of them #}
   {% if dsummary.sort == 2 %}
     <div></div>
   {% endif %}
