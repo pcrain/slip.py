@@ -1,4 +1,7 @@
 <script type="text/javascript">
+  var nCostumes = {
+
+  }
   function checkSubmit(e) {
      if(e && e.keyCode == 13) {
         document.forms[0].submit();
@@ -7,6 +10,7 @@
   function setPlayer(me,pnum) {
     var cid    = $(me).data('cid');
     var cname  = $(me).data('cname');
+    var colors = $(me).data('ccols');
     var costid = $("#b-p"+pnum+"cost").data('id');
     if (costid == "-1") {
       costid = 0;
@@ -22,10 +26,20 @@
 
     $("#b-p"+pnum+"cost").removeAttr('disabled');
 
-    for(i = 0; i < 6; i+=1) {
-      costurl = "{{ url_for('static',filename='icons/stock') }}/"+cname+i+".png";
+    for(i = -1; i < 6; i+=1) {
+      if (i == -1) {
+        costurl = "{{ url_for('static',filename='icons/stock') }}/_NONE0.png";
+        $("#cost"+pnum+"-"+i).attr("src",costurl);
+      } else {
+        if (i < colors) {
+          costurl = "{{ url_for('static',filename='icons/stock') }}/"+cname+i+".png";
+          $("#cost"+pnum+"-"+i).attr("src",costurl);
+          $("#cost"+pnum+"-"+i).show();
+        } else {
+          $("#cost"+pnum+"-"+i).hide();
+        }
+      }
       // alert(costurl);
-     $("#cost"+pnum+"-"+i).attr("src",costurl);
     }
   }
   function setCostume(me,pnum) {
@@ -83,7 +97,7 @@
       <span id="dd-p1" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-p1" data-id="-1" data-name="" type='button' class="has-dropdown">P1</button>
         <span class="dropdown css-dropdown">{% for c in chardata %}
-          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
+          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" data-ccols="{{ c.colors }}" onclick="setPlayer(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
         {% endfor %}</span>
       </span>
       {{ form.p1char() }}
@@ -99,7 +113,7 @@
       <span id="dd-p2" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-p2" data-id="-1" data-name="" type='button' class="has-dropdown">P2</button>
         <span class="dropdown css-dropdown">{% for c in chardata %}
-          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" onclick="setPlayer(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
+          <img title="{{ c.name }}" data-cid="{{ c.id }}" data-cname="{{ c.intname }}" data-ccols="{{ c.colors }}" onclick="setPlayer(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.intname }}0.png"/>
         {% endfor %}</span>
       </span>
       {{ form.p2char() }}
@@ -113,9 +127,9 @@
       {{ form.sort() }}
 
       <span id="dd-p1cost" class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p1cost" data-id="-1" type='button' class="has-dropdown" disabled>P1 C</button>
-        <span class="dropdown sort-dropdown">{% for c in costdata %}
-          <img id="cost1-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,1)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.name }}0.png"/>
+        <button id="b-p1cost" data-id="-1" type='button' class="has-dropdown" disabled>Color</button>
+        <span class="dropdown color-dropdown">{% for c in costdata %}
+          <img id="cost1-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,1)" src="{{ url_for('static',filename='icons/stock') }}/_NONE0.png"/>
           {# <span data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,1)"> #}
             {# {{ c.name }} #}
           {# </span> #}
@@ -124,16 +138,16 @@
       {{ form.p1cost() }}
 
       <span id="dd-p2cost" class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p2cost" data-id="-1" type='button' class="has-dropdown" disabled>P2 C</button>
-        <span class="dropdown sort-dropdown">{% for c in costdata %}
-          <img id="cost2-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,2)" src="{{ url_for('static',filename='icons/stock') }}/{{ c.name }}0.png"/>
+        <button id="b-p2cost" data-id="-1" type='button' class="has-dropdown" disabled>Color</button>
+        <span class="dropdown color-dropdown">{% for c in costdata %}
+          <img id="cost2-{{ c.id }}" title="{{ c.name }}" data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,2)" src="{{ url_for('static',filename='icons/stock') }}/_NONE0.png"/>
           {# <span data-costid="{{ c.id }}" data-costname="{{ c.name }}" onclick="setCostume(this,2)">{{ c.name }}</span> #}
         {% endfor %}</span>
       </span>
       {{ form.p2cost() }}
 
       <span id="dd-p1stock" class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p1stock" data-id="0" type='button' class="has-dropdown">P1 S</button>
+        <button id="b-p1stock" data-id="0" type='button' class="has-dropdown">Stocks</button>
         <span class="dropdown sort-dropdown">{% for s in stockdata %}
           <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,1)">{{ s.name }}</span>
         {% endfor %}</span>
@@ -141,7 +155,7 @@
       {{ form.p1stock() }}
 
       <span id="dd-p2stock" class="dropdown-wrapper hideUntilParentClicked">
-        <button id="b-p2stock" data-id="0" type='button' class="has-dropdown">P2 S</button>
+        <button id="b-p2stock" data-id="0" type='button' class="has-dropdown">Stocks</button>
         <span class="dropdown sort-dropdown">{% for s in stockdata %}
           <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,2)">{{ s.name }}</span>
         {% endfor %}</span>

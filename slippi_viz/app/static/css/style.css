@@ -856,7 +856,7 @@ form#searchForm button, form#searchForm input {
   pointer-events: initial;
 }
 
-.css-dropdown {
+.css-dropdown{
   /*Center under parent*/
   left                  : calc(50% - var(--css-dropdown-width)/2);
   width                 : var(--css-dropdown-width);
@@ -867,6 +867,19 @@ form#searchForm button, form#searchForm input {
 
 .css-dropdown img {
   cursor: pointer;
+}
+
+.color-dropdown {
+  left    : calc(50% - var(--css-dropdown-width)/2);
+  width   : var(--css-dropdown-width);
+  display : inline;
+  height  : 33px;
+  /*grid-template-columns : repeat(7, auto);*/
+}
+
+.color-dropdown img {
+  cursor: pointer;
+  padding: 4px;
 }
 
 .stage-dropdown {
