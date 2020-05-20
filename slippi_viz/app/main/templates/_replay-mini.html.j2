@@ -1,5 +1,5 @@
 <span class="replaySummary"><a class="nostyle" href="/replays/{{ rsummary.checksum }}">
-  <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ intstagedata[rsummary.stage]['intname'] }}.png)" title="{{ intstagedata[rsummary.stage]['intname'] }}">
+  <span class="replayStageGrid" style="background-image: url({{ url_for('static',filename='icons/stage') }}/{{ intstagedata[rsummary.stage]['intname'] }}.png)" title="{{ intstagedata[rsummary.stage]['name'] }}">
 
 {#     {% if (replay.players[0].end_stocks > replay.players[1].end_stocks) %}
       {% if (0 == replay.players[1].end_stocks) %}
