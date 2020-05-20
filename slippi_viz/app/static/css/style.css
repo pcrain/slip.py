@@ -1025,51 +1025,52 @@ span.dirSummary span.dsTitle {
 }
 
 span.dirSummary span.dsSubs {
+  color: rgba(192,192,255,1);
   grid-area: s;
-  opacity: 0.5;
+}
+
+span.dirSummary span.dsSubs.has0 {
+  color: rgba(255,255,255,0.5);
 }
 
 span.dirSummary span.dsReplays {
+  color: rgba(192,255,192,1);
   grid-area: r;
-  opacity: 0.5;
+}
+
+span.dirSummary span.dsReplays.has0 {
+  color: rgba(255,255,255,0.5);
 }
 
 span#scanGrid {
   grid-area: innergrid;
   display: inline-grid;
-  grid-template-areas:
-    "add      begin"
-    "scandirs scandirs"
-    "adddirs  adddirs"
-    ;
+  grid-template-columns: repeat(2, auto);
   align-items           : center;
   justify-items         : center;
   column-gap: 24px;
 }
 
-span#scanGrid button#add-button {
-  grid-area: add;
+span#scanGrid span#browseList {
+  grid-column: span 2;
 }
 
-span#scanGrid button#scan-button {
-  grid-area: begin;
-}
-
-span#scanGrid span#cur-scans{
-  grid-area: scandirs;
-}
-
-span#browseList {
-  grid-area: adddirs;
-}
-
-span.scanAddEntry, span.scanConfirmEntry {
+span.scanAddEntry, span.scanConfirmEntry, span.scanBackEntry {
   display    : inline-block;
+  border     : 2px solid rgba(0,0,0,0.5);
+  border-radius : 8px;
   background : rgba(0,255,0,0.5);
   margin     : 4px;
+  padding    : 4px;
   cursor     : pointer;
 }
 
 span.scanConfirmEntry {
+  /*display: block;*/
   background : rgba(0,0,255,0.5);
+}
+
+span.scanBackEntry {
+  /*display: block;*/
+  background : rgba(255,0,0,0.5);
 }
