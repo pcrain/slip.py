@@ -833,16 +833,16 @@ form#searchForm button, form#searchForm input {
   position: relative; /* Give the dropdown somewhere to be positioned relative to */
 }
 .dropdown {
-  opacity        : 0;                 /* Hide ourselves */
-  pointer-events : none;              /* Make sure we can't interact with the dropdown while it's not visible */
-  position       : absolute;          /* Position it relative to the dropdown-wrapper */
-  z-index        : 5;                 /* Make sure we're above most other things */
-  top            : 100%;              /* By default, start it right under our parent */
-  transition     : opacity 0.3s ease; /* Add a nice transition :) */
-  background-color      : black;
-  display               : inline-grid;
-  align-items           : center;
-  justify-items         : center;
+  opacity          : 0;                 /* Hide ourselves */
+  pointer-events   : none;              /* Make sure we can't interact with the dropdown while it's not visible */
+  position         : absolute;          /* Position it relative to the dropdown-wrapper */
+  z-index          : 5;                 /* Make sure we're above most other things */
+  top              : 100%;              /* By default, start it right under our parent */
+  transition       : opacity 0.3s ease; /* Add a nice transition :) */
+  background-color : black;
+  display          : inline-grid;
+  align-items      : center;
+  justify-items    : center;
 }
 .has-dropdown:focus+.dropdown {
   opacity: 1;              /* Restore visibility */

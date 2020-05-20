@@ -68,7 +68,7 @@ def config_generators(app):
       { "id" : 13, "name" : "Great Bay",          "intname": "GREATBAY"  },
       { "id" : 14, "name" : "Hyrule Temple",      "intname": "SHRINE"    },
       { "id" : 15, "name" : "Brinstar Depths",    "intname": "KRAID"     },
-      { "id" : 16, "name" : "SMW",                "intname": "YOSTER"    },
+      { "id" : 16, "name" : "Yoshi's Island",     "intname": "YOSTER"    },
       { "id" : 17, "name" : "Green Greens",       "intname": "GREENS"    },
       { "id" : 18, "name" : "Fourside",           "intname": "FOURSIDE"  },
       { "id" : 19, "name" : "Mushroom Kingdom",   "intname": "INISHIE1"  },
