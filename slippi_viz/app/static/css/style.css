@@ -4,29 +4,30 @@
 }
 
 :root {
-  --form-fg              : rgba(255,255,255,1);
-  --form-bg              : rgba(24,20,24,1.00);
-  --form-fg-disabled     : rgba(255,255,255,0.5);
-  --form-bg-disabled     : rgba(24,20,24,0.5);
-  --form-border          : rgba(128,128,128,1);
-  --form-border-hl       : rgba(128,128,255,1);
-  --form-border-focus    : rgba(128,220,160,1);
+  --form-fg                    : rgba(255,255,255,1);
+  --form-bg                    : rgba(24,20,24,1.00);
+  --form-fg-disabled           : rgba(255,255,255,0.5);
+  --form-bg-disabled           : rgba(24,20,24,0.5);
+  --form-border                : rgba(128,128,128,1);
+  --form-border-hl             : rgba(128,128,255,1);
+  --form-border-focus          : rgba(128,220,160,1);
 
-  --css-dropdown-width   : 300px;
-  --stage-dropdown-width : 450px;
-  --header-height        : 48px;
-  --form-button-height   : 32px;
+  --css-dropdown-width         : 300px;
+  --stage-dropdown-width       : 380px;
+  --stage-dropdown-image-width : 100px;
+  --header-height              : 48px;
+  --form-button-height         : 32px;
 
-  --combomove-border     : rgba(112,112,112,1.0);
+  --combomove-border           : rgba(112,112,112,1.0);
 
-  --color-EDGEGUARDING   : hsla(120,100%,75%,0.45);
-  --color-PRESSURING     : hsla(60,100%,75%,0.45);
-  --color-PUNISHING      : hsla(30,100%,75%,0.45);
-  --color-TECHCHASING    : hsla(300,100%,75%,0.45);
-  --color-SHARKING       : hsla(240,100%,75%,0.45);
-  --color-DEATH          : hsla(0,0%,100%,0.45);
-  --color-POKING         : hsla(0,0%,50%,0.45);
-  --color-DEFENSE        : hsla(0,100%,75%,0.45);
+  --color-EDGEGUARDING         : hsla(120,100%,75%,0.45);
+  --color-PRESSURING           : hsla(60,100%,75%,0.45);
+  --color-PUNISHING            : hsla(30,100%,75%,0.45);
+  --color-TECHCHASING          : hsla(300,100%,75%,0.45);
+  --color-SHARKING             : hsla(240,100%,75%,0.45);
+  --color-DEATH                : hsla(0,0%,100%,0.45);
+  --color-POKING               : hsla(0,0%,50%,0.45);
+  --color-DEFENSE              : hsla(0,100%,75%,0.45);
 }
 
 /* Get rid of dotted line on focus */
@@ -884,18 +885,25 @@ form#searchForm button, form#searchForm input {
 
 .stage-dropdown {
   /*Center under parent*/
-  left                  : calc(50% - var(--stage-dropdown-width)/2);
-  width                 : var(--stage-dropdown-width);
-
-  grid-template-columns : repeat(3, 1fr);
-  height                : calc(var(--stage-dropdown-width) * 0.5);
+  left            : calc(50% - var(--stage-dropdown-width)/2);
+  width           : var(--stage-dropdown-width);
+  display         : flex;
+  flex-direction  : row;
+  flex-wrap       : wrap;
+  justify-content : center;
 }
 
 .stage-dropdown img {
-  cursor: pointer;
-  width: calc(var(--stage-dropdown-width) / 4);
-  border: 4px solid rgba(255,255,255,0.2);
-  border-radius: 4px;
+  cursor        : pointer;
+  width         : var(--stage-dropdown-image-width);
+  border        : 2px solid rgba(255,255,255,0.2);
+  border-radius : 4px;
+  margin        : 4px;
+  display       : inline;
+}
+
+.stage-dropdown img.mini {
+  width: calc(var(--stage-dropdown-image-width) / 2);
 }
 
 .sort-dropdown {

@@ -104,8 +104,8 @@
 
       <span id="dd-stage" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-stage"  data-id="-1" data-name="" type='button' class="has-dropdown">Stage</button>
-        <span class="dropdown stage-dropdown">{% for s in stagedata[:6] %}
-          <img title="{{ s.name }}" data-sid="{{ s.id }}" data-sname="{{ s.intname }}" onclick="setStage(this)" src="{{ url_for('static',filename='icons/stage') }}/{{ s.intname }}.png"/>
+        <span class="dropdown stage-dropdown">{% for s in stagedata %}
+          <img class="{{'' if s.legal else 'mini'}}" title="{{ s.name }}" data-sid="{{ s.id }}" data-sname="{{ s.intname }}" onclick="setStage(this)" src="{{ url_for('static',filename='icons/stage') }}/{{ s.intname }}.png"/>
         {% endfor %}</span>
       </span>
       {{ form.stage() }}
