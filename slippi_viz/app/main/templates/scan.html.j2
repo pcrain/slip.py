@@ -115,6 +115,7 @@
       }
 
       function beginScan() {
+        toastr.info('Beginning scan. Keep window open until scan is complete.')
         var index    = 0;
         var ubutton  = document.getElementById("scan-button");
         var token    = "";
@@ -136,6 +137,8 @@
               complete: function (rjson) {
                 if (!("done" in rjson["responseJSON"])) {
                   setTimeout(checkProgress, 500);
+                } else {
+                  toastr.success('Scan complete!')
                 }
               }
           });
