@@ -67,6 +67,16 @@
     $("#b-p"+pnum+"cost").data("id",nstocks);
     $("#s-p"+pnum+"-stock").val(nstocks);
   }
+  function setLength(me,min) {
+    d = min ? "min" : "max";
+    var length   = $(me).data('lengthid');
+    var name     = $(me).data('lengthname');
+    $("#b-length"+d).prop('title',length);
+    $("#b-length"+d).html(name);
+
+    $("#b-length"+d).data("id",length);
+    $("#s-length"+d).val(length);
+  }
   function setStage(me) {
     var sid   = $(me).data('sid');
     var sname = $(me).data('sname');
@@ -104,7 +114,7 @@
 
       <span id="dd-stage" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-stage"  data-id="-1" data-name="" type='button' class="has-dropdown">Stage</button>
-        <span class="dropdown stage-dropdown">{% for s in stagedata %}
+        <span class="dropdown stage-dropdown">{% for s in stagedata[:30] %}
           <img class="{{'' if s.legal else 'mini'}}" title="{{ s.name }}" data-sid="{{ s.id }}" data-sname="{{ s.intname }}" onclick="setStage(this)" src="{{ url_for('static',filename='icons/stage') }}/{{ s.intname }}.png"/>
         {% endfor %}</span>
       </span>
@@ -148,7 +158,7 @@
 
       <span id="dd-p1stock" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-p1stock" data-id="0" type='button' class="has-dropdown">Stocks</button>
-        <span class="dropdown sort-dropdown">{% for s in stockdata %}
+        <span class="dropdown stock-dropdown">{% for s in stockdata %}
           <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,1)">{{ s.name }}</span>
         {% endfor %}</span>
       </span>
@@ -156,13 +166,29 @@
 
       <span id="dd-p2stock" class="dropdown-wrapper hideUntilParentClicked">
         <button id="b-p2stock" data-id="0" type='button' class="has-dropdown">Stocks</button>
-        <span class="dropdown sort-dropdown">{% for s in stockdata %}
+        <span class="dropdown stock-dropdown">{% for s in stockdata %}
           <span data-stockid="{{ s.id }}" data-stockname="{{ s.name }}" onclick="setStocks(this,2)">{{ s.name }}</span>
         {% endfor %}</span>
       </span>
       {{ form.p2stock() }}
 
-      <span id="sf-submit" class="dropdown-wrapper hideUntilParentClicked">
+      <span id="dd-lengthmin" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-lengthmin" data-id="-1" type='button' class="has-dropdown">Min. Length</button>
+        <span class="dropdown time-dropdown">{% for s in lengthdata %}
+          <span data-lengthid="{{ s.id }}" data-lengthname="{{ s.name }}" onclick="setLength(this,true)">{{ s.name }}</span>
+        {% endfor %}</span>
+      </span>
+      {{ form.lengthmin() }}
+
+      <span id="dd-lengthmax" class="dropdown-wrapper hideUntilParentClicked">
+        <button id="b-lengthmax" data-id="-1" type='button' class="has-dropdown">Max. Length</button>
+        <span class="dropdown time-dropdown">{% for s in lengthdata %}
+          <span data-lengthid="{{ s.id }}" data-lengthname="{{ s.name }}" onclick="setLength(this,false)">{{ s.name }}</span>
+        {% endfor %}</span>
+      </span>
+      {{ form.lengthmax() }}
+
+      <span id="dd-submit" class="dropdown-wrapper hideUntilParentClicked">
         {{ form.submit(class="hideUntilParentClicked") }}
       </span>
   </form>

@@ -54,8 +54,6 @@ def config_generators(app):
       { "id" :  2, "name" : "Fountain of Dreams", "intname": "IZUMI",     "legal" : True,},
       { "id" :  3, "name" : "Pokemon Stadium",    "intname": "PSTADIUM",  "legal" : True,},
 
-      # { "id" :  0, "name" : "Dummy",              "intname": "DUMMY",     "legal" : False,},
-      # { "id" :  1, "name" : "Test",               "intname": "TEST",      "legal" : False,},
       { "id" : -1, "name" : "Any Stage",          "intname": "_NONE0",    "legal" : False,},
       { "id" :  4, "name" : "Peach's Castle",     "intname": "CASTLE",    "legal" : False,},
       { "id" :  5, "name" : "Kongo Jungle",       "intname": "KONGO",     "legal" : False,},
@@ -73,15 +71,18 @@ def config_generators(app):
       { "id" : 18, "name" : "Fourside",           "intname": "FOURSIDE",  "legal" : False,},
       { "id" : 19, "name" : "Mushroom Kingdom",   "intname": "INISHIE1",  "legal" : False,},
       { "id" : 20, "name" : "Mushroom Kingdom 2", "intname": "INISHIE2",  "legal" : False,},
-      # { "id" : 21, "name" : "Arcania",            "intname": "AKANEIA",   "legal" : False,},
       { "id" : 22, "name" : "Venom",              "intname": "VENOM",     "legal" : False,},
       { "id" : 23, "name" : "Poke Floats",        "intname": "PURA",      "legal" : False,},
       { "id" : 24, "name" : "Big Blue",           "intname": "BIGBLUE",   "legal" : False,},
       { "id" : 25, "name" : "Summit",             "intname": "ICEMT",     "legal" : False,},
-      # { "id" : 26, "name" : "Ice Top",            "intname": "ICETOP",    "legal" : False,},
       { "id" : 27, "name" : "Flat Zone",          "intname": "FLATZONE",  "legal" : False,},
       { "id" : 29, "name" : "Yoshi's Island 64",  "intname": "OLD_YOSH",  "legal" : False,},
       { "id" : 30, "name" : "Kongo Jungle 64",    "intname": "OLD_KONG",  "legal" : False,},
+
+      { "id" :  0, "name" : "Dummy",              "intname": "DUMMY",     "legal" : False,},
+      { "id" :  1, "name" : "Test",               "intname": "TEST",      "legal" : False,},
+      { "id" : 21, "name" : "Arcania",            "intname": "AKANEIA",   "legal" : False,},
+      { "id" : 26, "name" : "Ice Top",            "intname": "ICETOP",    "legal" : False,},
       ]
     intstagedata = { s["id"] : s for s in stagedata}
     return dict(stagedata=stagedata,intstagedata=intstagedata)
@@ -110,14 +111,38 @@ def config_generators(app):
   @app.context_processor
   def get_stockdata():
     stockdata = [
-      {"id" : -1, "name" : "Any", },
-      {"id" : 0,  "name" : "0",   },
-      {"id" : 1,  "name" : "1",   },
-      {"id" : 2,  "name" : "2",   },
-      {"id" : 3,  "name" : "3",   },
-      {"id" : 4,  "name" : "4",   },
+      {"id" : "-1",   "name" : "Any",  },
+      {"id" : "0",    "name" : "0",    },
+      {"id" : "gt0",  "name" : "> 0",   },
+      {"id" : "lt1",  "name" : "< 1",   },
+      {"id" : "1",    "name" : "1",    },
+      {"id" : "gt1",  "name" : "> 1",   },
+      {"id" : "lt2",  "name" : "< 2",   },
+      {"id" : "2",    "name" : "2",    },
+      {"id" : "gt2",  "name" : "> 2",   },
+      {"id" : "lt3",  "name" : "< 3",   },
+      {"id" : "3",    "name" : "3",    },
+      {"id" : "gt3",  "name" : "> 3",   },
+      {"id" : "lt4",  "name" : "< 4",   },
+      {"id" : "4",    "name" : "4",    },
+      {"id" : "gt4",  "name" : "> 4",   },
       ]
     return dict(stockdata=stockdata)
+
+  @app.context_processor
+  def get_lengthdata():
+    lengthdata = [
+      {"id" :    -1,    "name" : "Any Time",    },
+      {"id" :  3600,    "name" : "1 minutes",    },
+      {"id" :  7200,    "name" : "2 minutes",    },
+      {"id" : 10800,    "name" : "3 minutes",    },
+      {"id" : 14400,    "name" : "4 minutes",    },
+      {"id" : 18000,    "name" : "5 minutes",    },
+      {"id" : 21600,    "name" : "6 minutes",    },
+      {"id" : 25200,    "name" : "7 minutes",    },
+      {"id" : 28800,    "name" : "8 minutes",    },
+      ]
+    return dict(lengthdata=lengthdata)
 
   @app.context_processor
   def utility_functions():

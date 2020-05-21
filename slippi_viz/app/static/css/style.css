@@ -783,6 +783,7 @@ form#searchForm {
     "search search search search search"
     "stage  p1     p1c    p1s    sort"
     "stage  p2     p2c    p2s    submit"
+    "lenmin lenmin lenmax lenmax submit"
     ;
   /*grid-template-columns: 20% 20% 20% 20% 20%;*/
   /*grid-template-columns: repeat(5,1fr);*/
@@ -792,22 +793,24 @@ form#searchForm {
 form#searchForm.clicked {
   grid-column-gap: 8px;
   grid-row-gap: 8px;
-  grid-template-rows:    repeat(3,var(--form-button-height));
+  grid-template-rows:    repeat(4,var(--form-button-height));
   /*align-items: center;*/
   width: 512px;
   /*height: 400px;*/
 }
 
-form#searchForm #s-query    { grid-area: search; }
-form#searchForm #s-submit   { grid-area: submit; }
-form#searchForm #dd-p1      { grid-area: p1; }
-form#searchForm #dd-p2      { grid-area: p2; }
-form#searchForm #dd-p1cost  { grid-area: p1c; }
-form#searchForm #dd-p2cost  { grid-area: p2c; }
-form#searchForm #dd-p1stock { grid-area: p1s; }
-form#searchForm #dd-p2stock { grid-area: p2s; }
-form#searchForm #dd-stage   { grid-area: stage; /*height: 64px;*/ }
-form#searchForm #dd-sort    { grid-area: sort; }
+form#searchForm #s-query      { grid-area: search; }
+form#searchForm #dd-submit    { grid-area: submit; }
+form#searchForm #dd-p1        { grid-area: p1; }
+form#searchForm #dd-p2        { grid-area: p2; }
+form#searchForm #dd-p1cost    { grid-area: p1c; }
+form#searchForm #dd-p2cost    { grid-area: p2c; }
+form#searchForm #dd-p1stock   { grid-area: p1s; }
+form#searchForm #dd-p2stock   { grid-area: p2s; }
+form#searchForm #dd-stage     { grid-area: stage; /*height: 64px;*/ }
+form#searchForm #dd-sort      { grid-area: sort; }
+form#searchForm #dd-lengthmin { grid-area: lenmin; }
+form#searchForm #dd-lengthmax { grid-area: lenmax; }
 
 form#searchForm > span {
   height: 100%;
@@ -883,6 +886,27 @@ form#searchForm button, form#searchForm input {
   padding: 4px;
 }
 
+.stock-dropdown {
+  /*Center under parent*/
+  left                  : calc(50% - var(--css-dropdown-width)/2);
+  width                 : var(--css-dropdown-width);
+
+  /*height                : 100px;*/
+  grid-template-columns : repeat(3, 1fr);
+  padding               : 4px;
+}
+
+.stock-dropdown span {
+  cursor  : pointer;
+  padding : 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.stock-dropdown span:hover {
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
 .stage-dropdown {
   /*Center under parent*/
   left            : calc(50% - var(--stage-dropdown-width)/2);
@@ -923,6 +947,26 @@ form#searchForm button, form#searchForm input {
 }
 
 .sort-dropdown span:last-child {
+  border-bottom: none;
+}
+
+.time-dropdown {
+  /*Center under parent*/
+  left                  : calc(50% - var(--css-dropdown-width)/2);
+  width                 : var(--css-dropdown-width);
+
+  grid-template-columns : repeat(1, 1fr);
+}
+
+.time-dropdown span {
+  width         : 100%;
+  padding       : 10px 0;
+  font-weight   : bold;
+  cursor        : pointer;
+  border-bottom : 1px solid rgba(255,255,255,0.5)
+}
+
+.time-dropdown span:last-child {
   border-bottom: none;
 }
 

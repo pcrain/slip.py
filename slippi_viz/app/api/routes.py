@@ -184,6 +184,7 @@ def analyze_replay(local_file,jret,nokeep=False):
         filedir   = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],""),
         user_id   = -1,
         is_public = True,
+        frames    = rdata["game_length"],
         uploaded  = jret["time"],
         played    = try_parse_time(rdata["game_time"][:19]),
         p1char    = rdata["players"][0]["char_id"],
