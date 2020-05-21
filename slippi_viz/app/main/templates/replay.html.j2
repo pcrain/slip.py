@@ -160,15 +160,18 @@
       </div> {# replayDataGrid #}
 
       {# Move / Punish List #}
+      {# TODO: document how this works, this is really hard to read #}
       {% for p in r.p %}
           {% set outer_loop = loop %}
           <div id="replayPlayer{{loop.index}}Grid">
               <div class="heading" style="grid-area: moves{{loop.index}}">Moves Shown</div>
               <div class="comboGrid">
                   {% if outer_loop.index == 1 and p["punishes"]|length > 0 %}
-                      {% set dam = p["punishes"][0]["end_pct"]-p["punishes"][0]["start_pct"] %}
+                      {% set dam  = p["punishes"][0]["end_pct"]-p["punishes"][0]["start_pct"] %}
+                      {% set time = p["punishes"][0]["start_frame"] %}
                       <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
                           {{"%.0f"|format(dam)}}%
+                          <span class="timer">{{frame_to_timestamp(time)}}</span>
                       </span>
                   {% endif %}
                   <span class="comboWrapper">
@@ -180,14 +183,17 @@
                                     p["punishes"][a["punish_id"]]["end_pct"]-
                                     p["punishes"][a["punish_id"]]["start_pct"]
                                 %}
+                                {% set time = p["punishes"][a["punish_id"]]["start_frame"] %}
                             {% else %}
                                 {% set dam =
                                     p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["end_pct"]-
                                     p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["start_pct"]
                                 %}
+                                {% set time = p["punishes"][p["attacks"][loop.index0-1]["punish_id"]]["start_frame"] %}
                             {% endif %}
                             <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
                                 {{"%.0f"|format(dam)}}%
+                                <span class="timer">{{frame_to_timestamp(time)}}</span>
                             </span>
                             <span class="comboWrapper">
                         {% endif %}
@@ -206,9 +212,11 @@
                     {% endfor %}
                   </span> {# comboWrapper #}
                   {% if outer_loop.index == 2 and p["punishes"]|length > 0 %}
-                      {% set dam = p["punishes"][-1]["end_pct"]-p["punishes"][-1]["start_pct"] %}
+                      {% set dam  = p["punishes"][-1]["end_pct"]-p["punishes"][-1]["start_pct"] %}
+                      {% set time = p["punishes"][-1]["start_frame"] %}
                       <span class="comboResult {{'hugecombo' if dam > 65 else 'bigcombo' if dam > 40 else ''}}">
                           {{"%.0f"|format(dam)}}%
+                          <span class="timer">{{frame_to_timestamp(time)}}</span>
                       </span>
                   {% endif %}
               </div> {# comboGrid #}

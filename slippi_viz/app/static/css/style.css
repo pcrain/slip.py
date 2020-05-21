@@ -426,12 +426,12 @@ div.p1item, div.p2item {
 
 div#replayPlayer1Grid div.comboGrid {
   grid-area: movelist1;
-  grid-template-columns: 44px 1fr;
+  grid-template-columns: 48px 1fr;
 }
 
 div#replayPlayer2Grid div.comboGrid {
   grid-area: movelist2;
-  grid-template-columns: 1fr 44px;
+  grid-template-columns: 1fr 48px;
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
@@ -495,8 +495,13 @@ span.comboResult {
    border: 1px solid black;
    border-radius: 6px;
    background-color: rgba(255,255,255,0.2);
-   padding: 2px;
+   padding: 1px 2px;
+   margin: 1px;
    width: 100%;
+}
+
+span.comboResult span.timer {
+  font-size: 12px;
 }
 
 span.combomoveWrapper {
