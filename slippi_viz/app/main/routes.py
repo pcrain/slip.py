@@ -57,6 +57,8 @@ def replay_viz(r):
     rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
     replay = load_replay(rpath)
     replay["__original_filename"] = rdata.filename
+    replay["__filedir"]           = rdata.filedir
+    replay["__checksum"]          = r
     return render_template("replay.html.j2", rsummary=rdata, replay=replay)
 
 @bp.route('/upload', methods=['GET'])
@@ -68,9 +70,23 @@ def scan_page():
   lbase = current_app.config['SCAN_FOLDER']
   ldirs = []
   for f in os.listdir(lbase):
-    if os.path.isdir(os.path.join(lbase, f)):
+    full = os.path.join(lbase, f)
+    if os.path.isdir(full):
         ldirs.append({
             "name"  : f,
             "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir")
             })
+    elif os.path.islink(full) and not os.path.exists(os.readlink(full)): #Broken symlink
+      ldirs.append({
+        "name"  : f,
+        "stats" : {
+            "name"  : f,
+            "path"  : os.path.join(lbase,f),
+            "dirs"  : 0,
+            "files" : 0,
+            "class" : "broken",
+            "click" : "delScanDir",
+            "sort"  : 4,
+          },
+        })
   return render_template("scan.html.j2", scandirs=ldirs)

@@ -391,11 +391,18 @@ div#replayDataOuterGrid {
   grid-template-columns: 1fr auto 1fr;
   display: inline-grid;
   grid-template-areas:
-    ".         mini      ."
-    "breakdown breakdown breakdown"
+    "buttons   mini       ."
+    "breakdown breakdown  breakdown"
     "p1grid    innergrid  p2grid"
     ;
   margin: 0 8px;
+}
+
+div #replayDataOuterGrid div#buttonGrid {
+  grid-area   : buttons;
+  display     : inline-grid;
+  align-items : center;
+  margin      : auto;
 }
 
 div#replayDataOuterGrid div.heading {
@@ -1083,8 +1090,13 @@ span.dirSummary.updir {
   background-color    : rgba(128,0,0,0.5);
 }
 
+
 span.dirSummary.curdir {
   background-color    : rgba(0,0,128,0.5);
+}
+
+span.dirSummary.broken {
+  background-color    : rgba(255,128,128,0.5);
 }
 
 span.dirSummary.scanned {

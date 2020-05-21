@@ -9,8 +9,33 @@
           <span title="{{ k }}" style="width:{{100*v / r.__act_length}}%" class="interaction int_{{ k }}"></span>
         {% endfor %}
       </span> #}
+
+      <script type="text/javascript">
+        function openContainingDir(d,f) {
+          $.ajax({
+              type        : "post",
+              url         : "/api/open",
+              data        : JSON.stringify({"dir" : d, "name" : f}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                return;
+                // window.location.href = window.location.href;
+              }
+          });
+        }
+      </script>
+
+      <div id="buttonGrid">
+        <button type="button" onclick='openContainingDir("{{r.__filedir}}","{{r.__original_filename}}")'>Open Containing Folder</button>
+        <button type="button" onclick='window.location.href = "/api/raw/{{r.__checksum}}"'>View Raw Analysis</button>
+      </div>
+
       <div id="replayDataGrid">
           <div class="heading">Overview</div>
+            <div class="stat">Game Length</div>
             <div class="stat">End Stocks</div>
             <div class="stat">End %</div>
             <div class="stat">Time Airborne</div>
@@ -91,6 +116,9 @@
             {%- endmacro %}
 
             {# Overview #}
+            <div class="{{pi}}">{{frame_to_timestamp(r.game_length)}}</div>
+
+
             {{ _stathi("end_stocks" )}}
             {{ _stat("end_pct","%.0f","%")}}
             <div class="{{pi}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>

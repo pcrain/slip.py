@@ -10,7 +10,7 @@ from app.main.helpers import *
 
 # from __main__ import app
 from datetime import datetime
-import json, glob, ntpath, time, os
+import json, glob, ntpath, time, os, subprocess
 
 REPLAY_UPLOAD_LIMIT = "600 per hour"
 NODUPES             = True  #Set to True to not allow duplicate reuploads
@@ -53,6 +53,27 @@ def api_upload_replay():
     file.save(opath)
     return analyze_replay(opath,jret,nokeep=NOKEEP)
 
+@bp.route('/open', methods=['POST'])
+def api_open_containing_dir():
+  d    = request.get_json()["dir"][1:] #Eliminate leading slash from database
+  f    = request.get_json()["name"]
+  full = os.path.join(current_app.config['DATA_FOLDER'],d,f)
+  real = os.path.realpath(full)
+
+  if os.name == 'nt':
+    explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
+    subprocess.run([explorer, '/select,', real])
+  else:
+    #Query default file explorer
+    exp_query   = ["xdg-mime","query","default","inode/directory"]
+    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate("")
+    explorer    = output.decode('utf-8').replace(".desktop\n","")
+
+    #Can't highlight file in every Linux explorer, so settle for opening the directory
+    subprocess.run([explorer, ntpath.dirname(real)])
+  return jsonify({"status" : "ok"})
+
 @bp.route('/scan', methods=['POST'])
 def api_scan_dir():
   global _scan_jobs
@@ -81,7 +102,7 @@ def api_scan_del():
   base    = ntpath.basename(d)
   oldlink = os.path.join(current_app.config['SCAN_FOLDER'],base)
   #Make sure it's a symlink so we don't accidentally delete files
-  if os.path.exists(oldlink) and os.path.islink(oldlink):
+  if os.path.islink(oldlink):
     os.remove(oldlink)
   return jsonify({"status" : "ok"})
 
