@@ -178,7 +178,8 @@ def check_for_slippi_files(path,nav=False):
 #Scan one folder for Slippi files
 def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb=False):
   p = os.path.join(parent,base)
-  if not os.path.exists(p) and (indb or (not os.path.islink(p))):
+  #Show deleted folders if they are in the database
+  if not os.path.exists(p) and indb:
     return {
       "name"  : base,
       "path"  : p,
