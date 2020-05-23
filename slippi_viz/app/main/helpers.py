@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from flask import current_app
 from datetime import datetime
-import os, json, sys, subprocess, shlex, hashlib, stat, ntpath
+import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip
 if os.name == 'nt':
     import win32api, win32con
 
@@ -203,3 +203,12 @@ def count_slippi_files(path):
         nfiles += 1
   return {"dirs" : ndirs, "files" : nfiles}
 
+#Compress writing example
+def compressedJsonWrite(data,filename):
+  with gzip.GzipFile(filename, 'w') as fout:
+    fout.write(json.dumps(data).encode('utf-8'))
+
+#Compress reading example
+def compressedJsonRead(filename):
+  with gzip.GzipFile(filename, 'r') as fin:
+    return json.loads(fin.read().decode('utf-8'))

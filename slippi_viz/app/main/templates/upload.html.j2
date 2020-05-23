@@ -80,8 +80,8 @@
                 ubutton.innerText  = rjson["status"];
                 ubutton.title      = JSON.stringify(rjson);
                 ubutton.className += " hasinfo";
-                if ("analysis-url" in rjson) {
-                  document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["analysis-url"]+"'>"+rjson["filename"]+"</a>";
+                if ("url" in rjson) {
+                  document.getElementById("u-filename-"+index).innerHTML = "<a title='View Analysis of "+rjson["filename"]+"' target='_blank' class='nostyle replay-link' href='"+rjson["url"]+"'>"+rjson["filename"]+"</a>";
                 }
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {

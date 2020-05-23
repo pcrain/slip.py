@@ -29,7 +29,7 @@ def api_upload_replay():
       "time"            : datetime.utcnow(),
       "status"          : "Success",
       "error"           : "",
-      "analysis-url"    : "",
+      "url"             : "",
       "filename"        : "",
       "filename_secure" : "",
       }
@@ -151,23 +151,25 @@ def api_scan_progress():
   del _scan_jobs[token]
   logline(tmpfile,f"Scan job deleted")
   now = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
-  scanfile = os.path.join(current_app.config['LOG_FOLDER'],f"scan-{now}.json")
-  with open(scanfile,'w') as fout:
-    json.dump(details, fout, indent=2, sort_keys=False)
+  scanfile = os.path.join(current_app.config['LOG_FOLDER'],f"scan-{now}.json.gz")
+  compressedJsonWrite(details,scanfile)
   return jsonify({"status" : "Done!", "done" : True, "details": f"scan-{now}.json"})
 
 @bp.route('/scanlog/<s>', methods=['GET'])
 def api_get_scan_log(s):
-    return send_from_directory(current_app.config['LOG_FOLDER'],s)
+  base = os.path.join(current_app.config['LOG_FOLDER'],s)
+  with open(base,'w') as fout:
+    json.dump(compressedJsonRead(base+".gz"), fout, indent=1, sort_keys=False)
+  return send_from_directory(current_app.config['LOG_FOLDER'],s)
 
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
-    return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
-    # rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
-    # replay = load_replay(rpath)
-    # rdata  = Replay.query.filter_by(checksum=r).first()
-    # replay["__original_filename"] = rdata.filename
-    # return jsonify(replay)
+  return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
+  # rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
+  # replay = load_replay(rpath)
+  # rdata  = Replay.query.filter_by(checksum=r).first()
+  # replay["__original_filename"] = rdata.filename
+  # return jsonify(replay)
 
 def analyze_replay(local_file,jret,nokeep=False):
     global _scan_jobs
@@ -184,7 +186,7 @@ def analyze_replay(local_file,jret,nokeep=False):
         db.session.commit()
 
       jret["status"]       = 'Duplicate'
-      jret["analysis-url"] = '/replays/'+m
+      jret["url"]          = '/replays/'+m
       jret["error"]        = 'Replay already in database'
       return jret
 
@@ -192,7 +194,7 @@ def analyze_replay(local_file,jret,nokeep=False):
     afile            = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
     if NODUPES and os.path.exists(afile):
       jret["status"]       = 'Duplicate'
-      jret["analysis-url"] = '/replays/'+m
+      jret["url"]          = '/replays/'+m
       jret["error"]        = 'Replay already in database'
       if nokeep:
         os.remove(local_file)
@@ -233,7 +235,7 @@ def analyze_replay(local_file,jret,nokeep=False):
         stage     = rdata["stage_id"],
         )
     _scan_jobs[jret["token"]]["adds"].append(replay)
-    jret["analysis-url"] = '/replays/'+m
+    jret["url"] = '/replays/'+m
     return jret
 
 def scan_job(token):
@@ -261,15 +263,18 @@ def scan_job(token):
     jret = {
       "token"           : token,
       "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
-      "status"          : "Success",
-      "error"           : "",
-      "analysis-url"    : "",
       "filedir"         : ntpath.dirname(r),
       "filename"        : ntpath.basename(r),
       "filename_secure" : ntpath.basename(r),
+      "url"             : "",
+      "status"          : "Success",
+      "error"           : "",
       }
     rstat = analyze_replay(r,jret,nokeep=False)
     rdata.append(rstat)
+    del jret["time"]
+    del jret["token"]
+    del jret["filename_secure"]
     _scan_jobs[token]["details"].append(jret)
   logline(tmpfile,"Committing {} new entries".format(len(_scan_jobs[token]["adds"])))
   db.session.add_all(_scan_jobs[token]["adds"])
