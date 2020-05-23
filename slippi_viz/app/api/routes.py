@@ -236,7 +236,8 @@ def scan_job(token):
 
   lbase   = current_app.config['SCAN_FOLDER']
   replays = []
-  get_all_slippi_files(lbase,replays)
+  checked = set()
+  get_all_slippi_files(lbase,replays,checked)
   rdata   = []
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")

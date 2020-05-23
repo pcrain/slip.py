@@ -118,7 +118,7 @@ def try_parse_time(t):
     return datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
 
 #Recursively list slippi files in directory
-def get_all_slippi_files(topdir,files,checked=set()):
+def get_all_slippi_files(topdir,files,checked):
   rpath=os.path.realpath(topdir)
   if rpath in checked:
     return
