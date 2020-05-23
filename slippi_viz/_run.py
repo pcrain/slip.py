@@ -11,8 +11,14 @@ os.environ["FLASK_DEBUG"] = "1"
 
 #On Windows, make sure necessary Python paths are in PATH
 if os.name == 'nt':
+  flaskpath = os.path.join(
+    "~","AppData","Roaming","Python","Python38","Scripts")
+  sys.path.append(os.path.expanduser(flaskpath))
   sys.path.append(os.path.expanduser(os.path.join(
-    "~","AppData","Roaming","Python","Python38","Scripts")))
+    "~","AppData","Roaming","Python","Python38","site-packages")))
+  flaskexec = flaskpath+".exe"
+else:
+  flaskexec = "flask"
 
 #Get the real location of this script and change working directory appropriately
 location = (os.path.dirname(os.path.realpath(os.path.abspath(__file__))))
@@ -30,7 +36,7 @@ else:
         print('Please open a browser on: '+APP_URL)
 
 #Launch the flask app
-os.execlp("flask","flask","run")
+os.execlp(flaskexec,"flask","run")
 
 #Old Windows batch file:
 #  SET PATH=%PATH%;"%HOMEDRIVE%%HOMEPATH%\AppData\Roaming\Python\Python38\Scripts"

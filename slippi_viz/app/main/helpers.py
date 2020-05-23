@@ -1,9 +1,7 @@
 #!/usr/bin/python
 from flask import current_app
 from datetime import datetime
-import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip
-if os.name == 'nt':
-    import win32api, win32con
+import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip, ctypes
 
 # Easy colors (print)
 class col:
@@ -138,11 +136,18 @@ def logline(l,text,new=False):
 
 #Check if a file is hidden (X-platform)
 def is_hidden(filepath):
-  if os.name== 'nt':
-    attribute = win32api.GetFileAttributes(filepath)
-    return attribute & (win32con.FILE_ATTRIBUTE_HIDDEN | win32con.FILE_ATTRIBUTE_SYSTEM)
-  else:
-    return ntpath.basename(filepath).startswith('.')
+    name = os.path.basename(os.path.abspath(filepath))
+    return name.startswith('.') or has_hidden_attribute(filepath)
+
+#Check if a file is hidden (X-platform)
+def has_hidden_attribute(filepath):
+    try:
+        attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(filepath))
+        assert attrs != -1
+        result = bool(attrs & 2)
+    except (AttributeError, AssertionError):
+        result = False
+    return result
 
 #Get info about slippi files in a directory (no recursion)
 def check_for_slippi_files(path,nav=False):

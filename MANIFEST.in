@@ -1,9 +1,7 @@
 graft slippi_viz/app/*
 include slippi_viz/app/*
-include slippi_viz/slippc.exe
+include slippi_viz/_run.py
 include slippi_viz/config.py
+include slippi_viz/slippc.exe
 include slippi_viz/slippi-viz.py
-include slippi_viz/_run
-include slippi_viz/_run-win.bat
 global-exclude *.pyc
-prune slippi_viz/app/static/data*
