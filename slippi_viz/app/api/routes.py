@@ -1,10 +1,11 @@
 #!/usr/bin/python
 from flask import request, jsonify, current_app, send_from_directory, render_template
+from sqlalchemy  import or_, and_
 
 from werkzeug.utils import secure_filename
 from app import db, executor
 # from app import db, limiter, executor
-from app.models import User, Replay
+from app.models import User, Replay, ScanDir
 from app.api import bp
 from app.main.helpers import *
 
@@ -94,28 +95,39 @@ def api_scan_dir():
 
 @bp.route('/scan/add', methods=['POST'])
 def api_scan_add():
-  d       = request.get_json()["dir"]
-  base    = ntpath.basename(d)
-  newlink = os.path.join(current_app.config['SCAN_FOLDER'],base)
-  if not os.path.exists(newlink):
-    os.symlink(d,newlink)
+  d = request.get_json()["dir"]
+
+  scandir = ScanDir(
+    fullpath = d,
+    display  = ntpath.basename(d),
+    path     = ntpath.dirname(d),
+    lastscan = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
+    )
+
+  db.session.add(scandir)
+  db.session.commit()
+
   return jsonify({"status" : "ok"})
 
 @bp.route('/scan/del', methods=['POST'])
 def api_scan_del():
-  d       = request.get_json()["dir"]
-  base    = ntpath.basename(d)
-  oldlink = os.path.join(current_app.config['SCAN_FOLDER'],base)
-  #Make sure it's a symlink so we don't accidentally delete files
-  if os.path.islink(oldlink):
-    os.remove(oldlink)
+  d = request.get_json()["dir"]
+
+  sd = ScanDir.query.filter(
+    ScanDir.fullpath == d,
+    ).first()
+  db.session.delete(sd)
+  db.session.commit()
+
   return jsonify({"status" : "ok"})
 
 @bp.route('/scan/browse', methods=['POST'])
 def api_scan_browse():
   curscans = set()
-  for f in os.listdir(current_app.config['SCAN_FOLDER']):
-    curscans.add(os.readlink(os.path.join(current_app.config['SCAN_FOLDER'],f)))
+  # for f in os.listdir(current_app.config['SCAN_FOLDER']):
+  #   curscans.add(os.readlink(os.path.join(current_app.config['SCAN_FOLDER'],f)))
+  for item in ScanDir.query.all():
+    curscans.add(os.path.realpath(item.fullpath))
   d       = request.get_json().get("dir",os.path.expanduser("~"))
   if d == "":
     d = os.path.expanduser("~")
@@ -257,7 +269,8 @@ def scan_job(token):
   os.makedirs(tmpdir,exist_ok=True)
   logline(tmpfile,f"Starting scan",new=True)
 
-  get_all_slippi_files(lbase,replays,checked)
+  for item in ScanDir.query.all():
+    get_all_slippi_files(item.fullpath,replays,checked)
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")
   for i,r in enumerate(replays):

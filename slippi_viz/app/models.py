@@ -77,6 +77,12 @@ def get_cmp(val,arg):
         return val > int(arg[2:])
     return val > int(arg)
 
+class ScanDir(db.Model):
+    fullpath  = db.Column(db.String(128), primary_key=True)
+    display   = db.Column(db.String(128), index=True)
+    path      = db.Column(db.String(128), index=True)
+    lastscan  = db.Column(db.String(19))
+
 class Replay(db.Model):
     id        = db.Column(db.Integer, primary_key=True)
     checksum  = db.Column(db.String(32))
