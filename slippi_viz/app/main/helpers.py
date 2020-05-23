@@ -176,8 +176,18 @@ def check_for_slippi_files(path,nav=False):
   return ddata
 
 #Scan one folder for Slippi files
-def check_single_folder_for_slippi_files(parent,base,*,click=None,classd=""):
+def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb=False):
   p = os.path.join(parent,base)
+  if not os.path.exists(p) and (indb or (not os.path.islink(p))):
+    return {
+      "name"  : base,
+      "path"  : p,
+      "dirs"  : 0,
+      "files" : 0,
+      "class" : "broken",
+      "click" : "delScanDir",
+      "sort"  : 4,
+      }
   if os.path.isdir(p) and os.access(p, os.R_OK) and (not is_hidden(p)):
     c = count_slippi_files(p)
     return {

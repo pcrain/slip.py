@@ -32,9 +32,11 @@ def replays():
     ddata = []
     if ddir == "":
         for item in ScanDir.query.all():
-            ddata.append(check_single_folder_for_slippi_files(item.path,item.display))
+            ddata.append(check_single_folder_for_slippi_files(item.path,item.display,indb=True))
     else:
         ddata = check_for_slippi_files(ddir)
+
+    print(ddata)
 
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)
@@ -73,12 +75,7 @@ def scan_page():
     lbase = item.path
     f     = item.display
     full  = item.fullpath
-    if os.path.isdir(full):
-        ldirs.append({
-            "name"  : f,
-            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
-            })
-    elif os.path.islink(full) and not os.path.exists(os.readlink(full)): #Broken symlink
+    if not os.path.exists(full): #Broken symlink
       ldirs.append({
         "name"  : f,
         "stats" : {
@@ -91,4 +88,9 @@ def scan_page():
             "sort"  : 4,
           },
         })
+    elif os.path.isdir(full):
+        ldirs.append({
+            "name"  : f,
+            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
+            })
   return render_template("scan.html.j2", scandirs=ldirs)
