@@ -55,7 +55,11 @@ def api_upload_replay():
 
 @bp.route('/open', methods=['POST'])
 def api_open_containing_dir():
-  d    = request.get_json()["dir"][1:] #Eliminate leading slash from database
+  d    = request.get_json()["dir"]
+  if d[0] == "/":
+    d = d[1:]  #Eliminate leading slash from database
+  elif d[0] == "\\":
+    d = d[1:]  #Eliminate leading double backslash from database
   f    = request.get_json()["name"]
   full = os.path.join(current_app.config['DATA_FOLDER'],d,f)
   real = os.path.realpath(full)
