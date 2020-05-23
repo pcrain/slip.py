@@ -141,13 +141,8 @@ def is_hidden(filepath):
 
 #Check if a file is hidden (X-platform)
 def has_hidden_attribute(filepath):
-    try:
-        attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(filepath))
-        assert attrs != -1
-        result = bool(attrs & 2)
-    except (AttributeError, AssertionError):
-        result = False
-    return result
+    return False
+    return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
 
 #Get info about slippi files in a directory (no recursion)
 def check_for_slippi_files(path,nav=False):
@@ -200,13 +195,17 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd=""):
 def count_slippi_files(path):
   ndirs  = 0
   nfiles = 0
-  for f in os.listdir(path):
-    s = os.path.join(path,f)
-    if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
-        ndirs += 1
-    elif f[-4:] == ".slp":
-        nfiles += 1
-  return {"dirs" : ndirs, "files" : nfiles}
+  try:
+    if os.access(path, os.R_OK) and os.access(path, os.W_OK):
+      for f in os.listdir(path):
+        s = os.path.join(path,f)
+        if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
+            ndirs += 1
+        elif f[-4:] == ".slp":
+            nfiles += 1
+    return {"dirs" : ndirs, "files" : nfiles}
+  except PermissionError:
+    return {"dirs" : ndirs, "files" : nfiles}
 
 #Compress writing example
 def compressedJsonWrite(data,filename):

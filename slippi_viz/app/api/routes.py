@@ -112,8 +112,10 @@ def api_scan_browse():
   curscans = set()
   for f in os.listdir(current_app.config['SCAN_FOLDER']):
     curscans.add(os.readlink(os.path.join(current_app.config['SCAN_FOLDER'],f)))
-  d       = request.get_json()["dir"]
-  s       = request.get_json()["subdir"]
+  d       = request.get_json().get("dir",os.path.expanduser("~"))
+  if d == "":
+    d = os.path.expanduser("~")
+  s       = request.get_json().get("subdir","")
   p       = d if s == "" else os.path.join(d,s)
   listing = check_for_slippi_files(p,nav=(p!="/"))
   listing = sorted(listing, key = lambda i: (i["sort"],i['name']))
