@@ -57,10 +57,6 @@ def api_upload_replay():
 @bp.route('/open', methods=['POST'])
 def api_open_containing_dir():
   d    = request.get_json()["dir"]
-  if d[0] == "/":
-    d = d[1:]  #Eliminate leading slash from database
-  elif d[0] == "\\":
-    d = d[1:]  #Eliminate leading double backslash from database
   f    = request.get_json()["name"]
   full = os.path.join(current_app.config['DATA_FOLDER'],d,f)
   real = os.path.realpath(full)
@@ -124,8 +120,6 @@ def api_scan_del():
 @bp.route('/scan/browse', methods=['POST'])
 def api_scan_browse():
   curscans = set()
-  # for f in os.listdir(current_app.config['SCAN_FOLDER']):
-  #   curscans.add(os.readlink(os.path.join(current_app.config['SCAN_FOLDER'],f)))
   for item in ScanDir.query.all():
     curscans.add(os.path.realpath(item.fullpath))
   d       = request.get_json().get("dir",os.path.expanduser("~"))
@@ -261,7 +255,6 @@ def scan_job(token):
 
   tmpdir  = current_app.config['TMP_FOLDER']
   tmpfile = os.path.join(tmpdir,token)
-  lbase   = current_app.config['SCAN_FOLDER']
   replays = []
   rdata   = []
   checked = set()

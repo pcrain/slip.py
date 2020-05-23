@@ -29,10 +29,14 @@ def replays():
     else:
         rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
-    dfull = os.path.join(current_app.config['SCAN_FOLDER'],ddir)
-    ddata = check_for_slippi_files(dfull)
-    for d in ddata: #Get relative paths to scan directory suitable for URL use
-        d["path"] = os.path.relpath(d["path"],current_app.config['SCAN_FOLDER'])
+    ddata = []
+    if ddir == "":
+        for item in ScanDir.query.all():
+            ddata.append(check_single_folder_for_slippi_files(item.path,item.display))
+    else:
+        print("DDD"+ddir)
+        ddata = check_for_slippi_files(ddir)
+        print(ddata)
 
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)
@@ -90,29 +94,3 @@ def scan_page():
           },
         })
   return render_template("scan.html.j2", scandirs=ldirs)
-
-# @bp.route('/scan', methods=['GET'])
-# def scan_page():
-#   lbase = current_app.config['SCAN_FOLDER']
-#   ldirs = []
-#   for f in os.listdir(lbase):
-#     full = os.path.join(lbase, f)
-#     if os.path.isdir(full):
-#         ldirs.append({
-#             "name"  : f,
-#             "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
-#             })
-#     elif os.path.islink(full) and not os.path.exists(os.readlink(full)): #Broken symlink
-#       ldirs.append({
-#         "name"  : f,
-#         "stats" : {
-#             "name"  : f,
-#             "path"  : os.path.join(lbase,f),
-#             "dirs"  : 0,
-#             "files" : 0,
-#             "class" : "broken",
-#             "click" : "delScanDir",
-#             "sort"  : 4,
-#           },
-#         })
-#   return render_template("scan.html.j2", scandirs=ldirs)

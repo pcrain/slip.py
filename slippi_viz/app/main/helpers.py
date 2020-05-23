@@ -178,6 +178,7 @@ def check_for_slippi_files(path,nav=False):
 #Scan one folder for Slippi files
 def check_single_folder_for_slippi_files(parent,base,*,click=None,classd=""):
   p = os.path.join(parent,base)
+  print("P: "+p)
   if os.path.isdir(p) and os.access(p, os.R_OK) and (not is_hidden(p)):
     c = count_slippi_files(p)
     return {
@@ -189,7 +190,7 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd=""):
         "click" : "travel" if click is None else click,
         "sort"  : 4,
       }
-    return None
+  return None
 
 #Count slippi files / subdirectories at a path
 def count_slippi_files(path):

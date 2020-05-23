@@ -184,7 +184,7 @@ class Replay(db.Model):
                 ))
 
         if path != "":
-            q = q.filter(Replay.filedir.like("/local/"+path))
+            q = q.filter(Replay.filedir.like(path))
 
         if args.get("sort","play") == "upload":
             q = q.order_by(Replay.uploaded.desc())
