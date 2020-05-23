@@ -34,9 +34,7 @@ def replays():
         for item in ScanDir.query.all():
             ddata.append(check_single_folder_for_slippi_files(item.path,item.display))
     else:
-        print("DDD"+ddir)
         ddata = check_for_slippi_files(ddir)
-        print(ddata)
 
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)
