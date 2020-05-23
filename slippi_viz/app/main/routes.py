@@ -74,7 +74,7 @@ def scan_page():
     if os.path.isdir(full):
         ldirs.append({
             "name"  : f,
-            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir")
+            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
             })
     elif os.path.islink(full) and not os.path.exists(os.readlink(full)): #Broken symlink
       ldirs.append({

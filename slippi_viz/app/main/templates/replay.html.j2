@@ -30,7 +30,7 @@
 
       <div id="buttonGrid">
         <button type="button" onclick='openContainingDir("{{r.__filedir}}","{{r.__original_filename}}")'>Open Containing Folder</button>
-        <button type="button" onclick='window.location.href = "/api/raw/{{r.__checksum}}"'>View Raw Analysis</button>
+        <button type="button" onclick='window.open("/api/raw/{{r.__checksum}}")'>View Raw Analysis</button>
       </div>
 
       <div id="replayDataGrid">

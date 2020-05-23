@@ -118,13 +118,17 @@ def try_parse_time(t):
     return datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
 
 #Recursively list slippi files in directory
-def get_all_slippi_files(topdir,files):
+def get_all_slippi_files(topdir,files,checked=set()):
+  rpath=os.path.realpath(topdir)
+  if rpath in checked:
+    return
+  checked.add(rpath)
   for f in os.listdir(topdir):
     path = os.path.join(topdir,f)
     if os.path.isfile(path) and path[-4:] == ".slp":
       files.append(path)
     elif os.path.isdir(path):
-      get_all_slippi_files(path,files)
+      get_all_slippi_files(path,files,checked)
 
 #Write a line to a log file
 def logline(l,text,new=False):
@@ -171,7 +175,7 @@ def check_for_slippi_files(path,nav=False):
   return ddata
 
 #Scan one folder for Slippi files
-def check_single_folder_for_slippi_files(parent,base,*,click=None):
+def check_single_folder_for_slippi_files(parent,base,*,click=None,classd=""):
   p = os.path.join(parent,base)
   if os.path.isdir(p) and os.access(p, os.R_OK) and (not is_hidden(p)):
     c = count_slippi_files(p)
@@ -180,7 +184,7 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None):
         "path"  : p,
         "dirs"  : c["dirs"],
         "files" : c["files"],
-        "class" : "",
+        "class" : classd,
         "click" : "travel" if click is None else click,
         "sort"  : 4,
       }

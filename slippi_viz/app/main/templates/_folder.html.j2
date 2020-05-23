@@ -1,5 +1,5 @@
 <span class="hoverWrapper">
-  <span class="dirSummary {{dsummary.class}}" onclick='{{dsummary.click}}("{{dsummary.path}}")'>
+  <span class="dirSummary {{dsummary.class}}" onclick='{{dsummary.click}}({{dsummary.path|tojson}})'>
     <span class="dsIcon"><img src="{{ url_for('static',filename='icons/folder-white.svg')}}"></img></span>
     <span class="dsTitle">{{dsummary.name}}</span>
     <span class="dsSubs has{{dsummary.dirs}}">{{dsummary.dirs}} subfolder(s)</span>

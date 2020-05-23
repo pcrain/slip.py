@@ -1,24 +1,23 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-    <span id="uploadOuterGrid">
+    <span id="scanOuterGrid">
       <span class="title">Scan Folders for .slp files</span>
       <span class="subtitle">Currently Scanned Folders: {{scandirs|length}}</span>
+      <span id="cur-scans">
+        {% for s in scandirs %}
+          {% set dsummary = s.stats %}
+          {% include '_folder.html.j2' %}
+        {% endfor %}
+      </span>
       <span id="scanGrid">
         <span id="scan-buttons">
           <button onclick='browseDir()' class="fake-submit">
             Add Folder
           </button>
-          {# <button type="button" disabled id=upload-button class="fake-submit" onclick='beginScan()'>Scan All</button> #}
           <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>
             Begin Scan
           </button>
-        </span>
-        <span id="cur-scans">
-          {% for s in scandirs %}
-            {% set dsummary = s.stats %}
-            {% include '_folder.html.j2' %}
-          {% endfor %}
         </span>
       </span>
       <span id="browseList">
