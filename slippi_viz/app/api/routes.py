@@ -83,6 +83,7 @@ def api_scan_dir():
     "progress" : -1,
     "total"    : 0,
     "adds"     : [],
+    "details"  : [],
     }
   executor.submit(scan_job,token)
   return jsonify({"status" : "Scan Started", "token" : token})
@@ -146,9 +147,18 @@ def api_scan_progress():
   # db.session.flush()
   # db.session.commit()
   # db.session.close()
+  details = dict({"details" : _scan_jobs[token]["details"]})
   del _scan_jobs[token]
   logline(tmpfile,f"Scan job deleted")
-  return jsonify({"status" : "Done!", "done" : True})
+  now = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
+  scanfile = os.path.join(current_app.config['LOG_FOLDER'],f"scan-{now}.json")
+  with open(scanfile,'w') as fout:
+    json.dump(details, fout, indent=2, sort_keys=False)
+  return jsonify({"status" : "Done!", "done" : True, "details": f"scan-{now}.json"})
+
+@bp.route('/scanlog/<s>', methods=['GET'])
+def api_get_scan_log(s):
+    return send_from_directory(current_app.config['LOG_FOLDER'],s)
 
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
@@ -231,14 +241,15 @@ def scan_job(token):
 
   tmpdir  = current_app.config['TMP_FOLDER']
   tmpfile = os.path.join(tmpdir,token)
+  lbase   = current_app.config['SCAN_FOLDER']
+  replays = []
+  rdata   = []
+  checked = set()
+
   os.makedirs(tmpdir,exist_ok=True)
   logline(tmpfile,f"Starting scan",new=True)
 
-  lbase   = current_app.config['SCAN_FOLDER']
-  replays = []
-  checked = set()
   get_all_slippi_files(lbase,replays,checked)
-  rdata   = []
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")
   for i,r in enumerate(replays):
@@ -249,7 +260,7 @@ def scan_job(token):
     _scan_jobs[token]["progress"] = i
     jret = {
       "token"           : token,
-      "time"            : datetime.utcnow(),
+      "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
       "status"          : "Success",
       "error"           : "",
       "analysis-url"    : "",
@@ -259,6 +270,7 @@ def scan_job(token):
       }
     rstat = analyze_replay(r,jret,nokeep=False)
     rdata.append(rstat)
+    _scan_jobs[token]["details"].append(jret)
   logline(tmpfile,"Committing {} new entries".format(len(_scan_jobs[token]["adds"])))
   db.session.add_all(_scan_jobs[token]["adds"])
   db.session.commit()

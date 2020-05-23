@@ -113,9 +113,10 @@ def allowed_file(filename):
 #Fallback in case we can't parse time from a .slp file
 def try_parse_time(t):
   try:
-    return datetime.strptime(t, "%Y-%m-%dT%H:%M:%S")
+    t = datetime.strptime(t, "%Y-%m-%dT%H:%M:%S")
   except:
-    return datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    t = datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+  return t.strftime('%Y-%m-%d_%H-%M-%S')
 
 #Recursively list slippi files in directory
 def get_all_slippi_files(topdir,files,checked):

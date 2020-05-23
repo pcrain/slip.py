@@ -83,8 +83,8 @@ class Replay(db.Model):
     filename  = db.Column(db.String(128))
     filedir   = db.Column(db.String(128))
     user_id   = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
-    played    = db.Column(db.DateTime, index=True)
-    uploaded  = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    played    = db.Column(db.String(19), index=True)
+    uploaded  = db.Column(db.String(19), index=True)
     is_public = db.Column(db.Boolean, default=True)
 
     frames    = db.Column(db.Integer)

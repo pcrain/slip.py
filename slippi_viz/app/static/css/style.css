@@ -807,7 +807,7 @@ form#searchForm.clicked {
   grid-row-gap: 8px;
   grid-template-rows:    repeat(4,var(--form-button-height));
   /*align-items: center;*/
-  width: 512px;
+  width: 544px;
   /*height: 400px;*/
 }
 

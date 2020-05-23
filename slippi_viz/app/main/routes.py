@@ -34,8 +34,6 @@ def replays():
     for d in ddata: #Get relative paths to scan directory suitable for URL use
         d["path"] = os.path.relpath(d["path"],current_app.config['SCAN_FOLDER'])
 
-    # ddata = [{"name" : "dir1"},{"name" : "dir2"},{"name" : "dir3"},{"name" : "dir4"},{"name" : "dir5"},{"name" : "dir6"},{"name" : "dir7"}]
-
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)
     qdict["nextpage"] = rdata.next_num
