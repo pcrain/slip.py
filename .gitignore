@@ -1,3 +1,5 @@
+__w*
+__m*
 __pycache__
 app/__pycache__
 app/static/data/
@@ -7,3 +9,4 @@ app/errors/__pycache__
 app/main/__pycache__
 app.db
 migrations
+*~

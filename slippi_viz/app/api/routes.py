@@ -279,11 +279,6 @@ def scan_single(i,r,token):
   # print(f"Finishing {i}")
   return jret
 
-def dump(obj):
-  for attr in dir(obj):
-    try:    print("obj.%s = %r" % (attr, getattr(obj, attr)))
-    except: print("obj.%s = %s" % (attr, "error"))
-
 def scan_job(token):
   global _scan_jobs
 
@@ -322,19 +317,11 @@ def scan_job(token):
   _scan_jobs[token]["progress"] = len(replays)
   logline(tmpfile,f"Committing {len(adds)} new entries")
   db.session.add_all(adds)
-  # print(updates[:5])
-  x = 0/0
+
   print(f"Updating {len(updates)} entries: ")
   for u in updates:
-    for r in Replay.query.filter_by(checksum=u["checksum"]).all():
-      print(r)
-      print(u)
-      r.update(u)
-      print(r)
-      # for key, value in r.items():
-      #     print("hi")
-          # print(f"{u['checksum']}: {key} - {u[key]} -> {value}")
-          # setattr(r, key, value)
+    Replay.query.filter_by(checksum=u["checksum"]).update(u)
+
   db.session.commit()
   print("Committed {} new entries".format(len(adds)))
   logline(tmpfile,f"Scan completed")

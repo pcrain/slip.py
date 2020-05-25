@@ -22,9 +22,11 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
 
     #Other config variables
+    EXECUTOR_PROPAGATE_EXCEPTIONS  = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
     FORCE_COMPRESSION              = False
     MAX_SCAN_THREADS               = max(1,multiprocessing.cpu_count()//4)
     SECRET_KEY                     = os.urandom(32)
+
