@@ -25,7 +25,6 @@ class User(UserMixin, db.Model):
     email         = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     replays       = db.relationship('Replay', backref='uploader', lazy='dynamic')
-    # about_me      = db.Column(db.String(2000))
     last_seen     = db.Column(db.DateTime, default=datetime.utcnow)
     # followed      = db.relationship(
     #     'User', secondary=followers,
@@ -41,28 +40,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-    # def avatar(self, size):
-    #     digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-    #     return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-    #         digest, size)
-
-    # def follow(self, user):
-    #     if not self.is_following(user):
-    #         self.followed.append(user)
-
-    # def unfollow(self, user):
-    #     if self.is_following(user):
-    #         self.followed.remove(user)
-
-    # def is_following(self, user):
-    #     return self.followed.filter(followers.c.followed_id == user.id).count() > 0
-
-    def followed_posts(self):
-        followed = Post.query.join(followers, (followers.c.followed_id == Post.user_id)
-            ).filter(followers.c.follower_id == self.id)
-        own      = Post.query.filter_by(user_id=self.id)
-        return followed.union(own).order_by(Post.timestamp.desc())
 
     def all_replays(self):
         reps = Replay.query.filter_by(user_id=self.id)
@@ -191,7 +168,6 @@ class Replay(db.Model):
         else:
             q = q.order_by(Replay.played.desc())
 
-        # sys.stderr.write(str(q))
         return q
 
     def __repr__(self):

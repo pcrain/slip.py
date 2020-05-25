@@ -141,7 +141,7 @@ def is_hidden(filepath):
 
 #Check if a file is hidden (X-platform)
 def has_hidden_attribute(filepath):
-    return False
+    return False #TODO: can't check for hidden files on Windows right now
     return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
 
 #Get info about slippi files in a directory (no recursion)
