@@ -157,10 +157,10 @@ def api_scan_browse():
 def api_scan_progress():
   token                       = request.get_json()["token"]
   _scan_jobs[token]["posted"] = datetime.utcnow() #Update our posted time
-  d                           = _scan_jobs[token]["progress"]+1
+  d                           = _scan_jobs[token]["progress"]
   t                           = _scan_jobs[token]["total"]
   tmpfile                     = os.path.join(current_app.config['TMP_FOLDER'],token)
-  if d < t:
+  if d is not None:
     return jsonify({"status" : f"{d}/{t}"})
 
   details = dict({"details" : _scan_jobs[token]["details"]})
@@ -294,7 +294,6 @@ def scan_job(token):
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
       # if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:
       #   pass
-      _scan_jobs[token]["progress"] += 1
       res = t.result()
       if res is None:
         logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
@@ -305,9 +304,8 @@ def scan_job(token):
         updates.append(res["update"])
       del res["replay"]
       rdata.append(res)
+      _scan_jobs[token]["progress"] += 1
 
-  _scan_jobs[token]["details"]  = rdata
-  _scan_jobs[token]["progress"] = len(replays)
   logline(tmpfile,f"Committing {len(adds)} new entries")
   db.session.add_all(adds)
 
@@ -317,4 +315,7 @@ def scan_job(token):
 
   db.session.commit()
   logline(tmpfile,f"Scan completed")
+
+  _scan_jobs[token]["details"]  = rdata
+  _scan_jobs[token]["progress"] = None
   return jsonify({"status" : "ok", "details" : rdata})
