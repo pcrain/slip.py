@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os
+import os, multiprocessing
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
@@ -26,4 +26,5 @@ class Config(object):
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
     FORCE_COMPRESSION              = False
+    MAX_SCAN_THREADS               = max(1,multiprocessing.cpu_count()//4)
     SECRET_KEY                     = os.urandom(32)
