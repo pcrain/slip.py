@@ -3,7 +3,7 @@
 
 def config_generators(app):
   @app.context_processor
-  def get_nav_icons():
+  def get_navigation_data():
     return dict(nav_icons=[
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",   "click" : ""},
       # {"name": "Upload",    "src" : "/upload",   "img" : "header-matchups.png", "class" : "mu",     "click" : ""},
@@ -11,7 +11,7 @@ def config_generators(app):
       ])
 
   @app.context_processor
-  def get_characters():
+  def get_character_data():
     chardata = [ #Listen in CSS order, Sheik in bottom left, Default in bottom right
       {"id" : 22, "name" : "Dr. Mario",        "intname" : "DOCTOR",  "csspos" : 0,  "colors" : 5,},
       {"id" : 8,  "name" : "Mario",            "intname" : "MARIO",   "csspos" : 1,  "colors" : 5,},
@@ -45,7 +45,7 @@ def config_generators(app):
     return dict(chardata=chardata,intchardata=intchardata)
 
   @app.context_processor
-  def get_stages():
+  def get_stage_data():
     stagedata = [ #TODO: finish implementing
       { "id" :  8, "name" : "Yoshi's Story",      "intname": "STORY",     "legal" : True,},
       { "id" : 31, "name" : "Battlefield",        "intname": "BATTLE",    "legal" : True,},
@@ -88,7 +88,7 @@ def config_generators(app):
     return dict(stagedata=stagedata,intstagedata=intstagedata)
 
   @app.context_processor
-  def get_sorts():
+  def get_sort_data():
     sortdata = [
       { "name" : "Newly Played",    "intname": "play"     },
       { "name" : "Newly Uploaded",  "intname": "upload"   },
@@ -96,7 +96,7 @@ def config_generators(app):
     return dict(sortdata=sortdata)
 
   @app.context_processor
-  def get_costumes():
+  def get_costume_data():
     costdata = [
       {"id" : -1, "name" : "Any",       },
       {"id" : 0,  "name" : "Default",   },
@@ -109,7 +109,7 @@ def config_generators(app):
     return dict(costdata=costdata)
 
   @app.context_processor
-  def get_stockdata():
+  def get_stock_data():
     stockdata = [
       {"id" : "-1",   "name" : "Any",  },
       {"id" : "0",    "name" : "0",    },
@@ -130,7 +130,7 @@ def config_generators(app):
     return dict(stockdata=stockdata)
 
   @app.context_processor
-  def get_lengthdata():
+  def get_length_data():
     lengthdata = [
       {"id" :    -1,    "name" : "Any Time",    },
       {"id" :  3600,    "name" : "1 minutes",    },
@@ -143,6 +143,29 @@ def config_generators(app):
       {"id" : 28800,    "name" : "8 minutes",    },
       ]
     return dict(lengthdata=lengthdata)
+
+  @app.context_processor
+  def get_interaction_data():
+    interactions = [
+      "EDGEGUARDING",
+      "TECHCHASING",
+      "PUNISHING",
+      "SHARKING",
+      "PRESSURING",
+      # "OFFENSIVE",
+      "FOOTSIES",
+      "POSITIONING",
+      # "NEUTRAL",
+      "POKING",
+      # "TRADING",
+      # "DEFENSIVE",
+      "PRESSURED",
+      "GROUNDING",
+      "PUNISHED",
+      "ESCAPING",
+      "RECOVERING",
+      ]
+    return dict(interactions=interactions)
 
   @app.context_processor
   def utility_functions():
@@ -160,4 +183,9 @@ def config_generators(app):
       f -= s*60
       c  = int(100*f/60.0)
       return f"{m}:{s:02d}.{c:02d}"
-    return dict(hl_if_higher=hl_if_higher,hl_if_lower=hl_if_lower,frame_to_timestamp=frame_to_timestamp)
+
+    return dict(
+      hl_if_higher       = hl_if_higher,
+      hl_if_lower        = hl_if_lower,
+      frame_to_timestamp = frame_to_timestamp
+      )

@@ -42,7 +42,7 @@
             <div class="stat">Ledge Grabs</div>
 
           <div class="heading">Interactions (Damage Dealt)</div>
-            {% for k in INTERACTIONS %}
+            {% for k in interactions %}
               <div class="stat op-{{k}}">{{k.title()}}</div>
             {% endfor %}
 
@@ -125,7 +125,7 @@
             {{ _stat("ledge_grabs" )}}
 
             {# Interactions #}
-            {% for k in INTERACTIONS %}
+            {% for k in interactions %}
                 {{ _stathi('__dmg'+k,"%.0f","%")}}
             {% endfor %}
 

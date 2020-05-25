@@ -3,7 +3,8 @@
 
 import os, sys, subprocess
 
-APP_URL="http://127.0.0.1:5000"
+PY_VER = "38"
+APP_URL= "http://127.0.0.1:5000"
 
 #Set appropriate environment variables
 os.environ["FLASK_APP"]   = "slippi_viz"
@@ -12,9 +13,9 @@ os.environ["FLASK_DEBUG"] = "1"
 #On Windows, make sure necessary Python paths are in PATH
 if os.name == 'nt':
   sys.path.append(os.path.expanduser(os.path.join(
-    "~","AppData","Roaming","Python","Python38","site-packages")))
+    "~","AppData","Roaming","Python",f"Python{PY_VER}","site-packages")))
   flaskpath = os.path.expanduser(os.path.join(
-    "~","AppData","Roaming","Python","Python38","Scripts"))
+    "~","AppData","Roaming","Python",f"Python{PY_VER}","Scripts"))
   sys.path.append(os.path.expanduser(flaskpath))
   flaskexec = os.path.join(flaskpath,"flask.exe")
 else:
@@ -37,11 +38,3 @@ else:
 
 #Launch the flask app
 os.execlp(flaskexec,flaskexec,"run")
-
-#Old Windows batch file:
-#  SET PATH=%PATH%;"%HOMEDRIVE%%HOMEPATH%\AppData\Roaming\Python\Python38\Scripts"
-#  SET FLASK_APP=slippi_viz
-#  SET FLASK_DEBUG=1
-#  chdir /d %HOMEDRIVE%%HOMEPATH%\AppData\Roaming\Python\Python38\site-packages\slippi_viz
-#  start "" http://127.0.0.1:5000
-#  flask run
