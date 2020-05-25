@@ -87,7 +87,7 @@ def api_scan_dir():
   token             = md5(str(datetime.utcnow()))[:8]
   _scan_jobs[token] = {
     "posted"   : datetime.utcnow(),
-    "progress" : -1,
+    "progress" : 0,
     "total"    : 0,
     "adds"     : [],
     "details"  : [],
