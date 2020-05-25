@@ -81,6 +81,21 @@ def api_open_containing_dir():
     subprocess.run([explorer, ntpath.dirname(real)])
   return jsonify({"status" : "ok"})
 
+@bp.route('/opendata', methods=['POST'])
+def api_open_data_dir():
+  if os.name == 'nt':
+    explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
+    subprocess.run([explorer, current_app.config['DATA_FOLDER']])
+  else:
+    #Query default file explorer
+    exp_query   = ["xdg-mime","query","default","inode/directory"]
+    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate("")
+    explorer    = output.decode('utf-8').replace(".desktop\n","")
+
+    subprocess.run([explorer, current_app.config['DATA_FOLDER']])
+  return jsonify({"status" : "ok"})
+
 @bp.route('/purge', methods=['POST'])
 def api_purge():
   # Replay.query.delete()
