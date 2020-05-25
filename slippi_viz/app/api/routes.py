@@ -56,7 +56,9 @@ def api_upload_replay():
     jret["filename_secure"] = secure_filename(file.filename)
     opath                   = os.path.join(current_app.config['UPLOAD_FOLDER'], jret["filename_secure"])
     file.save(opath)
-    return analyze_replay(opath,jret,nokeep=NOKEEP)
+    conf      = dict(current_app.config)
+    checksums = set(i.checksum for i in Replay.query.all())
+    return analyze_replay(opath,jret,nokeep=NOKEEP,conf=conf,checksums=checksums)
 
 @bp.route('/open', methods=['POST'])
 def api_open_containing_dir():
@@ -180,40 +182,29 @@ def api_get_scan_log(s):
 def api_get_raw_analysis(r):
   return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
 
-def analyze_replay(local_file,jret,nokeep=False):
+def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
     global _scan_jobs
 
     #If we've already analyzed a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
-    samemd5 = Replay.query.filter_by(checksum=m).all()
+    # samemd5 = Replay.query.filter_by(checksum=m).all()
     # samemd5 = []
-    if NODUPES and len(samemd5) > 0:
-
-      for r in samemd5:
-        newdir  = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],"")
-        newname = jret["filename_secure"]
-        update  = {}
-
-        if r.filedir != newdir:
-          update["filedir"] = newdir
-
-        if r.filename != newname:
-          update["filename"] = newname
-
-        if len(update.keys()) > 0:
-          update["checksum"] = m
-          jret["update"]     = update
-
-      jret["status"]       = 'Duplicate'
-      jret["url"]          = '/replays/'+m
-      jret["error"]        = 'Replay already in database'
+    if NODUPES and m in checksums:
+      jret["update"] = {
+        "filedir"  : jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
+        "filename" : jret["filename_secure"],
+        "checksum" : m,
+      }
+      jret["status"] = 'Duplicate'
+      jret["url"]    = '/replays/'+m
+      jret["error"]  = 'Replay already in database'
       return jret
 
     #If an analysis of this file already exists, don't bother analyzing it
-    afile = os.path.join(current_app.config['REPLAY_FOLDER'], m+".slp.json")
+    afile = os.path.join(conf['REPLAY_FOLDER'], m+".slp.json")
     if not os.path.exists(afile):
       #Try to actually analyze the replay; if we can't, call it a day
-      _,err = call([current_app.config['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
+      _,err = call([conf['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
 
     if nokeep:
       os.remove(local_file)
@@ -227,7 +218,7 @@ def analyze_replay(local_file,jret,nokeep=False):
     replay = Replay(
         checksum  = m,
         filename  = jret["filename_secure"],
-        filedir   = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],""),
+        filedir   = jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
         user_id   = -1,
         is_public = True,
         frames    = rdata["game_length"],
@@ -247,12 +238,12 @@ def analyze_replay(local_file,jret,nokeep=False):
         p2display = get_display_tag(rdata["players"][1]),
         stage     = rdata["stage_id"],
         )
-    _scan_jobs[jret["token"]]["adds"].append(replay)
+    # _scan_jobs[jret["token"]]["adds"].append(replay)
     jret["url"] = '/replays/'+m
     jret["replay"] = replay
     return jret
 
-def scan_single(i,r,token):
+def scan_single(i,r,token,conf,checksums):
   global _scan_jobs
   # progfile = os.path.join(current_app.config['TMP_FOLDER'],token+"-progress")
   # Path(progfile).touch()
@@ -269,7 +260,7 @@ def scan_single(i,r,token):
     "replay"          : None,
     "update"          : None,
     }
-  jret = analyze_replay(r,jret,nokeep=False)
+  jret = analyze_replay(r,jret,nokeep=False,conf=conf,checksums=checksums)
   # rdata.append(rstat)
   del jret["time"]
   del jret["token"]
@@ -294,10 +285,12 @@ def scan_job(token):
   logline(tmpfile,f"Found {len(replays)} total files")
 
   logline(tmpfile,f"Starting scan")
-  adds    = []
-  updates = []
+  conf      = dict(current_app.config)
+  checksums = set(i.checksum for i in Replay.query.all())
+  adds      = []
+  updates   = []
   with concurrent.futures.ProcessPoolExecutor(max_workers=current_app.config["MAX_SCAN_THREADS"]) as ex:
-    tasks = {ex.submit(scan_single,i,r,token) for i,r in enumerate(replays)}
+    tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
       # if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:
       #   pass

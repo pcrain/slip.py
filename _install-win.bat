@@ -1,7 +1,5 @@
 SET PATH="%PATH%;%HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts;"
 %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe install --user .
-mklink "%HOMEDRIVE%%HOMEPATH%\Desktop\slip.py" "%HOMEDRIVE%%HOMEPATH%\AppData\Roaming\Python\Python38\site-packages\slippi_viz\slip.py"
-PAUSE
 
 rem Create a Shortcut https://superuser.com/questions/392061/how-to-make-a-shortcut-from-cmd
 @echo off
@@ -18,6 +16,7 @@ SET LOG=".\%~N0_runtime.log"
   echo oLink.TargetPath = oWS.ExpandEnvironmentStrings^("!Esc_LinkTarget!"^)
   echo oLink.Save
 )1>!cSctVBS!
-cscript //nologo .\!cSctVBS!
+%SystemRoot%\System32\cscript.exe //nologo .\!cSctVBS!
 DEL !cSctVBS! /f /q
 )1>>!LOG! 2>>&1
+PAUSE
