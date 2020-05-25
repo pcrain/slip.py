@@ -287,13 +287,13 @@ def scan_job(token):
   rdata   = []
   checked = set()
 
-  logline(tmpfile,f"Locating .slp Replay files")
+  logline(tmpfile,f"Locating .slp Replay files",new=True)
   for item in ScanDir.query.all():
     get_all_slippi_files(item.fullpath,replays,checked)
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")
 
-  logline(tmpfile,f"Starting scan",new=True)
+  logline(tmpfile,f"Starting scan")
   adds    = []
   updates = []
   with concurrent.futures.ProcessPoolExecutor(max_workers=current_app.config["MAX_SCAN_THREADS"]) as ex:
@@ -318,11 +318,10 @@ def scan_job(token):
   logline(tmpfile,f"Committing {len(adds)} new entries")
   db.session.add_all(adds)
 
-  print(f"Updating {len(updates)} entries: ")
+  logline(tmpfile,f"Updating {len(updates)} entries: ")
   for u in updates:
     Replay.query.filter_by(checksum=u["checksum"]).update(u)
 
   db.session.commit()
-  print("Committed {} new entries".format(len(adds)))
   logline(tmpfile,f"Scan completed")
   return jsonify({"status" : "ok", "details" : rdata})
