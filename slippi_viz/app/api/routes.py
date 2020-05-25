@@ -12,7 +12,7 @@ from app.main.helpers import *
 # from __main__ import app
 from datetime import datetime
 from pathlib import Path
-import json, glob, ntpath, time, os, subprocess, copy
+import json, glob, ntpath, time, os, subprocess, copy, shutil
 import concurrent.futures
 
 REPLAY_UPLOAD_LIMIT = "600 per hour"
@@ -79,6 +79,13 @@ def api_open_containing_dir():
 
     #Can't highlight file in every Linux explorer, so settle for opening the directory
     subprocess.run([explorer, ntpath.dirname(real)])
+  return jsonify({"status" : "ok"})
+
+@bp.route('/purge', methods=['POST'])
+def api_purge():
+  # Replay.query.delete()
+  if os.path.exists(current_app.config["DATA_FOLDER"]):
+    shutil.rmtree(current_app.config["DATA_FOLDER"])
   return jsonify({"status" : "ok"})
 
 @bp.route('/scan', methods=['POST'])

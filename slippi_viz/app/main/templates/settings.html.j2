@@ -1,0 +1,33 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    <span id="settingsGrid">
+      <span class="title">{{SITE_NAME}} settings</span>
+      <button id="purge-button" class="danger-button" onclick="purge()">Purge Data</button>
+    </span>
+
+    <script>
+      function purge() {
+        if (confirm("Delete all user data? (1/3)")) {
+          if (confirm("Are you sure? This cannot be undone. (2/3)")) {
+            if (confirm("Final confirmation. Press OK to delete all user data or CANCEL to go back. (3/3)")) {
+                $.ajax({
+                  type        : "post",
+                  url         : "/api/purge",
+                  data        : JSON.stringify({}),
+                  dataType    : "json",
+                  contentType : "application/json",
+                  cache       : false,
+                  processData : false,
+                  success: function (rjson) {
+                    $("#purge-button").innerText = "Data Purged";
+                    alert("Data purged. The app must be restarted before using.");
+                    window.location.href = window.location.href;
+                  }
+              });
+            }
+          }
+        }
+      }
+    </script>
+{% endblock %}

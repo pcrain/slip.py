@@ -13,6 +13,8 @@ import os
 
 @bp.before_request
 def before_request():
+    if not os.path.exists(current_app.config["DATA_FOLDER"]):
+      return render_template("nodata.html.j2", title="No Data")
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
@@ -65,6 +67,10 @@ def replay_viz(r):
 @bp.route('/upload', methods=['GET'])
 def upload_page():
   return render_template("upload.html.j2", title="Upload Replays")
+
+@bp.route('/settings', methods=['GET'])
+def settings_page():
+  return render_template("settings.html.j2", title="Settings")
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():
