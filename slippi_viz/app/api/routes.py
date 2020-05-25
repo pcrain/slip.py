@@ -11,7 +11,8 @@ from app.main.helpers import *
 
 # from __main__ import app
 from datetime import datetime
-import json, glob, ntpath, time, os, subprocess
+import json, glob, ntpath, time, os, subprocess, copy
+import concurrent.futures
 
 REPLAY_UPLOAD_LIMIT = "600 per hour"
 NODUPES             = True  #Set to True to not allow duplicate reuploads
@@ -33,6 +34,7 @@ def api_upload_replay():
       "url"             : "",
       "filename"        : "",
       "filename_secure" : "",
+      "replay"          : None,
       }
 
     # Error if no file attribute
@@ -177,11 +179,6 @@ def api_get_scan_log(s):
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
   return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
-  # rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
-  # replay = load_replay(rpath)
-  # rdata  = Replay.query.filter_by(checksum=r).first()
-  # replay["__original_filename"] = rdata.filename
-  # return jsonify(replay)
 
 def analyze_replay(local_file,jret,nokeep=False):
     global _scan_jobs
@@ -189,17 +186,20 @@ def analyze_replay(local_file,jret,nokeep=False):
     #If we've already analyzed a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
     samemd5 = Replay.query.filter_by(checksum=m).all()
+    # samemd5 = []
     if NODUPES and len(samemd5) > 0:
 
       for r in samemd5:
+        #TODO: can't db.session.commit here, but need to store changes
         r.filedir  = jret.get("filedir","").replace(current_app.config['DATA_FOLDER'],"")
         r.filename = jret["filename_secure"]
         # db.session.flush()
-        db.session.commit()
+        # db.session.commit()
 
       jret["status"]       = 'Duplicate'
       jret["url"]          = '/replays/'+m
       jret["error"]        = 'Replay already in database'
+      # print("1 and done")
       return jret
 
     #If an analysis of this file already exists, don't bother analyzing it and call it a day
@@ -248,48 +248,75 @@ def analyze_replay(local_file,jret,nokeep=False):
         )
     _scan_jobs[jret["token"]]["adds"].append(replay)
     jret["url"] = '/replays/'+m
+    jret["replay"] = replay
     return jret
+
+def scan_single(i,r,token):
+  global _scan_jobs
+
+  # if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:
+  #   print(f"Done with {i}")
+  #   return None
+
+  jret = {
+    "token"           : token,
+    "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
+    "filedir"         : ntpath.dirname(r),
+    "filename"        : ntpath.basename(r),
+    "filename_secure" : ntpath.basename(r),
+    "url"             : "",
+    "status"          : "Success",
+    "error"           : "",
+    "replay"          : None,
+    }
+  jret = analyze_replay(r,jret,nokeep=False)
+  # rdata.append(rstat)
+  del jret["time"]
+  del jret["token"]
+  del jret["filename_secure"]
+  # _scan_jobs[token]["details"].append(jret)
+  # print(f"Returning {i}")
+  print(f"Finishing {i}")
+  return jret
+
+def dump(obj):
+  for attr in dir(obj):
+    try:    print("obj.%s = %r" % (attr, getattr(obj, attr)))
+    except: print("obj.%s = %s" % (attr, "error"))
 
 def scan_job(token):
   global _scan_jobs
 
-  tmpdir  = current_app.config['TMP_FOLDER']
-  tmpfile = os.path.join(tmpdir,token)
+  tmpfile = os.path.join(current_app.config['TMP_FOLDER'],token)
   replays = []
   rdata   = []
   checked = set()
 
-  os.makedirs(tmpdir,exist_ok=True)
-  logline(tmpfile,f"Starting scan",new=True)
-
+  logline(tmpfile,f"Locating .slp Replay files")
   for item in ScanDir.query.all():
     get_all_slippi_files(item.fullpath,replays,checked)
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")
-  for i,r in enumerate(replays):
-    #If we haven't received a progress update request in the last 2 seconds, cancel the job
-    if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:
-      logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
-      break
-    _scan_jobs[token]["progress"] = i
-    jret = {
-      "token"           : token,
-      "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
-      "filedir"         : ntpath.dirname(r),
-      "filename"        : ntpath.basename(r),
-      "filename_secure" : ntpath.basename(r),
-      "url"             : "",
-      "status"          : "Success",
-      "error"           : "",
-      }
-    rstat = analyze_replay(r,jret,nokeep=False)
-    rdata.append(rstat)
-    del jret["time"]
-    del jret["token"]
-    del jret["filename_secure"]
-    _scan_jobs[token]["details"].append(jret)
-  logline(tmpfile,"Committing {} new entries".format(len(_scan_jobs[token]["adds"])))
-  db.session.add_all(_scan_jobs[token]["adds"])
+
+  logline(tmpfile,f"Starting scan",new=True)
+  adds = []
+  with concurrent.futures.ProcessPoolExecutor(max_workers=1) as ex:
+    pass
+    tasks = {ex.submit(scan_single,i,r,token) for i,r in enumerate(replays)}
+    for i,t in enumerate(tasks):
+      res = t.result()
+      if res is None:
+        logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
+        break
+      if res["replay"] is not None:
+        adds.append(res["replay"])
+      del res["replay"]
+      rdata.append(res)
+
+  _scan_jobs[token]["details"]  = rdata
+  _scan_jobs[token]["progress"] = len(replays)
+  logline(tmpfile,"Committing {} new entries".format(len(adds)))
   db.session.commit()
+  print("Committed {} new entries".format(len(adds)))
   logline(tmpfile,f"Scan completed")
   return jsonify({"status" : "ok", "details" : rdata})
