@@ -6,7 +6,7 @@ class Config(object):
     #User config variables
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
-    MAX_SCAN_THREADS               = max(1,multiprocessing.cpu_count()//4)
+    MAX_SCAN_THREADS               = max(1,multiprocessing.cpu_count()//2)
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"

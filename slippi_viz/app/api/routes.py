@@ -304,12 +304,12 @@ def scan_single(i,r,token,conf,checksums):
 def scan_job(token):
   global _scan_jobs
 
-  tmpfile   = os.path.join(current_app.config['TMP_FOLDER'],token)
-  replays   = []
-  rdata     = []
-  checked   = set()
-  checksums = set()
-  namesizes = set()
+  tmpfile     = os.path.join(current_app.config['TMP_FOLDER'],token)
+  allreplays  = []
+  rdata       = []
+  checked     = set()
+  checksums   = set()
+  namesizes   = set()
 
   logline(tmpfile,f"Fetching cached replay metadata",new=True)
   for i in Replay.query.all():
@@ -318,13 +318,13 @@ def scan_job(token):
 
   logline(tmpfile,f"Locating .slp Replay files")
   for item in ScanDir.query.all():
-    get_all_slippi_files(item.fullpath,replays,checked)
-  _scan_jobs[token]["total"] = len(replays)
-  logline(tmpfile,f"Found {len(replays)} total files")
+    get_all_slippi_files(item.fullpath,allreplays,checked)
+  _scan_jobs[token]["total"] = len(allreplays)
+  logline(tmpfile,f"Found {len(allreplays)} total files")
 
   logline(tmpfile,f"Filtering unchanged .slp Replay files")
-  replays = [r for r in replays if (r,os.stat(r).st_size) not in namesizes]
-  logline(tmpfile,f"Found {len(replays)} unchanged files")
+  replays = [r for r in allreplays if (r,os.stat(r).st_size) not in namesizes]
+  logline(tmpfile,f"Found {len(replays)} changed files ({len(allreplays)-len(replays)} unchanged)")
 
   logline(tmpfile,f"Starting scan")
   conf      = dict(current_app.config)
