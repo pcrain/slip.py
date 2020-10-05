@@ -65,6 +65,7 @@ class Replay(db.Model):
     checksum  = db.Column(db.String(32))
     filename  = db.Column(db.String(128))
     filedir   = db.Column(db.String(128))
+    filesize  = db.Column(db.Integer)
     user_id   = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
     played    = db.Column(db.String(19), index=True)
     uploaded  = db.Column(db.String(19), index=True)
@@ -76,12 +77,14 @@ class Replay(db.Model):
     p1stocks  = db.Column(db.Integer)
     p1metatag = db.Column(db.String(128))
     p1csstag  = db.Column(db.String(8))
+    p1codetag = db.Column(db.String(8))
     p1display = db.Column(db.String(128))
     p2char    = db.Column(db.Integer)
     p2color   = db.Column(db.Integer)
     p2stocks  = db.Column(db.Integer)
     p2metatag = db.Column(db.String(128))
     p2csstag  = db.Column(db.String(8))
+    p2codetag = db.Column(db.String(8))
     p2display = db.Column(db.String(128))
     stage     = db.Column(db.Integer)
 
@@ -158,6 +161,8 @@ class Replay(db.Model):
                 Replay.p2metatag.like(t),
                 Replay.p1csstag.like(t),
                 Replay.p2csstag.like(t),
+                Replay.p1codetag.like(t),
+                Replay.p2codetag.like(t),
                 ))
 
         if path != "":

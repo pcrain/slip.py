@@ -14,8 +14,8 @@
     {% set p1char = intchardata[rsummary.p1char]['intname'] %}
     {% set p2char = intchardata[rsummary.p2char]['intname'] %}
 
-    <span class="rs-tag1">{{ rsummary.p1display }}</span>
-    <span class="rs-tag2">{{ rsummary.p2display }}</span>
+    <span class="rs-tag1" title="{{ rsummary.p1display }} ({{rsummary.p1codetag}})">{{ rsummary.p1display }}</span>
+    <span class="rs-tag2" title="{{ rsummary.p2display }} ({{rsummary.p2codetag}})">{{ rsummary.p2display }}</span>
 
     <span class="rs-char1"><img title="{{ p1char }}" src="{{ url_for('static',filename='icons/css') }}/{{ p1char }}{{ rsummary.p1color }}.png" /></span>
     <span class="rs-char2"><img title="{{ p2char }}" src="{{ url_for('static',filename='icons/css') }}/{{ p2char }}{{ rsummary.p2color }}.png" /></span>

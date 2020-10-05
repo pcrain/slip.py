@@ -185,10 +185,16 @@ def api_scan_progress():
   if d is not None:
     return jsonify({"status" : f"{d}/{t}"})
 
-  details = dict({"details" : _scan_jobs[token]["details"]})
+  with open(os.path.join(current_app.config['TMP_FOLDER'],token),'r') as fin:
+    logoutput = fin.read()
+
+  details = dict({
+    "details" : _scan_jobs[token]["details"],
+    "log"     : logoutput,
+    })
   del _scan_jobs[token]
   logline(tmpfile,f"Scan job deleted")
-  now = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
+  now      = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
   scanfile = os.path.join(current_app.config['LOG_FOLDER'],f"scan-{now}.json.gz")
   compressedJsonWrite(details,scanfile)
   return jsonify({"status" : "Done!", "done" : True, "details": f"scan-{now}.json"})
@@ -241,6 +247,7 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
         checksum  = m,
         filename  = jret["filename_secure"],
         filedir   = jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
+        filesize  = os.stat(local_file).st_size,
         user_id   = -1,
         is_public = True,
         frames    = rdata["game_length"],
@@ -251,12 +258,14 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
         p1stocks  = rdata["players"][0]["end_stocks"],
         p1metatag = rdata["players"][0]["tag_player"],
         p1csstag  = rdata["players"][0]["tag_css"],
+        p1codetag = rdata["players"][0]["tag_code"],
         p1display = get_display_tag(rdata["players"][0]),
         p2char    = rdata["players"][1]["char_id"],
         p2color   = rdata["players"][1]["color"],
         p2stocks  = rdata["players"][1]["end_stocks"],
         p2metatag = rdata["players"][1]["tag_player"],
         p2csstag  = rdata["players"][1]["tag_css"],
+        p2codetag = rdata["players"][1]["tag_code"],
         p2display = get_display_tag(rdata["players"][1]),
         stage     = rdata["stage_id"],
         )
@@ -295,20 +304,30 @@ def scan_single(i,r,token,conf,checksums):
 def scan_job(token):
   global _scan_jobs
 
-  tmpfile = os.path.join(current_app.config['TMP_FOLDER'],token)
-  replays = []
-  rdata   = []
-  checked = set()
+  tmpfile   = os.path.join(current_app.config['TMP_FOLDER'],token)
+  replays   = []
+  rdata     = []
+  checked   = set()
+  checksums = set()
+  namesizes = set()
 
-  logline(tmpfile,f"Locating .slp Replay files",new=True)
+  logline(tmpfile,f"Fetching cached replay metadata",new=True)
+  for i in Replay.query.all():
+    checksums.add(i.checksum)
+    namesizes.add((os.path.join(i.filedir,i.filename),i.filesize))
+
+  logline(tmpfile,f"Locating .slp Replay files")
   for item in ScanDir.query.all():
     get_all_slippi_files(item.fullpath,replays,checked)
   _scan_jobs[token]["total"] = len(replays)
   logline(tmpfile,f"Found {len(replays)} total files")
 
+  logline(tmpfile,f"Filtering unchanged .slp Replay files")
+  replays = [r for r in replays if (r,os.stat(r).st_size) not in namesizes]
+  logline(tmpfile,f"Found {len(replays)} unchanged files")
+
   logline(tmpfile,f"Starting scan")
   conf      = dict(current_app.config)
-  checksums = set(i.checksum for i in Replay.query.all())
   adds      = []
   updates   = []
   with concurrent.futures.ProcessPoolExecutor(max_workers=current_app.config["MAX_SCAN_THREADS"]) as ex:
