@@ -1,13 +1,6 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-{#
-    <table>
-      {% for key in stats %}
-        <tr><td>{{key}}</td><td>{{stats[key]}}</td></tr>
-      {% endfor %}
-    </table>
- #}
     <span id="statsGrid">
       <span class="title">
         Player Stats for {{stats.name}} ({{stats.tag}})
@@ -15,9 +8,6 @@
       <span class="subtitle">
         Showing most recent {{stats.count}} games
       </span>
-      {# {{ rdata.filename }} #}
-      {# <button id="data-button" onclick="open_data_folder()">Open Data Folder</button> #}
-
 
       {# Mains, Secondaries, and Other Characters #}
       <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
@@ -40,7 +30,7 @@
             {% endif %}
             <span class="charGrid {{role}}">
               <span class="portrait">
-                <img title="{{ cname }} ({{playpercent}}%)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" />
+                <a href="/stats/{{ stats.tag|replace('#', '_', 1) }}?char={{c[0]}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
               </span>
               <span class="playtime">
                 {{ playpercent }}%
@@ -128,19 +118,4 @@
 
     </span>
 
-    <script>
-      function open_data_folder() {
-        $.ajax({
-            type        : "post",
-            url         : "/api/opendata",
-            data        : JSON.stringify({}),
-            dataType    : "json",
-            contentType : "application/json",
-            cache       : false,
-            processData : false,
-            success: function (rjson) {
-            }
-        });
-      }
-    </script>
 {% endblock %}

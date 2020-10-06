@@ -1314,6 +1314,10 @@ span#statsChars span.portrait {
   background-color : rgba(0,0,0,0.2);
 }
 
+span#statsChars span.portrait:hover {
+  border           : 1px solid rgba(255,255,255,0.8);
+}
+
 span.portrait img {
   width: 100%;
 }

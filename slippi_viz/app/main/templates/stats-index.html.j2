@@ -1,24 +1,15 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-
     <span id="statsIndexGrid">
-
-      <span class="title">
-        All Players
-      </span>
-
+      <span class="title">All Players</span>
       <table>
-        {% for p in players %}
-          {% if p[0] != "" %}
-            <tr>
-              <td><a href="/stats/{{ p[0]|replace('#', '_', 1) }}">{{p[0]}}</a></td>
-              <td>{{p[1]}} games</td>
-            </tr>
-          {% endif%}
+        {% for p in players if p[0] != "" %}
+          <tr>
+            <td><a href="/stats/{{ p[0]|replace('#', '_', 1) }}">{{p[0]}}</a></td>
+            <td>{{p[1]}} games</td>
+          </tr>
         {% endfor%}
       </table>
-
     </span>
-
 {% endblock %}
