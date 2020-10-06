@@ -11,7 +11,7 @@ class Config(object):
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
     SITE_VERSION                   = "0.3.0"
-    SITE_ICON                      = os.path.join(os.getcwd(),"app","static","icons","sandbag.png")
+    SITE_ICON                      = os.path.join(basedir,"static","icons","sandbag.png")
 
     #Data location variables
     STATIC_FOLDER                  = os.path.join(basedir,"static")
