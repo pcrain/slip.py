@@ -86,8 +86,8 @@ def stats_index_page():
 @bp.route('/stats/<tag>', methods=['GET'])
 def stats_page(tag):
   tag   = tag.replace("_","#") #Replace underscore with pound sign
-  mlen  = 10         #Length of recent / most player opponent lists
-  count = 1000       #Number of games to fetch
+  mlen  = 26         #Length of recent / most player opponent lists
+  count = 10000       #Number of games to fetch
 
   #Start with a basic search for tag in either player slot
   p1and=[Replay.p1codetag==tag]

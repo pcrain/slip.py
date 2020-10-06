@@ -1371,8 +1371,10 @@ span#statsGrid {
   grid-area: mostgames;
 }
 
+span#statsGrid td.wp { background-color: yellow; }
 span#statsGrid td.ww { background-color: lime; }
 span#statsGrid td.ll { background-color: pink; }
+span#statsGrid td.lf { background-color: red; }
 
 
 span#statsIndexGrid {

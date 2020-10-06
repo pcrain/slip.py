@@ -75,9 +75,19 @@
           {% for o in stats.top %}
             <tr>
               {% if o[0] > o[1] %}
-                {% set outcome = "w" %}
+                {% if o[1] == 0 %}
+                  {% set outcome = "p" %}
+                {% else %}
+                  {% set outcome = "w" %}
+                {% endif %}
+              {% elif o[1] > o[0] %}
+                {% if o[0] == 0 %}
+                  {% set outcome = "f" %}
+                {% else %}
+                  {% set outcome = "l" %}
+                {% endif %}
               {% else %}
-                {% set outcome = "l" %}
+                {% set outcome = "d" %}
               {% endif %}
               <td>{{ o[3] }}</td>
               <td>{{ o[4] }}</td>
@@ -102,9 +112,19 @@
           {% for o in stats.recent %}
             <tr>
               {% if o[0] > o[1] %}
-                {% set outcome = "w" %}
+                {% if o[1] == 0 %}
+                  {% set outcome = "p" %}
+                {% else %}
+                  {% set outcome = "w" %}
+                {% endif %}
+              {% elif o[1] > o[0] %}
+                {% if o[0] == 0 %}
+                  {% set outcome = "f" %}
+                {% else %}
+                  {% set outcome = "l" %}
+                {% endif %}
               {% else %}
-                {% set outcome = "l" %}
+                {% set outcome = "d" %}
               {% endif %}
               <td>{{ o[3] }}</td>
               <td>{{ o[4] }}</td>

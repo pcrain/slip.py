@@ -36,7 +36,7 @@ def config_generators(app):
       {"id" : 19, "name" : "Sheik",            "intname" : "SHEIK",   "csspos" : 18, "colors" : 5,},
       {"id" : 24, "name" : "Pichu",            "intname" : "PICHU",   "csspos" : 19, "colors" : 4,},
       {"id" : 13, "name" : "Pikachu",          "intname" : "PIKACHU", "csspos" : 20, "colors" : 4,},
-      {"id" : 15, "name" : "Jigglypyff",       "intname" : "JIGGLY",  "csspos" : 21, "colors" : 5,},
+      {"id" : 15, "name" : "Jigglypuff",       "intname" : "JIGGLY",  "csspos" : 21, "colors" : 5,},
       {"id" : 10, "name" : "Mewtwo",           "intname" : "MEWTWO",  "csspos" : 22, "colors" : 4,},
       {"id" : 3,  "name" : "Mr. Game & Watch", "intname" : "WATCH",   "csspos" : 23, "colors" : 4,},
       {"id" : 9,  "name" : "Marth",            "intname" : "MARTH",   "csspos" : 24, "colors" : 5,},
