@@ -115,7 +115,15 @@
                   $("#log-button").prop("disabled",false);
                   $("#log-button").show();
                   $("#log-button").click(function() {
-                    window.open("/api/scanlog/"+rjson["responseJSON"]["details"]);
+                    $.ajax({
+                      type        : "get",
+                      url         : "/api/scanlog/"+rjson["responseJSON"]["details"],
+                      data        : JSON.stringify({"token" : token}),
+                      dataType    : "json",
+                      contentType : "application/json",
+                      cache       : false,
+                      processData : false
+                    });
                   });
                 }
               }

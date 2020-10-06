@@ -201,7 +201,19 @@ def api_get_scan_log(s):
   base = os.path.join(current_app.config['LOG_FOLDER'],s)
   with open(base,'w') as fout:
     json.dump(compressedJsonRead(base+".gz"), fout, indent=1, sort_keys=False)
-  return send_from_directory(current_app.config['LOG_FOLDER'],s)
+  # return send_from_directory(current_app.config['LOG_FOLDER'],s)
+  if os.name == 'nt':
+    notepad = os.path.join(os.getenv('WINDIR'), 'notepad.exe')
+    subprocess.run([notepad, base])
+  else:
+    #Query default file viewer
+    exp_query   = ["xdg-mime","query","default","application/json"]
+    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate("")
+    notepad     = output.decode('utf-8').replace(".desktop\n","")
+
+    subprocess.run([notepad, base])
+  return jsonify({"status" : "ok"})
 
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
