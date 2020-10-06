@@ -30,7 +30,12 @@
             {% endif %}
             <span class="charGrid {{role}}">
               <span class="portrait">
-                <a href="/stats/{{ stats.tag|replace('#', '_', 1) }}?char={{c[0]}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
+                {% if playpercent < 100 %}
+                  {% set url="/stats/"+stats.tag|replace('#', '_', 1)+"?char="+c[0]|string %}
+                {% else %}
+                  {% set url="/stats/"+stats.tag|replace('#', '_', 1) %}
+                {% endif %}
+                <a href="{{url}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
               </span>
               <span class="playtime">
                 {{ playpercent }}%
@@ -47,7 +52,7 @@
             <th>Opponent Char.</th>
             <th>W</th>
             <th>L</th>
-            <th>D</th>
+            {# <th>D</th> #}
             <th>Win%</th>
           </tr>
           {% for mu in stats.opp %}
@@ -55,7 +60,7 @@
               <td>{{ intchardata[mu[0]]['name'] }}</td>
               <td>{{mu[1]}}</td>
               <td>{{mu[2]}}</td>
-              <td>{{mu[3]}}</td>
+              {# <td>{{mu[3]}}</td> #}
               <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
             </tr>
           {% endfor %}
@@ -70,7 +75,7 @@
             <th>Name</th>
             <th>W</th>
             <th>L</th>
-            <th>D</th>
+            {# <th>D</th> #}
           </tr>
           {% for o in stats.top %}
             <tr>
@@ -89,11 +94,11 @@
               {% else %}
                 {% set outcome = "d" %}
               {% endif %}
-              <td>{{ o[3] }}</td>
+              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}">{{ o[3] }}</a></td>
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>
-              <td>{{ o[2] }}</td>
+              {# <td>{{ o[2] }}</td> #}
             </tr>
           {% endfor %}
         </table>
@@ -107,7 +112,7 @@
             <th>Name</th>
             <th>W</th>
             <th>L</th>
-            <th>D</th>
+            {# <th>D</th> #}
           </tr>
           {% for o in stats.recent %}
             <tr>
@@ -126,11 +131,11 @@
               {% else %}
                 {% set outcome = "d" %}
               {% endif %}
-              <td>{{ o[3] }}</td>
+              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}">{{ o[3] }}</a></td>
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>
-              <td>{{ o[2] }}</td>
+              {# <td>{{ o[2] }}</td> #}
             </tr>
           {% endfor %}
         </table>
