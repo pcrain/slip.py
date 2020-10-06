@@ -16,16 +16,6 @@
         Showing most recent {{stats.count}} games
       </span>
       {# {{ rdata.filename }} #}
-      {#
-      <table>
-        {% for item in rdata %}
-          {% for key in item.__dict__ %}
-            <tr><td>{{key}}</td><td>{{item[key]}}</td></tr>
-          {% endfor %}
-          <tr><td colspan=2>--------------------</td></tr>
-        {% endfor %}
-      </table>
-      #}
       {# <button id="data-button" onclick="open_data_folder()">Open Data Folder</button> #}
 
 
@@ -37,7 +27,7 @@
 
       <span id="statsChars">
         {% for c in stats.char %}
-          {% set playcount = (c[1:]|sum) %}
+          {% set playcount = (c[1:7]|sum) %}
           {% if playcount > 0 %}
             {% set playpercent = ((1000*(playcount)/stats.count)|int)/10 %}
             {% set cname = intchardata[c[0]]['intname'] %}

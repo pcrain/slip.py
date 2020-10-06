@@ -10,6 +10,7 @@ from app.main.helpers import *
 from app.models import User, Replay, ScanDir
 
 from datetime import datetime
+from collections import defaultdict
 import os
 
 @bp.before_request
@@ -74,17 +75,34 @@ def settings_page():
   return render_template("settings.html.j2", title="Settings")
 
 @bp.route('/stats', methods=['GET'])
-def stats_page():
-  tag   = "CAPT#931" #Tag of player we're showing stats for
+def stats_index_page():
+  codes = defaultdict(int)
+  for row in Replay.query.all():
+    codes[row.p1codetag] += 1
+    codes[row.p2codetag] += 1
+  players = sorted([(k,codes[k]) for k in codes],key=lambda x: x[1], reverse=True)
+  return render_template("stats-index.html.j2", title="Stats Index", players=players)
+
+@bp.route('/stats/<tag>', methods=['GET'])
+def stats_page(tag):
+  tag   = tag.replace("_","#") #Replace underscore with pound sign
   mlen  = 10         #Length of recent / most player opponent lists
   count = 1000       #Number of games to fetch
+
+  #Start with a basic search for tag in either player slot
+  p1and=[Replay.p1codetag==tag]
+  p2and=[Replay.p2codetag==tag]
+
+  if "char" in request.args:
+    p1and.append(Replay.p1char==request.args["char"])
+    p2and.append(Replay.p2char==request.args["char"])
 
   #Get all relevant rows from the database
   rows = (Replay.query
     .filter(
       or_(
-        Replay.p1codetag==tag,
-        Replay.p2codetag==tag
+        and_(*p1and),
+        and_(*p2and)
       )
     ).order_by(Replay.played.desc())
     .limit(count)
@@ -108,8 +126,6 @@ def stats_page():
 
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
-    rdata = [r]
-
     #Determine player's and opponent's stats for the game
     p       = 1 if r.p1codetag == tag else 2         #player's port number
     if rnum == 0:
@@ -152,7 +168,7 @@ def stats_page():
   #Recent opponent characters are already sorted
   stats["recent"] = stats["recent"][:mlen]
 
-  return render_template("stats.html.j2", title="Stats", rdata=rdata, stats=stats)
+  return render_template("stats.html.j2", title=tag, stats=stats)
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():
