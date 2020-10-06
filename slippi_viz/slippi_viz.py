@@ -126,10 +126,15 @@ if __name__ == "__main__":
       webView = QtWebEngineWidgets.QWebEngineView(window)
       window.setCentralWidget(webView)
 
+      #Back shortcut
+      homepage = WebPage('http://localhost:{}'.format(port))
+      back = QtWidgets.QShortcut(QtGui.QKeySequence("F5"), window);
+      # back.activated.connect(lambda : print("Hi"));
+      back.activated.connect(lambda : homepage.home());
+
       # WebPage Level
-      page = WebPage('http://localhost:{}'.format(port))
-      page.home()
-      webView.setPage(page)
+      homepage.home()
+      webView.setPage(homepage)
 
       window.show()
       return qtapp.exec_()
