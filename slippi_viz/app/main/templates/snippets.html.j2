@@ -1,0 +1,6 @@
+{# Dump a sqlalchemy row #}
+<table>
+  {% for key in rdata.__dict__ %}
+    <tr><td>{{key}}</td><td>{{rdata[key]}}</td>
+  {% endfor %}
+</table>

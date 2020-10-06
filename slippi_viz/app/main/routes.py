@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from flask import render_template, flash, redirect, url_for, request, current_app, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy        import or_, and_
 
 from app import db
 from app.main import bp
@@ -71,6 +72,87 @@ def upload_page():
 @bp.route('/settings', methods=['GET'])
 def settings_page():
   return render_template("settings.html.j2", title="Settings")
+
+@bp.route('/stats', methods=['GET'])
+def stats_page():
+  tag   = "CAPT#931" #Tag of player we're showing stats for
+  mlen  = 10         #Length of recent / most player opponent lists
+  count = 1000       #Number of games to fetch
+
+  #Get all relevant rows from the database
+  rows = (Replay.query
+    .filter(
+      or_(
+        Replay.p1codetag==tag,
+        Replay.p2codetag==tag
+      )
+    ).order_by(Replay.played.desc())
+    .limit(count)
+    .all()
+    )
+
+  #Set up dict for stats
+  stats = {
+    "tag"    : tag,                                    #Tag of player we're showing stats for
+    "name"   : "???",                                  #Display name for player we're showing stats for
+    "count"  : len(rows),                              #Total number of matches returned from query
+    "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
+    "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
+    "recent" : [],                                     #Win,Lose,Draw against most recent opponents
+    "top"    : [],                                     #Win,lose,Draw against most played opponents
+    }
+
+  #Set up miscellaneous variables
+  olast = None #last opponent
+  top   = {}   #most played opponents
+
+  #Compute stats for each returned result
+  for rnum,r in enumerate(rows):
+    rdata = [r]
+
+    #Determine player's and opponent's stats for the game
+    p       = 1 if r.p1codetag == tag else 2         #player's port number
+    if rnum == 0:
+      stats["name"] = r.p1metatag if p == 1 else r.p2metatag
+    oname   = r.p2metatag if p == 1 else r.p1metatag #opponent's display tag
+    o       = 3-p                                    #opponent's port number
+    otag    = r.p2codetag if p == 1 else r.p1codetag #opponent's code tag
+    pstocks = r.p1stocks  if p == 1 else r.p2stocks  #player stock count
+    ostocks = r.p2stocks  if p == 1 else r.p1stocks  #opponent stock count
+    pcolor  = r.p1color   if p == 1 else r.p2color   #player costume choice
+    pchar   = r.p1char    if p == 1 else r.p2char    #player character choice
+    ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
+
+    #Determine the game results
+    if pstocks > ostocks:   res = 0 #win
+    elif ostocks > pstocks: res = 1 #lose
+    else:                   res = 2 #draw
+
+    #Increment appropriate character, costume, opponent, and result choices, creating new ones as needed
+    stats["char"][pchar][pcolor+1] += 1
+    stats["opp"][ochar][res+1]     += 1
+    if otag != olast:
+      stats["recent"].append([0,0,0,otag,oname])
+    stats["recent"][-1][res]  += 1
+    if not otag in top:
+      top[otag] = [0,0,0,otag,oname]
+    top[otag][res] += 1
+
+    olast = otag #Set last-played opponent
+
+  #Sort own characters by number of times pickes
+  stats["char"] = sorted(stats["char"],key=lambda x: sum(x[1:]), reverse=True)
+  #Get preferred costumes for each character
+  for char in stats["char"]:
+    char.append(max(0,char[1:].index(max(char[1:])))) #7th item in the array is the preferred costume
+  #Sort opponent characters by wins / (wins+losses)
+  stats["opp"] = sorted(stats["opp"],key=lambda x: x[1]/(max(1,x[1]+x[2])), reverse=True)
+  #Sort top opponents by most-played
+  stats["top"]  = sorted([top[k] for k in top],key=lambda x: x[0]+x[1]+x[2], reverse=True)[:mlen]
+  #Recent opponent characters are already sorted
+  stats["recent"] = stats["recent"][:mlen]
+
+  return render_template("stats.html.j2", title="Stats", rdata=rdata, stats=stats)
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():

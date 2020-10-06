@@ -7,6 +7,7 @@ def config_generators(app):
     return dict(nav_icons=[
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",     "click" : ""},
       # {"name": "Upload",    "src" : "/upload",   "img" : "header-matchups.png", "class" : "mu",       "click" : ""},
+      {"name": "Stats",     "src" : "/stats",    "img" : "header-pr.png",       "class" : "stats",    "click" : ""},
       {"name": "Scan",      "src" : "/scan",     "img" : "header-search.png",   "class" : "scan",     "click" : ""},
       {"name": "Settings",  "src" : "/settings", "img" : "header-mush.png",     "class" : "settings", "click" : ""},
       ])

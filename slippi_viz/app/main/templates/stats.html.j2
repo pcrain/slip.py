@@ -1,0 +1,156 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+{#
+    <table>
+      {% for key in stats %}
+        <tr><td>{{key}}</td><td>{{stats[key]}}</td></tr>
+      {% endfor %}
+    </table>
+ #}
+    <span id="statsGrid">
+      <span class="title">
+        Player Stats for {{stats.name}} ({{stats.tag}})
+      </span>
+      <span class="subtitle">
+        Showing most recent {{stats.count}} games
+      </span>
+      {# {{ rdata.filename }} #}
+      {#
+      <table>
+        {% for item in rdata %}
+          {% for key in item.__dict__ %}
+            <tr><td>{{key}}</td><td>{{item[key]}}</td></tr>
+          {% endfor %}
+          <tr><td colspan=2>--------------------</td></tr>
+        {% endfor %}
+      </table>
+      #}
+      {# <button id="data-button" onclick="open_data_folder()">Open Data Folder</button> #}
+
+
+      {# Mains, Secondaries, and Other Characters #}
+      <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
+      <span class="h" id="hmatchups"><hr/>Win Rate by Matchup<hr/></span>
+      <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
+      <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
+
+      <span id="statsChars">
+        {% for c in stats.char %}
+          {% set playcount = (c[1:]|sum) %}
+          {% if playcount > 0 %}
+            {% set playpercent = ((1000*(playcount)/stats.count)|int)/10 %}
+            {% set cname = intchardata[c[0]]['intname'] %}
+            {% if loop.index == 1 %}
+              {% set role = "main" %}
+            {% elif loop.index <= 3 %}
+              {% set role = "second" %}
+            {% else %}
+              {% set role = "other" %}
+            {% endif %}
+            <span class="charGrid {{role}}">
+              <span class="portrait">
+                <img title="{{ cname }} ({{playpercent}}%)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" />
+              </span>
+              <span class="playtime">
+                {{ playpercent }}%
+              </span>
+            </span>
+          {% endif %}
+        {% endfor %}
+      </span>
+
+      {# Win / Loss / Draw rate for each matchup #}
+      <span id="statsMatchups">
+        <table>
+          <tr>
+            <th>Opponent Char.</th>
+            <th>W</th>
+            <th>L</th>
+            <th>D</th>
+            <th>Win%</th>
+          </tr>
+          {% for mu in stats.opp %}
+            <tr>
+              <td>{{ intchardata[mu[0]]['name'] }}</td>
+              <td>{{mu[1]}}</td>
+              <td>{{mu[2]}}</td>
+              <td>{{mu[3]}}</td>
+              <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </span>
+
+      {# Most Played Opponents #}
+      <span id="statsMost">
+        <table>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>W</th>
+            <th>L</th>
+            <th>D</th>
+          </tr>
+          {% for o in stats.top %}
+            <tr>
+              {% if o[0] > o[1] %}
+                {% set outcome = "w" %}
+              {% else %}
+                {% set outcome = "l" %}
+              {% endif %}
+              <td>{{ o[3] }}</td>
+              <td>{{ o[4] }}</td>
+              <td class="w{{outcome}}">{{ o[0] }}</td>
+              <td class="l{{outcome}}">{{ o[1] }}</td>
+              <td>{{ o[2] }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </span>
+
+      {# Most Recent Opponents #}
+      <span id="statsNew">
+        <table>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>W</th>
+            <th>L</th>
+            <th>D</th>
+          </tr>
+          {% for o in stats.recent %}
+            <tr>
+              {% if o[0] > o[1] %}
+                {% set outcome = "w" %}
+              {% else %}
+                {% set outcome = "l" %}
+              {% endif %}
+              <td>{{ o[3] }}</td>
+              <td>{{ o[4] }}</td>
+              <td class="w{{outcome}}">{{ o[0] }}</td>
+              <td class="l{{outcome}}">{{ o[1] }}</td>
+              <td>{{ o[2] }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </span>
+
+    </span>
+
+    <script>
+      function open_data_folder() {
+        $.ajax({
+            type        : "post",
+            url         : "/api/opendata",
+            data        : JSON.stringify({}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+            }
+        });
+      }
+    </script>
+{% endblock %}

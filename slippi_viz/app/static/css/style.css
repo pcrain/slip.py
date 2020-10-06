@@ -232,6 +232,7 @@ hr {
 .ni-mu       img { filter: drop-shadow(0px 0px 5px red)    drop-shadow(0px 0px 1px lightgray) ; }
 .ni-scan     img { filter: drop-shadow(0px 0px 5px yellow) drop-shadow(0px 0px 1px lightgray) ; }
 .ni-settings img { filter: drop-shadow(0px 0px 5px orange) drop-shadow(0px 0px 1px lightgray) ; }
+.ni-stats    img { filter: drop-shadow(0px 0px 5px violet) drop-shadow(0px 0px 1px lightgray) ; }
 
 .navbar_top {
   display               : inline-grid;
@@ -991,20 +992,9 @@ span#uploadOuterGrid {
   display: inline-grid;
   grid-template-areas:
     "title"
-    "limit"
+    "subtitle"
     "innergrid"
     ;
-}
-
-span#uploadOuterGrid span.title {
-  grid-area: title;
-  font-size: 28px;
-}
-
-span#uploadOuterGrid span.subtitle {
-  grid-area: limit;
-  font-size: 16px;
-  margin-bottom: 16px;
 }
 
 span#uploadGrid {
@@ -1166,20 +1156,10 @@ span#scanOuterGrid {
   display: inline-grid;
   grid-template-areas:
     "title"
-    "limit"
+    "subtitle"
     "scanlist"
     "innergrid"
     ;
-}
-
-span#scanOuterGrid span.title {
-  grid-area: title;
-  font-size: 28px;
-}
-span#scanOuterGrid span.subtitle {
-  grid-area: limit;
-  font-size: 16px;
-  margin-bottom: 4px;
 }
 
 span#scanOuterGrid span#cur-scans {
@@ -1210,14 +1190,20 @@ span#settingsGrid {
   display: inline-grid;
   grid-template-areas:
     "title"
-    "limit"
+    "subtitle"
     "innergrid"
     ;
 }
 
-span#settingsGrid span.title {
+span.title {
   grid-area: title;
   font-size: 28px;
+}
+
+span.subtitle {
+  grid-area: subtitle;
+  font-size: 16px;
+  /*margin-bottom: 16px;*/
 }
 
 .danger-button {
@@ -1225,3 +1211,164 @@ span#settingsGrid span.title {
   color            : var(--form-fg);
   background-color : red;
 }
+
+span#statsGrid {
+  width                 : 95%;
+  margin-top            : 10px;
+  padding               : 10px;
+  background-color      : rgba(0,0,0,0.25);
+  border                : 4px solid rgba(0,0,0,0.25);
+  border-radius         : 10px;
+  display               : inline-grid;
+}
+
+@media screen and (min-width: 1200px) {
+  span#statsGrid {
+    grid-template-columns : repeat(4, minmax(0, 1fr));
+    grid-template-areas   :
+      "title    title     title      title"
+      "subtitle subtitle  subtitle   subtitle"
+      "hchars   hmatchups hmostgames hnewgames "
+      "chars    matchups  mostgames  newgames  "
+      ;
+  }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1200px) {
+  span#statsGrid {
+    /*grid-gap              : 32px;*/
+    grid-template-columns : repeat(2, minmax(0, 1fr));
+    grid-template-areas   :
+      "title title"
+      "subtitle subtitle"
+      "hchars hmatchups"
+      "chars matchups"
+      "hmostgames hnewgames"
+      "mostgames newgames"
+      ;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  span#statsGrid {
+    /*grid-gap              : 32px;*/
+    grid-template-columns : repeat(1, minmax(0, 1fr));
+    grid-template-areas   :
+      "title"
+      "subtitle"
+      "hchars"
+      "chars"
+      "hmatchups"
+      "matchups"
+      "hmostgames"
+      "mostgames"
+      "hnewgames"
+      "newgames"
+      ;
+  }
+}
+
+span#statsGrid table {
+  margin: auto;
+  text-align: center;
+}
+
+span#statsGrid td {
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0 6px;
+}
+
+span#statsGrid span.h {
+  font-weight : bold;
+  font-size   : 24px;
+}
+
+span#hchars     { grid-area: hchars; }
+span#hmatchups  { grid-area: hmatchups; }
+span#hnewgames  { grid-area: hnewgames; }
+span#hmostgames { grid-area: hmostgames; }
+
+span#statsChars {
+  grid-area             : chars;
+  display               : inline-grid;
+  grid-template-columns : repeat(8, minmax(0, 1fr));
+  grid-auto-rows        : max-content;
+  grid-gap              : 4px;
+}
+
+span#statsChars span.charGrid {
+  display               : inline-grid;
+  grid-template-areas   :
+  "portrait"
+  "playtime"
+  ;
+}
+
+span#statsChars span.portrait {
+  width            : 100%;
+  height           : max-content;
+  grid-area        : portrait;
+  border           : 1px solid rgba(255,255,255,0.2);
+  border-radius    : 8px;
+  background-color : rgba(0,0,0,0.2);
+}
+
+span.portrait img {
+  width: 100%;
+}
+
+span#statsChars span.charGrid.main {
+  grid-column : span 4;
+  grid-row    : span 3;
+  height      : max-content;
+  margin      : auto;
+}
+
+span#statsChars span.charGrid.second {
+  grid-column : span 2;
+  grid-row    : span 2;
+  height      : max-content;
+  margin      : auto;
+}
+
+span#statsChars span.charGrid.other {
+  height : max-content;
+  margin : auto;
+}
+
+span#statsChars span.playtime {
+  grid-area : playtime;
+  font-size: 12px;
+}
+
+span#statsMatchups {
+  grid-area: matchups;
+  /*background-color: red;*/
+}
+
+span#statsMost {
+  grid-area: mostgames;
+  /*background-color: lime;*/
+}
+
+span#statsNew {
+  grid-area: newgames;
+  /*background-color: lime;*/
+}
+
+span#statsGrid {
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8),
+    -1px -1px 3px rgba(0,0,0,0.8),
+     1px -1px 3px rgba(0,0,0,0.8),
+    -1px  1px 3px rgba(0,0,0,0.8),
+     1px  1px 3px rgba(0,0,0,0.8);
+  grid-area: mostgames;
+  /*background-color: red;*/
+}
+
+span#statsGrid td.ww { background-color: lime; }
+span#statsGrid td.ll { background-color: pink; }
