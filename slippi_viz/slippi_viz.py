@@ -117,7 +117,7 @@ if __name__ == "__main__":
       window.setWindowTitle(window_title)
       window.setWindowIcon(QtGui.QIcon(icon))
 
-      #Tray Icon
+      # Tray Icon
       w = QtWidgets.QWidget()
       trayIcon = SystemTrayIcon(QtGui.QIcon(icon), w, window)
       trayIcon.show()
@@ -126,7 +126,7 @@ if __name__ == "__main__":
       webView = QtWebEngineWidgets.QWebEngineView(window)
       window.setCentralWidget(webView)
 
-      #Back shortcut
+      # Back shortcut
       homepage = WebPage('http://localhost:{}'.format(port))
       back = QtWidgets.QShortcut(QtGui.QKeySequence("F5"), window);
       # back.activated.connect(lambda : print("Hi"));

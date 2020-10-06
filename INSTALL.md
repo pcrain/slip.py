@@ -1,9 +1,6 @@
 ### Windows Install Instructions
-  - Install Python 3.8:
-    - Download and install "Windows x86-64 executable installer" at the bottom of [this page](https://www.python.org/downloads/release/python-380/)
-  - Install Pip:
-    - Download "get-pip.py" from [this page](https://www.liquidweb.com/kb/install-pip-windows/)
-    - Double click the file to install it
+  - Install Python 3.8.6 from [the official website](https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe):
+    - You may skip this step if Python is already installed
   - Install slip.py by double-clicking "\_install-win.bat"
   - If the installation is successful, a "slip.py" shortcut will be created on your Desktop
   - Double-click slip.py to launch the Flask application. Note that the command prompt must remain open when using slip.py
