@@ -14,7 +14,7 @@ class Config(object):
     SITE_ICON                      = os.path.join(os.getcwd(),"app","static","icons","sandbag.png")
 
     #Data location variables
-    STATIC_FOLDER                  = os.path.join(basedir,"app","static")
+    STATIC_FOLDER                  = os.path.join(basedir,"static")
     if os.name == 'nt':
       DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")
       ANALYZER                     = "slippc.exe"
