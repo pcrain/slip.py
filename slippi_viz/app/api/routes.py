@@ -4,7 +4,6 @@ from sqlalchemy  import or_, and_
 
 from werkzeug.utils import secure_filename
 from app import db, executor
-# from app import db, limiter, executor
 from app.models import User, Replay, ScanDir
 from app.api import bp
 from app.main.helpers import *
@@ -15,7 +14,6 @@ from pathlib import Path
 import json, glob, ntpath, time, os, subprocess, copy, shutil
 import concurrent.futures
 
-REPLAY_UPLOAD_LIMIT = "600 per hour"
 NODUPES             = True  #Set to True to not allow duplicate reuploads
 NOKEEP              = False #Set to True to delete files after uploading
 
@@ -25,7 +23,6 @@ _scan_jobs = {
 }
 
 @bp.route('/upload', methods=['POST'])
-# @limiter.limit(REPLAY_UPLOAD_LIMIT)
 def api_upload_replay():
     #Populate a return JSON
     jret = {
@@ -330,6 +327,7 @@ def scan_job(token):
   conf      = dict(current_app.config)
   adds      = []
   updates   = []
+  #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
   with concurrent.futures.ProcessPoolExecutor(max_workers=current_app.config["MAX_SCAN_THREADS"]) as ex:
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):

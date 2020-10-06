@@ -10,7 +10,6 @@ setup(
     install_requires     = [
         "Flask",
         "Flask-Executor",
-        "Flask-Limiter",
         "Flask-Login",
         "Flask-SQLAlchemy",
         "Flask-WTF",
