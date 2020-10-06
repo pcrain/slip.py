@@ -9,4 +9,7 @@ app/errors/__pycache__
 app/main/__pycache__
 app.db
 migrations
+build
+dist
+slippi_viz.spec
 *~
