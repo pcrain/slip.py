@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name                 = 'slippi_viz',
-    version              = '0.2.0',
+    version              = '0.3.0',
     packages             = ["slippi_viz"],
     include_package_data = True,
     zip_safe             = False,
@@ -14,5 +14,6 @@ setup(
         "Flask-Login",
         "Flask-SQLAlchemy",
         "Flask-WTF",
+        "PyFladesk"
     ],
 )

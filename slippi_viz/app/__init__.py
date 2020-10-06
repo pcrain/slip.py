@@ -24,6 +24,7 @@ def init_environment(app):
   os.makedirs(app.config["TMP_FOLDER"],exist_ok=True)
 
 def create_app(config_class=Config):
+    print("Creating Flask App")
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -66,6 +67,7 @@ def create_app(config_class=Config):
     app.logger.setLevel(logging.INFO)
     app.logger.info('Slippi Viz startup')
 
+    print("Flask App Created")
     return app
 
 from app import models
