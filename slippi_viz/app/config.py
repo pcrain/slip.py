@@ -14,7 +14,7 @@ class Config(object):
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
-    INSTALL_FOLDER                 = (os.path.dirname(os.path.realpath(os.path.abspath(sys.argv[0]))))
+    INSTALL_FOLDER                 = os.path.dirname(basedir)
     STATIC_FOLDER                  = os.path.join(basedir,"static")
     if os.name == 'nt':
       DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")

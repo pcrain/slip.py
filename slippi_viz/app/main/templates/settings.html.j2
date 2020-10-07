@@ -1,12 +1,6 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-    {# <table>
-      {% for key in settings %}
-        <tr><td>{{key}}</td><td>{{settings[key]}}</td>
-      {% endfor %}
-    </table> #}
-
     <span id="settingsGrid">
       <span class="title">{{SITE_NAME}} - Settings</span>
       {# <button id="purge-button" class="danger-button" onclick="purge()">Purge Data</button> #}
@@ -19,7 +13,6 @@
         Set ISO Path<br/><span class="set">{{ settings["isopath"] }}</span>
       </button>
     </span>
-
 
     <script>
       function change(u,reload=true) {

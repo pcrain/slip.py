@@ -83,6 +83,7 @@ def api_open_install_dir():
 def api_set_emu_path():
   Settings.load()
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
+  print(fp)
   fn = shcall(f"""python {fp} "Select Slippi Dolphin Executable" """)
   if fn:
     Settings.query.filter_by(name="emupath").update({"value" : fn})

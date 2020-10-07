@@ -122,8 +122,15 @@ if __name__ == "__main__":
       trayIcon = SystemTrayIcon(QtGui.QIcon(icon), w, window)
       trayIcon.show()
 
+      # def dump(obj):
+      #   for attr in dir(obj):
+      #     try:    print("obj.%s = %r" % (attr, getattr(obj, attr)))
+      #     except: print("obj.%s = %s" % (attr, "error"))
+      # QtWebEngineWidgets.QWebSettings.clearMemoryCaches()
+
       # WebView Level
       webView = QtWebEngineWidgets.QWebEngineView(window)
+      webView.page().profile().clearHttpCache() #Clear CSS / JS / image cache
       window.setCentralWidget(webView)
 
       # Back shortcut
