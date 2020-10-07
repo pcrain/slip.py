@@ -83,8 +83,7 @@ def api_open_install_dir():
 def api_set_emu_path():
   Settings.load()
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  print(fp)
-  fn = shcall(f"""python {fp} "Select Slippi Dolphin Executable" """)
+  fn = call(["python",fp,"Select Slippi Dolphin Executable"])
   if fn:
     Settings.query.filter_by(name="emupath").update({"value" : fn})
     db.session.commit()
@@ -94,7 +93,7 @@ def api_set_emu_path():
 def api_set_iso_path():
   Settings.load()
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = shcall(f"""python {fp} "Select Melee 1.02 ISO Path" """)
+  fn = call(["python",fp,"Select Melee 1.02 ISO Path"])
   if fn:
     Settings.query.filter_by(name="isopath").update({"value" : fn})
     db.session.commit()
@@ -226,13 +225,12 @@ def api_play_replay(c,sf=-123,ef=999999):
   isopath  = settings["isopath"]
   emupath  = settings["emupath"]
   r        = Replay.query.filter_by(checksum=c).first()
-  p        = os.path.join(r.filedir,r.filename)
-  jdata    = f"""{{"mode":"queue","queue":[{{"path":"{p}","startFrame":{sf},"endFrame":{ef}}}]}}"""
-  tname    = "/tmp/slipjson.json"
+  p        = json.dumps(os.path.join(r.filedir,r.filename))
+  jdata    = f"""{{"mode":"queue","queue":[{{"path":{p},"startFrame":{sf},"endFrame":{ef}}}]}}\r\n"""
+  tname    = os.path.join(current_app.config['DATA_FOLDER'],"__replay__.json")
   with open(tname,'w') as fout:
     fout.write(jdata)
-  comm     = f"{emupath} -b -e {isopath} -i {tname}"
-  subprocess.Popen(shlex.split(comm))
+  subprocess.Popen([emupath,"-b","-e",isopath,"-i",tname])
   return jsonify({"status" : "ok"})
 
 def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):

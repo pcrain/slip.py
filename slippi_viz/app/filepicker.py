@@ -2,7 +2,7 @@
 #Small script for picking files / folders
 
 from PyQt5 import QtCore, QtWidgets
-import sys
+import sys, os
 
 class ApplicationThread(QtCore.QThread):
   def __init__(self):
@@ -23,7 +23,7 @@ class ApplicationThread(QtCore.QThread):
       "All Files (*)",
       options=options)
     if fileName:
-      print(fileName)
+      print(os.path.normpath(fileName),end="")
 
 def main():
   webapp = ApplicationThread()
