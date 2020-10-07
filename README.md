@@ -1,8 +1,12 @@
 # Slip.py - A Slippi replay browser, search engine, and analyzer
 
-![Slip.py Index Screenshot](https://i.imgur.com/P5Oig2b.jpg)
-![Slip.py Replay Screenshot](https://i.imgur.com/bPj1VAA.png)
-![Slip.py Stats Screenshot](https://i.imgur.com/4YM0Tj4.png)
+## Screenshots (click to zoom)
+<span>
+  <img title="Slip.py Index"   src="https://i.imgur.com/P5Oig2b.jpg" alt="alt text" width="200">
+  <img title="Slip.py Replay1" src="https://i.imgur.com/bPj1VAA.jpg" alt="alt text" width="200">
+  <img title="Slip.py Replay2" src="https://i.imgur.com/womlpnP.jpg" alt="alt text" width="200">
+  <img title="Slip.py Stats"   src="https://i.imgur.com/4YM0Tj4.jpg" alt="alt text" width="200">
+</span>
 
 ## Overview
 Slip.py is designed to be a full-featured tool for managing your Slippi replays.
