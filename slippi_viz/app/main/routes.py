@@ -73,7 +73,6 @@ def upload_page():
 @bp.route('/settings', methods=['GET'])
 def settings_page():
   s = Settings.load()
-  print(s)
   return render_template("settings.html.j2", title="Settings", settings=s)
 
 @bp.route('/stats', methods=['GET'])
