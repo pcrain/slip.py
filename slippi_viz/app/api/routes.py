@@ -4,14 +4,17 @@ from sqlalchemy  import or_, and_
 
 from werkzeug.utils import secure_filename
 from app import db, executor
-from app.models import User, Replay, ScanDir
+from app.models import User, Replay, ScanDir, Settings
 from app.api import bp
 from app.main.helpers import *
+
+from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
+
 
 # from __main__ import app
 from datetime import datetime
 from pathlib import Path
-import json, glob, ntpath, time, os, subprocess, copy, shutil
+import json, glob, ntpath, time, os, subprocess, copy, shutil, shlex
 import concurrent.futures
 
 NODUPES             = True  #Set to True to not allow duplicate reuploads
@@ -63,34 +66,27 @@ def api_open_containing_dir():
   f    = request.get_json()["name"]
   full = os.path.join(current_app.config['DATA_FOLDER'],d,f)
   real = os.path.realpath(full)
-
-  if os.name == 'nt':
-    explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
-    subprocess.run([explorer, '/select,', real])
-  else:
-    #Query default file explorer
-    exp_query   = ["xdg-mime","query","default","inode/directory"]
-    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, err = p.communicate("")
-    explorer    = output.decode('utf-8').replace(".desktop\n","")
-
-    #Can't highlight file in every Linux explorer, so settle for opening the directory
-    subprocess.run([explorer, ntpath.dirname(real)])
+  openDir(real,isfile=True)
   return jsonify({"status" : "ok"})
 
-@bp.route('/opendata', methods=['POST'])
+@bp.route('/opendata', methods=['GET'])
 def api_open_data_dir():
-  if os.name == 'nt':
-    explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
-    subprocess.run([explorer, current_app.config['DATA_FOLDER']])
-  else:
-    #Query default file explorer
-    exp_query   = ["xdg-mime","query","default","inode/directory"]
-    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, err = p.communicate("")
-    explorer    = output.decode('utf-8').replace(".desktop\n","")
+  openDir(current_app.config['DATA_FOLDER'])
+  return jsonify({"status" : "ok"})
 
-    subprocess.run([explorer, current_app.config['DATA_FOLDER']])
+@bp.route('/openinstall', methods=['GET'])
+def api_open_install_dir():
+  openDir(current_app.config['INSTALL_FOLDER'])
+  return jsonify({"status" : "ok"})
+
+@bp.route('/setslippipath', methods=['GET'])
+def api_set_slippi_path():
+  # options     = QtWidgets.QFileDialog.Options()
+  # options    |= QtWidgets.QFileDialog.DontUseNativeDialog
+  # fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+  #   None,"Select Slippi Dolphin Executable", "","All Files (*)", options=options)
+  # if fileName:
+  #   print(Settings.load())
   return jsonify({"status" : "ok"})
 
 @bp.route('/purge', methods=['POST'])
@@ -201,23 +197,36 @@ def api_get_scan_log(s):
   base = os.path.join(current_app.config['LOG_FOLDER'],s)
   with open(base,'w') as fout:
     json.dump(compressedJsonRead(base+".gz"), fout, indent=1, sort_keys=False)
-  # return send_from_directory(current_app.config['LOG_FOLDER'],s)
-  if os.name == 'nt':
-    notepad = os.path.join(os.getenv('WINDIR'), 'notepad.exe')
-    subprocess.run([notepad, base])
-  else:
-    #Query default file viewer
-    exp_query   = ["xdg-mime","query","default","application/json"]
-    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, err = p.communicate("")
-    notepad     = output.decode('utf-8').replace(".desktop\n","")
-
-    subprocess.run([notepad, base])
+  openJson(base)
   return jsonify({"status" : "ok"})
 
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
-  return send_from_directory(current_app.config['REPLAY_FOLDER'],r+".slp.json")
+  openJson(
+    os.path.join(
+      current_app.config['REPLAY_FOLDER'],r+".slp.json"))
+  return jsonify({"status" : "ok"})
+
+@bp.route('/play/<c>',           methods=['GET'])
+@bp.route('/play/<c>/<sf>',      methods=['GET'])
+@bp.route('/play/<c>/<sf>/<ef>', methods=['GET'])
+def api_play_replay(c,sf=-123,ef=999999):
+  settings = Settings.load()
+  isopath  = settings["isopath"]
+  emupath  = settings["slippipath"]
+
+  emupath  = "/home/pretzel/workspace/Slippi-FM-r18/playback/dolphin-emu"
+  isopath  = "/home/pretzel/isos/melee102-clean.iso"
+
+  r        = Replay.query.filter_by(checksum=c).first()
+  p        = os.path.join(r.filedir,r.filename)
+  jdata    = f"""{{"mode":"queue","queue":[{{"path":"{p}","startFrame":{sf},"endFrame":{ef}}}]}}"""
+  tname    = "/tmp/slipjson.json"
+  with open(tname,'w') as fout:
+    fout.write(jdata)
+  comm     = f"{emupath} -b -e {isopath} -i {tname}"
+  subprocess.Popen(shlex.split(comm))
+  return jsonify({"status" : "ok"})
 
 def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
     global _scan_jobs

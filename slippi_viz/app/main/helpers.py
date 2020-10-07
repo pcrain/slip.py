@@ -227,3 +227,36 @@ def compressedJsonWrite(data,filename):
 def compressedJsonRead(filename):
   with gzip.GzipFile(filename, 'r') as fin:
     return json.loads(fin.read().decode('utf-8'))
+
+#Open JSON in OS's default JSON viewer
+def openJson(path):
+  if os.name == 'nt':
+    notepad = os.path.join(os.getenv('WINDIR'), 'notepad.exe')
+    subprocess.run([notepad, path])
+  else:
+    #Query default file viewer
+    exp_query   = ["xdg-mime","query","default","application/json"]
+    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate("")
+    notepad     = output.decode('utf-8').replace(".desktop\n","")
+    subprocess.run([notepad, path])
+
+#Open folder (and optionally highlight a file in Windows)
+def openDir(path,isfile=False):
+  if os.name == 'nt':
+    explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
+    if isfile:
+      subprocess.run([explorer, '/select,', path])
+    else:
+      subprocess.run([explorer, path])
+  else:
+    #Query default file explorer
+    exp_query   = ["xdg-mime","query","default","inode/directory"]
+    p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate("")
+    explorer    = output.decode('utf-8').replace(".desktop\n","")
+    if isfile:
+      #Can't highlight file in every Linux explorer, so settle for opening the directory
+      subprocess.run([explorer, ntpath.dirname(path)])
+    else:
+      subprocess.run([explorer, path])

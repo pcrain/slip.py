@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, multiprocessing
+import sys, os, multiprocessing
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
@@ -14,6 +14,7 @@ class Config(object):
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
+    INSTALL_FOLDER                 = (os.path.dirname(os.path.realpath(os.path.abspath(sys.argv[0]))))
     STATIC_FOLDER                  = os.path.join(basedir,"static")
     if os.name == 'nt':
       DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")
@@ -32,4 +33,3 @@ class Config(object):
     EXECUTOR_PROPAGATE_EXCEPTIONS  = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FORCE_COMPRESSION              = False
-

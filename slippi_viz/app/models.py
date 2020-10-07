@@ -54,6 +54,30 @@ def get_cmp(val,arg):
         return val > int(arg[2:])
     return val > int(arg)
 
+class Settings(db.Model):
+    name  = db.Column(db.String(128), primary_key=True)
+    type_ = db.Column(db.String(16))
+    value = db.Column(db.String(128))
+
+    def asDict():
+        casts = {
+          "str"  : lambda x: str(x),
+          "int"  : lambda x: int(x),
+          "num"  : lambda x: float(x),
+          "bool" : lambda x: bool(x),
+          }
+        return { d.name : casts[d.type_](d.value) for d in Settings.query.all() }
+
+    def load():
+      d = Settings.asDict()
+      if len(d.keys()) == 0:
+        db.session.add(Settings(name="isopath",    type_="str",value=""))
+        db.session.add(Settings(name="slippipath", type_="str",value=""))
+        db.session.add(Settings(name="scanthreads",type_="int",value="2"))
+        db.session.commit()
+        d = Settings.asDict()
+      return d
+
 class ScanDir(db.Model):
     fullpath  = db.Column(db.String(128), primary_key=True)
     display   = db.Column(db.String(128), index=True)
