@@ -11,7 +11,7 @@ class Config(object):
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
     SITE_VERSION                   = "0.3.0"
-    SITE_ICON                      = os.path.join(basedir,"static","icons","sandbag.png")
+    SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
     STATIC_FOLDER                  = os.path.join(basedir,"static")
@@ -20,7 +20,7 @@ class Config(object):
       ANALYZER                     = "slippc.exe"
     else:
       DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
-      ANALYZER                     = os.path.join(os.path.expanduser("~"),"bin","slippc")
+      ANALYZER                     = "slippc"
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
     LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
