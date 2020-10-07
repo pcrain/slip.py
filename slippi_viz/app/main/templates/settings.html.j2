@@ -4,10 +4,10 @@
     <span id="settingsGrid">
       <span class="title">{{SITE_NAME}} - Settings</span>
       {# <button id="purge-button" class="danger-button" onclick="purge()">Purge Data</button> #}
-      <button id="data-button" onclick="change('/api/opendata',false)">Open Data Folder</button>
-      <button id="install-button" onclick="change('/api/openinstall',false)">Open Install Folder</button>
+      <button id="data-button" onclick="change('/api/opendata',false)">Open Data Folder<br/><span class="set">{{ DATA_FOLDER }}</span></button>
+      <button id="install-button" onclick="change('/api/openinstall',false)">Open Install Folder<br/><span class="set">{{ INSTALL_FOLDER }}</span></button>
       <button id="install-button" onclick="change('/api/setemupath')">
-        Set Slippi Path:<br/><span class="set">{{ settings["emupath"] }}</span>
+        Set Slippi Path<br/><span class="set">{{ settings["emupath"] }}</span>
       </button>
       <button id="install-button" onclick="change('/api/setisopath')">
         Set ISO Path<br/><span class="set">{{ settings["isopath"] }}</span>
