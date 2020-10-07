@@ -1,15 +1,33 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
+    {# <table>
+      {% for key in settings %}
+        <tr><td>{{key}}</td><td>{{settings[key]}}</td>
+      {% endfor %}
+    </table> #}
+
     <span id="settingsGrid">
       <span class="title">{{SITE_NAME}} - Settings</span>
       {# <button id="purge-button" class="danger-button" onclick="purge()">Purge Data</button> #}
-      <button id="data-button" onclick="$.ajax({url:'/api/opendata'})">Open Data Folder</button>
-      <button id="install-button" onclick="$.ajax({url:'/api/openinstall'})">Open Install Folder</button>
-      <button id="install-button" onclick="$.ajax({url:'/api/setslippipath'})">Set Slippi Path</button>
+      <button id="data-button" onclick="change('/api/opendata',false)">Open Data Folder</button>
+      <button id="install-button" onclick="change('/api/openinstall',false)">Open Install Folder</button>
+      <button id="install-button" onclick="change('/api/setemupath')">
+        Set Slippi Path:<br/><span class="set">{{ settings["emupath"] }}</span>
+      </button>
+      <button id="install-button" onclick="change('/api/setisopath')">
+        Set ISO Path<br/><span class="set">{{ settings["isopath"] }}</span>
+      </button>
     </span>
 
+
     <script>
+      function change(u,reload=true) {
+        $.ajax({
+          url : u,
+          success: function() { if(reload) { location.reload(); } }
+        });
+      }
       // function purge() {
       //   if (confirm("Delete all user data? (1/3)")) {
       //     if (confirm("Are you sure? This cannot be undone. (2/3)")) {

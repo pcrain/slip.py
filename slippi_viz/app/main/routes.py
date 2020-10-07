@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask import render_template, flash, redirect, url_for, request, current_app, send_from_directory
+from flask import render_template, jsonify, flash, redirect, url_for, request, current_app, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy        import or_, and_
 
@@ -7,7 +7,7 @@ from app import db
 from app.main import bp
 from app.main.forms import ReplaySearchForm
 from app.main.helpers import *
-from app.models import User, Replay, ScanDir
+from app.models import User, Replay, ScanDir, Settings
 
 from datetime import datetime
 from collections import defaultdict
@@ -72,7 +72,9 @@ def upload_page():
 
 @bp.route('/settings', methods=['GET'])
 def settings_page():
-  return render_template("settings.html.j2", title="Settings")
+  s = Settings.load()
+  print(s)
+  return render_template("settings.html.j2", title="Settings", settings=s)
 
 @bp.route('/stats', methods=['GET'])
 def stats_index_page():

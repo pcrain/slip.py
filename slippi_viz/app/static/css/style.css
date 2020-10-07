@@ -1394,3 +1394,8 @@ span#statsIndexGrid table {
   /*width: max-content;*/
   margin: auto;
 }
+
+span#settingsGrid span.set {
+  font-weight : bold;
+  color       : lime;
+}

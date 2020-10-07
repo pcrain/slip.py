@@ -79,14 +79,24 @@ def api_open_install_dir():
   openDir(current_app.config['INSTALL_FOLDER'])
   return jsonify({"status" : "ok"})
 
-@bp.route('/setslippipath', methods=['GET'])
-def api_set_slippi_path():
-  # options     = QtWidgets.QFileDialog.Options()
-  # options    |= QtWidgets.QFileDialog.DontUseNativeDialog
-  # fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
-  #   None,"Select Slippi Dolphin Executable", "","All Files (*)", options=options)
-  # if fileName:
-  #   print(Settings.load())
+@bp.route('/setemupath', methods=['GET'])
+def api_set_emu_path():
+  Settings.load()
+  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
+  fn = shcall(f"""python {fp} "Select Slippi Dolphin Executable" """)
+  if fn:
+    Settings.query.filter_by(name="emupath").update({"value" : fn})
+    db.session.commit()
+  return jsonify({"status" : "ok"})
+
+@bp.route('/setisopath', methods=['GET'])
+def api_set_iso_path():
+  Settings.load()
+  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
+  fn = shcall(f"""python {fp} "Select Melee 1.02 ISO Path" """)
+  if fn:
+    Settings.query.filter_by(name="isopath").update({"value" : fn})
+    db.session.commit()
   return jsonify({"status" : "ok"})
 
 @bp.route('/purge', methods=['POST'])
@@ -207,17 +217,13 @@ def api_get_raw_analysis(r):
       current_app.config['REPLAY_FOLDER'],r+".slp.json"))
   return jsonify({"status" : "ok"})
 
-@bp.route('/play/<c>',           methods=['GET'])
-@bp.route('/play/<c>/<sf>',      methods=['GET'])
-@bp.route('/play/<c>/<sf>/<ef>', methods=['GET'])
+@bp.route('/play/<c>',           methods=['GET']) #File
+@bp.route('/play/<c>/<sf>',      methods=['GET']) #File, Start
+@bp.route('/play/<c>/<sf>/<ef>', methods=['GET']) #File, Start, End
 def api_play_replay(c,sf=-123,ef=999999):
   settings = Settings.load()
   isopath  = settings["isopath"]
-  emupath  = settings["slippipath"]
-
-  emupath  = "/home/pretzel/workspace/Slippi-FM-r18/playback/dolphin-emu"
-  isopath  = "/home/pretzel/isos/melee102-clean.iso"
-
+  emupath  = settings["emupath"]
   r        = Replay.query.filter_by(checksum=c).first()
   p        = os.path.join(r.filedir,r.filename)
   jdata    = f"""{{"mode":"queue","queue":[{{"path":"{p}","startFrame":{sf},"endFrame":{ef}}}]}}"""

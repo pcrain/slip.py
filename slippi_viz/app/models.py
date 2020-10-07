@@ -72,7 +72,7 @@ class Settings(db.Model):
       d = Settings.asDict()
       if len(d.keys()) == 0:
         db.session.add(Settings(name="isopath",    type_="str",value=""))
-        db.session.add(Settings(name="slippipath", type_="str",value=""))
+        db.session.add(Settings(name="emupath",    type_="str",value=""))
         db.session.add(Settings(name="scanthreads",type_="int",value="2"))
         db.session.commit()
         d = Settings.asDict()
