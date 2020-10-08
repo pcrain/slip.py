@@ -1415,3 +1415,18 @@ span.errorblock code {
   width            : 75%;
   background-color : rgba(255,0,0,0.4);
 }
+
+span.stockcount {
+  font-weight: bold;
+  font-size: 20px;
+  vertical-align: top;
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8),
+    -1px -1px 3px rgba(0,0,0,0.8),
+     1px -1px 3px rgba(0,0,0,0.8),
+    -1px  1px 3px rgba(0,0,0,0.8),
+     1px  1px 3px rgba(0,0,0,0.8);
+}
