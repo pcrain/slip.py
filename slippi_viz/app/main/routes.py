@@ -217,13 +217,14 @@ def stats_page(tag):
 def stats2_page(tag):
   tag   = tag.replace("_","#") #Replace underscore with pound sign
   stats = get_stats(tag,request.args)
-  print(stats)
+  # print(stats)
   barvals = [{
-    "label" : item[3],
-    "pos"   : item[0],
-    "neg"   : item[1],
+    "label" : item[3], #code
+    "pos"   : item[0], #wins
+    "neg"   : item[1], #losses
   } for item in stats["top"]]
-  print(barvals)
+  barvals = sorted(barvals,key=lambda x: x["label"])#[:10]
+  # print(barvals)
   return render_template("stats2.html.j2", title=tag, stats=stats, data=barvals)
 
 @bp.route('/scan', methods=['GET'])
