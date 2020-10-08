@@ -30,10 +30,18 @@ def favicon():
 @bp.route('/')
 @bp.route('/replays')
 def replays():
+    rdir     = current_app.config['REPLAY_FOLDER']
     q        = request.args.get("query",None)
     ddir     = request.args.get("path","")
-    rdir     = current_app.config['REPLAY_FOLDER']
     page     = request.args.get('page', 1, type=int)
+    scandirs = ScanDir.query.all()
+
+    #If we're at a top-level scanned directory, back out to index
+    for item in scandirs:
+      if item.path == ddir:
+        ddir = ""
+        break
+
     if (q is None) and (ddir == ""):
         rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     else:
@@ -41,10 +49,10 @@ def replays():
 
     ddata = []
     if ddir == "":
-        for item in ScanDir.query.all():
+        for item in scandirs:
             ddata.append(check_single_folder_for_slippi_files(item.path,item.display,indb=True))
     else:
-        ddata = check_for_slippi_files(ddir)
+        ddata = check_for_slippi_files(ddir,nav=2)
 
     #Copy GET args and set next / previous page
     qdict             = dict(request.args)

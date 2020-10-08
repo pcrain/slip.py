@@ -159,16 +159,17 @@ def check_for_slippi_files(path,nav=False):
       "click" : "travel",
       "sort"  : 1,
       })
-    c = count_slippi_files(path)
-    ddata.append({
-      "name"  : "Add "+path,
-      "path"  : path,
-      "dirs"  : c["dirs"],
-      "files" : c["files"],
-      "class" : "curdir",
-      "click" : "travel",
-      "sort"  : 2,
-      })
+    if nav < 2:
+      c = count_slippi_files(path)
+      ddata.append({
+        "name"  : "Add "+path,
+        "path"  : path,
+        "dirs"  : c["dirs"],
+        "files" : c["files"],
+        "class" : "curdir",
+        "click" : "travel",
+        "sort"  : 2,
+        })
   for f in os.listdir(path):
       data = check_single_folder_for_slippi_files(path,f)
       if data is not None:

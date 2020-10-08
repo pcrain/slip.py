@@ -81,9 +81,9 @@ def api_open_install_dir():
 
 @bp.route('/setemupath', methods=['GET'])
 def api_set_emu_path():
-  Settings.load()
+  cp = Settings.load()["emupath"]
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = call(["python",fp,"Select Slippi Dolphin Executable"])
+  fn = call(["python",fp,"Select Slippi Dolphin Executable",cp])
   if fn:
     Settings.query.filter_by(name="emupath").update({"value" : fn})
     db.session.commit()
@@ -91,9 +91,9 @@ def api_set_emu_path():
 
 @bp.route('/setisopath', methods=['GET'])
 def api_set_iso_path():
-  Settings.load()
+  cp = Settings.load()["isopath"]
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = call(["python",fp,"Select Melee 1.02 ISO Path"])
+  fn = call(["python",fp,"Select Melee 1.02 ISO Path",cp])
   if fn:
     Settings.query.filter_by(name="isopath").update({"value" : fn})
     db.session.commit()
@@ -106,8 +106,22 @@ def api_toggle_auto_scan():
   db.session.commit()
   return jsonify({"status" : "ok"})
 
+@bp.route('/togglescanthreads', methods=['GET'])
+def api_toggle_scan_threads():
+  m = current_app.config["MAX_SCAN_THREADS"]
+  s = str((Settings.load()["scanthreads"]%m)+1)
+  Settings.query.filter_by(name="scanthreads").update({"value" : s})
+  db.session.commit()
+  return jsonify({"status" : "ok"})
+
+@bp.route('/deletereplays', methods=['POST'])
+def api_delete_all_replays():
+  Replay.query.delete()
+  db.session.commit()
+  return jsonify({"status" : "ok"})
+
 @bp.route('/purge', methods=['POST'])
-def api_purge():
+def api_purge_all_data():
   # Replay.query.delete()
   if os.path.exists(current_app.config["DATA_FOLDER"]):
     shutil.rmtree(current_app.config["DATA_FOLDER"])
@@ -334,6 +348,8 @@ def scan_single(i,r,token,conf,checksums):
 def scan_job(token):
   global _scan_jobs
 
+  settings    = Settings.load()
+
   tmpfile     = os.path.join(current_app.config['TMP_FOLDER'],token)
   allreplays  = []
   rdata       = []
@@ -361,7 +377,7 @@ def scan_job(token):
   adds      = []
   updates   = []
   #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
-  with concurrent.futures.ProcessPoolExecutor(max_workers=current_app.config["MAX_SCAN_THREADS"]) as ex:
+  with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
       # if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:

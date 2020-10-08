@@ -10,8 +10,10 @@ class ApplicationThread(QtCore.QThread):
 
   def run(self):
     title = "Select a File"
+    path  = os.path.expanduser("~")
     try: #Keep iterating through argv until we hit the end of the list
       title = sys.argv[1]
+      path  = sys.argv[2]
     except:
       pass
     options     = QtWidgets.QFileDialog.Options()
@@ -19,7 +21,7 @@ class ApplicationThread(QtCore.QThread):
     fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
       None,
       title,
-      "",
+      path,
       "All Files (*)",
       options=options)
     if fileName:

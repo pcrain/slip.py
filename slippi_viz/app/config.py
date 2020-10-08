@@ -6,11 +6,11 @@ class Config(object):
     #User config variables
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
-    MAX_SCAN_THREADS               = max(1,multiprocessing.cpu_count()//2)
+    MAX_SCAN_THREADS               = multiprocessing.cpu_count()
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.3.0"
+    SITE_VERSION                   = "0.3.1"
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables

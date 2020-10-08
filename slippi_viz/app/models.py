@@ -2,10 +2,12 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime          import datetime
 from app               import db, login
+from app.config        import Config
 from flask_login       import UserMixin, AnonymousUserMixin
 from hashlib           import md5
 from sqlalchemy        import or_, and_
 import sys
+
 
 class Anonymous(AnonymousUserMixin):
   def __init__(self):
@@ -75,7 +77,7 @@ class Settings(db.Model):
       if not "emupath" in d:
           db.session.add(Settings(name="emupath",    type_="str" ,value=""))
       if not "scanthreads" in d:
-          db.session.add(Settings(name="scanthreads",type_="int" ,value="2"))
+          db.session.add(Settings(name="scanthreads",type_="int" ,value=str(max(1,Config.MAX_SCAN_THREADS//2))))
       if not "autoscan" in d:
           db.session.add(Settings(name="autoscan",   type_="bool",value="False"))
           db.session.commit()
@@ -83,16 +85,16 @@ class Settings(db.Model):
       return d
 
 class ScanDir(db.Model):
-    fullpath  = db.Column(db.String(128), primary_key=True)
-    display   = db.Column(db.String(128), index=True)
-    path      = db.Column(db.String(128), index=True)
+    fullpath  = db.Column(db.String(), primary_key=True)
+    display   = db.Column(db.String(), index=True)
+    path      = db.Column(db.String(), index=True)
     lastscan  = db.Column(db.String(19))
 
 class Replay(db.Model):
     id        = db.Column(db.Integer, primary_key=True)
     checksum  = db.Column(db.String(32))
-    filename  = db.Column(db.String(128))
-    filedir   = db.Column(db.String(128))
+    filename  = db.Column(db.String())
+    filedir   = db.Column(db.String())
     filesize  = db.Column(db.Integer)
     user_id   = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
     played    = db.Column(db.String(19), index=True)

@@ -138,9 +138,9 @@ if __name__ == "__main__":
       homepage.home()
       webView.setPage(homepage)
 
-      # Back shortcut (handled in Javascript now)
-      # back = QtWidgets.QShortcut(QtGui.QKeySequence("F5"), window);
-      # back.activated.connect(lambda : homepage.home());
+      # Hard refresh shortcut
+      back = QtWidgets.QShortcut(QtGui.QKeySequence("F12"), window);
+      back.activated.connect(lambda : homepage.home());
 
       window.show()
       return qtapp.exec_()
