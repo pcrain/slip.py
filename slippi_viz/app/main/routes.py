@@ -215,16 +215,22 @@ def stats_page(tag):
 
 @bp.route('/stats2/<tag>', methods=['GET'])
 def stats2_page(tag):
-  tag   = tag.replace("_","#") #Replace underscore with pound sign
-  stats = get_stats(tag,request.args)
-  # print(stats)
-  barvals = [{
-    "label" : item[3], #code
-    "pos"   : item[0], #wins
-    "neg"   : item[1], #losses
-  } for item in stats["top"]]
-  barvals = sorted(barvals,key=lambda x: x["label"])#[:10]
-  # print(barvals)
+  tag     = tag.replace("_","#") #Replace underscore with pound sign
+  stats   = get_stats(tag,request.args)
+  # Jinja does not preserve dict key order
+  barvals = { "data" : [{
+      "Code"  : item[3], #code
+      "Wins"  : item[0], #wins
+      "Losses": item[1], #losses
+    } for item in stats["top"]],
+    "meta" : {
+      "labels"   : "Code",
+      "pos"      : "Wins",
+      "neg"      : "Losses",
+      "ttkeys"   : ["Code","Wins","Losses"], #keys to show in tooltip
+    }
+  }
+  # barvals["data"] = sorted(barvals["data"],key=lambda x: x["Code"])#[:10]
   return render_template("stats2.html.j2", title=tag, stats=stats, data=barvals)
 
 @bp.route('/scan', methods=['GET'])

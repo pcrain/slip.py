@@ -1,46 +1,40 @@
+{# https://bl.ocks.org/WillTurman/9c4142944f6132855fd318350f552b7b #}
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
+  .title {
+    font: 15px sans-serif;
+  }
 
-.title {
-  font: 15px sans-serif;
-}
+  .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
 
-.legend {
-  font: 10px sans-serif;
-}
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+  .svg-container {
+    display        : inline-block;
+    position       : relative;
+    width          : 100%;
+    /*height         : 100%;*/
+    vertical-align : top;
+    overflow       : hidden;
+  }
 
-.svg-container {
-  display        : inline-block;
-  position       : relative;
-  width          : 100%;
-  /*height         : 100%;*/
-  vertical-align : top;
-  overflow       : hidden;
-}
+  div.tooltip {
+    z-index        : 100000;
+    position       : absolute;
+    text-align     : center;
+    padding        : 2px;
+    font           : 12px sans-serif;
+    background     : rgba(255,255,255,0.75);
+    border         : 2px solid black;
+    border-radius  : 8px;
+    pointer-events : none;
+  }
 
-div.tooltip {
-  z-index        : 100000;
-  position       : absolute;
-  text-align     : center;
-  padding        : 2px;
-  font           : 12px sans-serif;
-  background     : rgba(255,255,255,0.75);
-  border         : 2px solid black;
-  border-radius  : 8px;
-  pointer-events : none;
-}
-
-div.tooltip td {
-  padding: 0 4px;
-}
-
+  div.tooltip td { padding: 0 4px; }
 </style>
 <body>
   {# <div>{{(stats["top"]|tojson)}}</div> #}
@@ -48,15 +42,27 @@ div.tooltip td {
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
 <script>
-  var data    = {{ (data|tojson) }};
+  // alert(JSON.stringify({{data}}));
+  var jdat    = {{ (data|tojson) }};     //Import JSON data passed through Jinja
+  // alert(JSON.stringify(jdat));
+
+  var klab    = jdat["meta"]["labels"];  //Item keys corresponding to X-axis labels
+  var kpos    = jdat["meta"]["pos"];     //Item keys corresponding to positive bars
+  var kneg    = jdat["meta"]["neg"];     //Item keys corresponding to negative bars
+  var ttkeys  = jdat["meta"]["ttkeys"];  //Keys to show in item tooltip
+  var data    = jdat["data"];            //Actual data after parsing through meta info
+
+  // alert(JSON.stringify(ttkeys));
+  // alert(JSON.stringify(data));
+
   var cwidth  = 1920;  //Width of canvas
   var cheight = 850;   //Height of canvas
-  var mleft   = 30;    //Lefthand margin
-  var mright  = 20;    //Righthand margin
+  var mleft   = 0;     //Lefthand margin
+  var mright  = 0;     //Righthand margin
   var xfill   = 0.5;   //Amount of free space bars fill up
 
   // X axis labels
-  var labels  = data.map(function(item) {return item["label"];});
+  var labels  = data.map(function(item) {return item[klab];});
   // # of labels
   var nlabels = labels.length;
   // width of canvas minus margins
@@ -64,7 +70,7 @@ div.tooltip td {
   // space between bars on canvas
   var xspace  = width/nlabels; //Spacing between tick marks
   // width of bars on canvas
-  var barwidth = xspace*xfill;            //Width of bars
+  var barwidth = xspace*xfill;
 
   var margin = {
     top    : 20,         //Leave enough space for title
@@ -92,18 +98,21 @@ div.tooltip td {
   var centerLine = d3.axisTop(center).ticks(0);
 
   data.forEach(function(d) {
+    var y0_pos = 0;
+    var y0_neg = 0;
+
     d.components = [
-      {parent: d, sign:  1, key : "wins",   y1: 0, y0: d["pos"]}, //Wins
-      {parent: d, sign: -1, key : "losses", y0: 0, y1: d["neg"]}, //Losses
+      {parent: d, sign:  1, key : "wins",   y1: y0_pos, y0: y0_pos += d[kpos]}, //Wins
+      {parent: d, sign: -1, key : "losses", y0: y0_neg, y1: y0_neg -= d[kneg]}, //Losses
       ];
   })
 
   //Scale y axis to max of wins / losses in both directions
   var y_min = d3.min(data, function(d) {
-    return -d["neg"] - 16;
+    return -d[kneg] - 16;
   });
   var y_max = d3.max(data, function(d) {
-    return d["pos"]  + 16;
+    return d[kpos]  + 16;
   });
 
   x.domain(labels);
@@ -137,9 +146,9 @@ div.tooltip td {
       .style("text-anchor", "start");
     ;
 
-  svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
+  // svg.append("g")
+  //   .attr("class", "y axis")
+  //   .call(yAxis);
 
   svg.append("g")
     .attr("class", "centerline")
@@ -156,17 +165,17 @@ div.tooltip td {
     .data(data)
     .enter().append("g")
     .attr("class", "g")
-    .attr("transform", function(d) { return "translate(" + x(d["label"]) + ", 0)"; });
+    .attr("transform", function(d) { return "translate(" + x(d[klab]) + ", 0)"; });
 
   entry.selectAll("text")
     .data(function(d) { return d.components; })
     .enter().append("text")
-      .attr("font-size", d => `${xspace/4}px`)
-      .text(function(d) { return (d.sign == 1 ? d.y0 : d.y1); })
+      .attr("font-size", d => `${xspace/3}px`)
+      .text(function(d) { return d.sign*(d.sign == 1 ? d.y0 : d.y1); })
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "central")
       .attr("x", 0)
-      .attr("y", function(d) { return -d.sign*10+y(d.sign == 1 ? d.y0 : -d.y1); })
+      .attr("y", function(d) { return -d.sign*16+y(d.sign == 1 ? d.y0 : d.y1); })
     ;
   entry.selectAll("rect")
     .data(function(d) { return d.components; })
@@ -182,13 +191,14 @@ div.tooltip td {
         div.transition()
           .duration(200)
           .style("opacity", .9);
-        div.html(
-          "<table>"
-            +"<tr><td>Label</td><td>"   +d["parent"]["label"]+"</td></tr>"
-            +"<tr><td>Wins</td><td>"    +d["parent"]["pos"]  +"</td></tr>"
-            +"<tr><td>Lossess</td><td>" +d["parent"]["neg"]  +"</td></tr>"
-          +"</table>"
-          )
+        div.html(function(){
+          var ss = "<table>";
+          for (const [i, k] of ttkeys.entries()) {
+            ss += "<tr><td>"+k+"</td><td>"   +d["parent"][k]  +"</td></tr>";
+          }
+          ss += "</table>";
+          return ss;
+          })
           .style("left", (d3.event.pageX) + "px")
           .style("top", (d3.event.pageY - 28) + "px");
         })
