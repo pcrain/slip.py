@@ -9,7 +9,7 @@ from app.main.forms import ReplaySearchForm
 from app.main.helpers import *
 from app.models import User, Replay, ScanDir, Settings
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 import os
 
@@ -113,8 +113,9 @@ def stats_index_page():
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 
 def get_stats(tag,args):
+  ndays = 29         #Number of days to backlog
   mlen  = 26         #Length of recent / most player opponent lists
-  count = 10000       #Number of games to fetch
+  count = 10000      #Number of games to fetch
 
   #Start with a basic search for tag in either player slot
   p1and=[Replay.p1codetag==tag]
@@ -149,12 +150,15 @@ def get_stats(tag,args):
 
   #Set up miscellaneous variables
   olast  = None #last opponent
+  latest = None #date of last match played
   top    = {}   #most played opponents
   tagmap = {}   #map of codes to display tags
+  dmap   = {}   #map of dates to winrates
 
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
     #Determine player's and opponent's stats for the game
+    gdate   = r.played[:10]                          #date the game was played
     p       = 1 if r.p1codetag == tag else 2         #player's port number
     pname   = r.p1metatag if p == 1 else r.p2metatag #player's display name
     oname   = r.p2metatag if p == 1 else r.p1metatag #opponent's display tag
@@ -166,11 +170,18 @@ def get_stats(tag,args):
     pchar   = r.p1char    if p == 1 else r.p2char    #player character choice
     ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
 
-    #Get display names and tags
+    #Get latest dates, display names and tags
     if not stats["name"]:
       stats["name"] = pname
     if not tagmap.get(otag,None):
       tagmap[otag] = oname
+    if not latest:
+      latest    = gdate
+      asdate    = datetime.strptime(latest, '%Y-%m-%d')
+      #Get data from last ndays days
+      for i in range(ndays-1,-1,-1):
+        timestamp = (asdate-timedelta(days=i)).strftime('%Y-%m-%d')
+        dmap[timestamp] = [0,0,0]
 
     #Determine the game results
     if pstocks > ostocks:   res = 0 #win
@@ -187,11 +198,17 @@ def get_stats(tag,args):
       top[otag] = [0,0,0,otag]
     top[otag][res] += 1
 
+    #Only track matches that fall within the requested date range
+    if gdate in dmap:
+      dmap[gdate][res] += 1
+
     olast = otag #Set last-played opponent
 
   #Reconcile Slippi codes with display tags
   for o in top.values():    o.append(tagmap[o[-1]])
   for o in stats["recent"]: o.append(tagmap[o[-1]])
+
+  # print(dmap)
 
   #Sort own characters by number of times pickes
   stats["char"] = sorted(stats["char"],key=lambda x: sum(x[1:]), reverse=True)
@@ -205,6 +222,35 @@ def get_stats(tag,args):
   #Recent opponent characters are already sorted
   stats["recent"] = stats["recent"][:mlen]
 
+  #Game dates are already sorted, so convert it to proper bar chart format
+  stats["bydate"] = { "data" : [{
+      "Date"  : k,          #dates
+      "Wins"  : dmap[k][0], #wins
+      "Losses": dmap[k][1], #losses
+    } for k in dmap],
+    "meta" : {
+      "labels"   : "Date",
+      "pos"      : "Wins",
+      "neg"      : "Losses",
+      "ttkeys"   : ["Date","Wins","Losses"], #keys to show in tooltip
+      "rot"      : 0,
+    }
+  }
+  #Compile barchart data for most played opponents
+  stats["bytop"] = { "data" : [{
+      "Code"  : item[3], #code
+      "Wins"  : item[0], #wins
+      "Losses": item[1], #losses
+    } for item in stats["top"]],
+    "meta" : {
+      "labels"   : "Code",
+      "pos"      : "Wins",
+      "neg"      : "Losses",
+      "ttkeys"   : ["Code","Wins","Losses"], #Jinja does not preserve dict key order
+      "rot"      : 90,
+    }
+  }
+  stats["bytop"]["data"] = sorted(stats["bytop"]["data"],key=lambda x: x["Code"])[:10]
   return stats
 
 @bp.route('/stats/<tag>', methods=['GET'])
@@ -217,21 +263,8 @@ def stats_page(tag):
 def stats2_page(tag):
   tag     = tag.replace("_","#") #Replace underscore with pound sign
   stats   = get_stats(tag,request.args)
-  # Jinja does not preserve dict key order
-  barvals = { "data" : [{
-      "Code"  : item[3], #code
-      "Wins"  : item[0], #wins
-      "Losses": item[1], #losses
-    } for item in stats["top"]],
-    "meta" : {
-      "labels"   : "Code",
-      "pos"      : "Wins",
-      "neg"      : "Losses",
-      "ttkeys"   : ["Code","Wins","Losses"], #keys to show in tooltip
-    }
-  }
-  barvals["data"] = sorted(barvals["data"],key=lambda x: x["Code"])#[:10]
-  return render_template("stats2.html.j2", title=tag, stats=stats, bardata=barvals)
+  # return render_template("stats2.html.j2", title=tag, stats=stats, bardata=stats["bytop"])
+  return render_template("stats2.html.j2", title=tag, stats=stats, bardata=stats["bydate"])
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():

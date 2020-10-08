@@ -42,6 +42,7 @@ body {
   color            : white;
   background-color : rgba(48,40,48,1.00);
   font-family      : 'Proza';
+  margin           : 0;
 }
 
 a {
@@ -1504,6 +1505,16 @@ div.svgtooltip {
   border         : 2px solid black;
   border-radius  : 8px;
   pointer-events : none;
+
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8),
+    -1px -1px 3px rgba(0,0,0,0.8),
+     1px -1px 3px rgba(0,0,0,0.8),
+    -1px  1px 3px rgba(0,0,0,0.8),
+     1px  1px 3px rgba(0,0,0,0.8);
 }
 
 div.svgtooltip td { padding: 0 4px; }

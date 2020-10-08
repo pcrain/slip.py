@@ -1,5 +1,4 @@
 {# https://bl.ocks.org/WillTurman/9c4142944f6132855fd318350f552b7b #}
-
 <script>
   var jdat     = {{ (jsondata|tojson) }};  //Import JSON data passed through Jinja
 
@@ -7,6 +6,7 @@
   var kpos     = jdat["meta"]["pos"];     //Item keys corresponding to positive bars
   var kneg     = jdat["meta"]["neg"];     //Item keys corresponding to negative bars
   var ttkeys   = jdat["meta"]["ttkeys"];  //Keys to show in item tooltip
+  var rot      = jdat["meta"]["rot"];     //Label rotation (in degrees)
   var data     = jdat["data"];            //Actual data after parsing through meta info
 
   // alert(JSON.stringify({{data}}));
@@ -15,9 +15,9 @@
   // alert(JSON.stringify(data));
 
   var cwidth   = 1920;  //Width of canvas
-  var cheight  = 850;   //Height of canvas
-  var mleft    = 0;     //Lefthand margin
-  var mright   = 0;     //Righthand margin
+  var cheight  = 800;   //Height of canvas
+  var mleft    = 80;     //Lefthand margin
+  var mright   = 80;     //Righthand margin
   var xfill    = 0.5;   //Amount of free space bars fill up
 
   // X axis labels
@@ -84,13 +84,14 @@
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis)
     .selectAll("text")
-      .attr("font-size", d => `${xspace/4}px`)
-      // .attr("y", -barwidth/2)
-      .attr("y", 0)
-      .attr("x", 9)
+      .attr("opacity", function(d,i) { return (i % 7 == 0) ? 1 : 0; })
+      .attr("font-size", d => `${Math.min(xspace/2,40)}px`)
+      .attr("fill", "white")
+      .attr("y", 40*Math.cos(rot*Math.PI/180))
+      .attr("x", 20*Math.sin(rot*Math.PI/180))
       .attr("dy", ".35em")
-      .attr("transform", "rotate(90)")
-      .style("text-anchor", "start");
+      .attr("transform", "rotate("+rot+")")
+      .style("text-anchor", (rot == 0) ? "center" : "start");
     ;
 
   // svg.append("g")
@@ -117,12 +118,13 @@
   entry.selectAll("text")
     .data(function(d) { return d.components; })
     .enter().append("text")
-      .attr("font-size", d => `${xspace/3}px`)
+      .attr("font-size", d => `${xspace/2}px`)
+      .attr("fill", "white")
       .text(function(d) { return d.sign*(d.sign == 1 ? d.y0 : d.y1); })
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "central")
       .attr("x", 0)
-      .attr("y", function(d) { return -d.sign*xspace/6+y(d.sign == 1 ? d.y0 : d.y1); })
+      .attr("y", function(d) { return -d.sign*xspace/3+y(d.sign == 1 ? d.y0 : d.y1); })
     ;
   entry.selectAll("rect")
     .data(function(d) { return d.components; })
@@ -131,8 +133,8 @@
       .attr("x", -barwidth/2 )
       .attr("y", function(d) { return y(d.y0); })
       .attr("height", function(d) { return Math.abs(y(d.y0) - y(d.y1)); })
-      .attr("stroke-width", 2)
-      .attr("stroke", "black")
+      .attr("stroke-width", 1)
+      .attr("stroke", "rgba(255,255,255,0.25)")
       .style("fill", function(d) { return color(d.key); } )
       .on("mouseover", function(d) {
         ttdiv.transition()
