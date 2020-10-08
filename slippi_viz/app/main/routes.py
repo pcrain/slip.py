@@ -112,9 +112,7 @@ def stats_index_page():
   players = sorted([(k,codes[k]) for k in codes],key=lambda x: x[1], reverse=True)
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 
-@bp.route('/stats/<tag>', methods=['GET'])
-def stats_page(tag):
-  tag   = tag.replace("_","#") #Replace underscore with pound sign
+def get_stats(tag,args):
   mlen  = 26         #Length of recent / most player opponent lists
   count = 10000       #Number of games to fetch
 
@@ -122,9 +120,9 @@ def stats_page(tag):
   p1and=[Replay.p1codetag==tag]
   p2and=[Replay.p2codetag==tag]
 
-  if "char" in request.args:
-    p1and.append(Replay.p1char==request.args["char"])
-    p2and.append(Replay.p2char==request.args["char"])
+  if "char" in args:
+    p1and.append(Replay.p1char==args["char"])
+    p2and.append(Replay.p2char==args["char"])
 
   #Get all relevant rows from the database
   rows = (Replay.query
@@ -207,7 +205,26 @@ def stats_page(tag):
   #Recent opponent characters are already sorted
   stats["recent"] = stats["recent"][:mlen]
 
+  return stats
+
+@bp.route('/stats/<tag>', methods=['GET'])
+def stats_page(tag):
+  tag   = tag.replace("_","#") #Replace underscore with pound sign
+  stats = get_stats(tag,request.args)
   return render_template("stats.html.j2", title=tag, stats=stats)
+
+@bp.route('/stats2/<tag>', methods=['GET'])
+def stats2_page(tag):
+  tag   = tag.replace("_","#") #Replace underscore with pound sign
+  stats = get_stats(tag,request.args)
+  print(stats)
+  barvals = [{
+    "label" : item[3],
+    "pos"   : item[0],
+    "neg"   : item[1],
+  } for item in stats["top"]]
+  print(barvals)
+  return render_template("stats2.html.j2", title=tag, stats=stats, data=barvals)
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():

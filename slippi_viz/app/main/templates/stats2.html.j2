@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.title {
+  font: 15px sans-serif;
+}
+
+.legend {
+  font: 10px sans-serif;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.svg-container {
+  display        : inline-block;
+  position       : relative;
+  width          : 100%;
+  /*height         : 100%;*/
+  vertical-align : top;
+  overflow       : hidden;
+}
+
+</style>
+<body>
+  {# <div>{{(stats["top"]|tojson)}}</div> #}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+  var data    = {{ (data|tojson) }};
+  var cwidth   = 1920
+  var cheight  = 800
+
+  labels = data.map(function(item) {return item["label"];});
+  // alert(JSON.stringify(labels));
+
+  var margin = {
+    top    : 20,
+    right  : 20,
+    bottom : 60, //Leave enough space for labels at the bottom
+    left   : 40
+    };
+  var width  = cwidth - margin.left - margin.right;
+  var height = cheight - margin.top - margin.bottom;
+
+  var xspace   = width/(labels.length); //Spacing between tick marks
+  var barwidth = xspace/2;            //Width of bars
+
+  var timeFormat = d3.timeFormat("%m-%Y");
+  var parseDate = d3.timeParse("%Y:%m");
+
+  // var x = d3.scaleTime()
+  //   .range([0, width]);
+
+  var x = d3.scaleOrdinal()
+    .domain(labels)
+    // .range(d3.range(margin.left, margin.left+width, xspace ));
+    // .range(d3.range(margin.left, cwidth-margin.right, xspace));
+    .range(d3.range(0, width-1, xspace));
+
+  var y = d3.scaleLinear()
+    .range([height, margin.top]);
+
+  var center = d3.scaleLinear()
+    // .range([0, width]);
+    .range([0, width-xspace]);
+
+  var color = d3.scaleOrdinal()
+    .range(["#BBCDA3", "#055C81", "#B13C3D", "#CCB40C"]);
+
+  var legendlabels = ["Production and Income", "Employment, Unemployment, and Hours", "Consumption and Housing", "Sales, Orders, and Inventories"];
+
+  var xAxis = d3.axisBottom(x);
+  var yAxis = d3.axisLeft(y).ticks(10);
+
+  var centerLine = d3.axisTop(center).ticks(0);
+
+  d3.json("https://gist.githubusercontent.com/WillTurman/9c4142944f6132855fd318350f552b7b/raw/b4d7da56c0f2effa0492869b21a1adf2bc6f204b/cfnai.json", function(error, dataold) {
+
+    // alert(JSON.stringify(stats));
+    // alert(JSON.stringify(data));
+
+    //Original
+      // data = data.slice(data.length - 125, data.length );
+
+      // var keys = d3.keys(data[0]);
+
+      // var keys = keys.filter(function(key) {
+      //   if (key !== "id" && key !== "diffusion" && key !== "date" && key !== "cfnai" && key !== "cfnai_ma3") {
+      //     return key;
+      //   }
+      // });
+
+      // data.forEach(function(d) {
+      //   var y0_positive = 0;
+      //   var y0_negative = 0;
+
+      //   d.components = keys.map(function(key) {
+      //     if (d[key] >= 0) {
+      //       return {key: key, y1: y0_positive, y0: y0_positive += d[key] };
+      //     } else if (d[key] < 0) {
+      //       return {key: key, y0: y0_negative, y1: y0_negative += d[key] };
+      //     }
+      //   })
+      //   // alert(JSON.stringify(d.components));
+      // })
+
+      // var y_min = d3.min(data, function(d) { return d.cfnai - 0.1 });
+      // var y_max = d3.max(data, function(d) { return d.cfnai + 0.1 });
+
+      // var datestart = d3.min(data, function(d) { return parseDate(d.date); });
+      // var dateend = d3.max(data, function(d) { return parseDate(d.date); });
+
+      // x.domain([datestart, dateend]);
+      // y.domain([y_min, y_max]);
+      // color.domain(keys);
+
+    //Modified
+      // data = stats["top"];
+
+      data.forEach(function(d) {
+        d.components = [
+          {key : "wins",   y1: 0, y0: d["pos"]}, //Wins
+          {key : "losses", y0: 0, y1: d["neg"]}, //Losses
+          ];
+      })
+
+      //Scale y axis to max of wins / losses in both directions
+      var y_min = d3.min(data, function(d) {
+        // return -Math.max(d[0],d[1]) - 0.1;
+        return -Math.max(d["neg"],d["neg"]) - 0.1;
+      });
+      var y_max = d3.max(data, function(d) {
+        // return Math.max(d[0],d[1]) + 0.1;
+        return Math.max(d["pos"],d["pos"]) + 0.1;
+      });
+
+      // x.domain([0, 26]);
+      x.domain(labels);
+      y.domain([y_min, y_max]);
+      color.domain(["wins,losses"]);
+
+    var svg = d3.select("body")
+               .append("div")
+               .classed("svg-container", true)
+               .append("svg")
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 "+cwidth+" "+cheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")
+        .attr("y", -barwidth/2)
+        .attr("x", 9)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(90)")
+        .style("text-anchor", "start");
+      ;
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+    svg.append("g")
+      .attr("class", "centerline")
+      .attr("transform", "translate(0," + y(0) + ")")
+      .call(centerLine);
+
+    // var entry = svg.selectAll(".entry")
+    //   .data(data)
+    //   .enter().append("g")
+    //   .attr("class", "g")
+    //   .attr("transform", function(d) { return "translate(" + x(parseDate(d.date)) + ", 0)"; });
+
+    var entry = svg.selectAll(".entry")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(" + x(d["label"]) + ", 0)"; });
+
+    entry.selectAll("rect")
+      .data(function(d) { return d.components; })
+      .enter().append("rect")
+      .attr("width", barwidth)
+      .attr("y", function(d) { return y(d.y0); })
+      .attr("height", function(d) { return Math.abs(y(d.y0) - y(d.y1)); })
+      .style("fill", function(d) { return color(d.key); } );
+
+    // var cfnai_ma3_line = svg.append("path")
+    //   .datum(data)
+    //   .attr("class", "line")
+    //   .attr("d", cfnai_ma3);
+
+    // var legend = svg.selectAll(".legend")
+    //   .data(color.domain())
+    //   .enter().append("g")
+    //   .attr("class", "legend");
+    //   //.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    // legend.append("rect")
+    //   .attr("x", 675)
+    //   .attr("y", function(d, i) { return i * 25 + 300 })
+    //   .attr("width", 18)
+    //   .attr("height", 18)
+    //   .style("fill", color );
+
+    // legend.append("text")
+    //   .attr("x", 700)
+    //   .attr("y", function(d, i) { return i * 25 + 309; })
+    //   .attr("dy", ".35em")
+    //   .style("text-anchor", "start")
+    //   .text(function(d, i) { return legendlabels[i]; });
+
+  })
+
+</script>

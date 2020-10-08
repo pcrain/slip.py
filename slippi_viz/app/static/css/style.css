@@ -1287,7 +1287,7 @@ span#statsGrid td {
   padding: 0 6px;
 }
 
-span#statsGrid span.h {
+span#statsGrid span.h, span#statsGraphs span.h {
   font-weight : bold;
   font-size   : 24px;
 }
@@ -1457,3 +1457,24 @@ span#helpGrid table td {
   border: 1px solid rgba(255,255,255,0.3);
   padding: 0 6px;
 }
+
+span#statsGraphs {
+  width                 : 95%;
+  margin-top            : 10px;
+  padding               : 10px;
+  background-color      : rgba(0,0,0,0.25);
+  border                : 4px solid rgba(0,0,0,0.25);
+  border-radius         : 10px;
+  display               : inline-grid;
+
+  grid-template-columns : repeat(1, minmax(0, 1fr));
+  grid-template-areas   :
+    "title"
+    "subtitle"
+    "hgamegraph"
+    "gamegraph"
+    ;
+}
+
+span#hgamegraph { grid-area: hgamegraph; }
+span#gamegraph  { grid-area: gamegraph; }
