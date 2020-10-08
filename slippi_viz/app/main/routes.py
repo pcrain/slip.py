@@ -27,6 +27,10 @@ def favicon():
       current_app.config["STATIC_FOLDER"],"icons"
       ), 'pretzel.png', mimetype='image/vnd.microsoft.icon')
 
+@bp.route('/help')
+def help():
+  return render_template("help.html.j2", title="Help")
+
 @bp.route('/')
 @bp.route('/replays')
 def replays():

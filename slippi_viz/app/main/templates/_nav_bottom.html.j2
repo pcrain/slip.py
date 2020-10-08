@@ -1,5 +1,7 @@
 {% block nav_bottom %}
   <span class="navbar_bottom">
     <a href="https://github.com/pcrain/slip.py">{{ SITE_NAME }}</a> v{{ SITE_VERSION }} by Patrick Crain (Captain Pretzel)
+    &nbsp;
+    <a href="{{ url_for('main.help') }}">(View Help)</a>
   </span>
 {% endblock %}
