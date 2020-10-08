@@ -122,12 +122,6 @@ if __name__ == "__main__":
       trayIcon = SystemTrayIcon(QtGui.QIcon(icon), w, window)
       trayIcon.show()
 
-      # def dump(obj):
-      #   for attr in dir(obj):
-      #     try:    print("obj.%s = %r" % (attr, getattr(obj, attr)))
-      #     except: print("obj.%s = %s" % (attr, "error"))
-      # QtWebEngineWidgets.QWebSettings.clearMemoryCaches()
-
       # WebView Level
       webView = QtWebEngineWidgets.QWebEngineView(window)
       webView.page().profile().clearHttpCache() #Clear CSS / JS / image cache
@@ -138,9 +132,15 @@ if __name__ == "__main__":
       homepage.home()
       webView.setPage(homepage)
 
-      # Hard refresh shortcut
-      back = QtWidgets.QShortcut(QtGui.QKeySequence("F12"), window);
-      back.activated.connect(lambda : homepage.home());
+      # Keyboard shortcuts
+      back     = QtWidgets.QShortcut(QtGui.QKeySequence("Backspace"), window);
+      back.activated.connect(lambda : webView.back()) #back a page
+      back2    = QtWidgets.QShortcut(QtGui.QKeySequence("Alt+Left"), window);
+      back2.activated.connect(lambda : webView.back()) #back a page
+      forward  = QtWidgets.QShortcut(QtGui.QKeySequence("Alt+Right"), window);
+      forward.activated.connect(lambda : webView.forward()); #forward a page
+      reset    = QtWidgets.QShortcut(QtGui.QKeySequence("F12"), window);
+      reset.activated.connect(lambda : homepage.home()); #hard app reset
 
       window.show()
       return qtapp.exec_()
@@ -150,6 +150,7 @@ if __name__ == "__main__":
   os.chdir(location)
   init_gui(app,
     port=5050,
-    window_title=app.config["SITE_NAME"]+" (F5 to Refresh, F12 to Reset)",
+    window_title=app.config["SITE_NAME"]+
+      " (Backspace to go Back, F5 to Refresh, F12 to Reset)",
     icon=app.config["SITE_ICON"]
     )

@@ -242,11 +242,25 @@ def openJson(path):
     notepad     = output.decode('utf-8').replace(".desktop\n","")
     subprocess.run([notepad, path])
 
+#Thunar-specific file highlighting
+def openFileThunar(path):
+  return [
+    "dbus-send",
+    "--type=method_call",
+    "--dest=org.xfce.Thunar",
+    "/org/xfce/FileManager",
+    "org.xfce.FileManager.DisplayFolderAndSelect",
+    f"string:{ntpath.dirname(path)}",
+    f"string:{ntpath.basename(path)}",
+    "string:",
+    "string:",
+    ]
+
 #Open folder (and optionally highlight a file in Windows)
 def openDir(path,isfile=False):
   if os.name == 'nt':
     explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
-    if isfile:
+    if isfile and os.path.exists(path):
       subprocess.run([explorer, '/select,', path])
     else:
       subprocess.run([explorer, path])
@@ -256,8 +270,12 @@ def openDir(path,isfile=False):
     p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate("")
     explorer    = output.decode('utf-8').replace(".desktop\n","")
-    if isfile:
-      #Can't highlight file in every Linux explorer, so settle for opening the directory
-      subprocess.run([explorer, ntpath.dirname(path)])
+    if isfile and os.path.exists(path):
+      if explorer == "thunar":
+        subprocess.run(openFileThunar(path))
+      elif explorer in ["nautilus","nemo"]:
+        subprocess.run([explorer, "no-desktop", path])
+      else: #Explorer not supported; settle for opening directory
+        subprocess.run([explorer, ntpath.dirname(path)])
     else:
       subprocess.run([explorer, path])

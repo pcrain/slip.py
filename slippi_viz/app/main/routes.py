@@ -137,7 +137,7 @@ def stats_page(tag):
   #Set up dict for stats
   stats = {
     "tag"    : tag,                                    #Tag of player we're showing stats for
-    "name"   : "???",                                  #Display name for player we're showing stats for
+    "name"   : None,                                   #Display name for player we're showing stats for
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
     "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
@@ -146,15 +146,15 @@ def stats_page(tag):
     }
 
   #Set up miscellaneous variables
-  olast = None #last opponent
-  top   = {}   #most played opponents
+  olast  = None #last opponent
+  top    = {}   #most played opponents
+  tagmap = {}   #map of codes to display tags
 
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
     #Determine player's and opponent's stats for the game
     p       = 1 if r.p1codetag == tag else 2         #player's port number
-    if rnum == 0:
-      stats["name"] = r.p1metatag if p == 1 else r.p2metatag
+    pname   = r.p1metatag if p == 1 else r.p2metatag #player's display name
     oname   = r.p2metatag if p == 1 else r.p1metatag #opponent's display tag
     o       = 3-p                                    #opponent's port number
     otag    = r.p2codetag if p == 1 else r.p1codetag #opponent's code tag
@@ -163,6 +163,12 @@ def stats_page(tag):
     pcolor  = r.p1color   if p == 1 else r.p2color   #player costume choice
     pchar   = r.p1char    if p == 1 else r.p2char    #player character choice
     ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
+
+    #Get display names and tags
+    if not stats["name"]:
+      stats["name"] = pname
+    if not tagmap.get(otag,None):
+      tagmap[otag] = oname
 
     #Determine the game results
     if pstocks > ostocks:   res = 0 #win
@@ -173,13 +179,17 @@ def stats_page(tag):
     stats["char"][pchar][pcolor+1] += 1
     stats["opp"][ochar][res+1]     += 1
     if otag != olast:
-      stats["recent"].append([0,0,0,otag,oname])
+      stats["recent"].append([0,0,0,otag])
     stats["recent"][-1][res]  += 1
     if not otag in top:
-      top[otag] = [0,0,0,otag,oname]
+      top[otag] = [0,0,0,otag]
     top[otag][res] += 1
 
     olast = otag #Set last-played opponent
+
+  #Reconcile Slippi codes with display tags
+  for o in top.values():    o.append(tagmap[o[-1]])
+  for o in stats["recent"]: o.append(tagmap[o[-1]])
 
   #Sort own characters by number of times pickes
   stats["char"] = sorted(stats["char"],key=lambda x: sum(x[1:]), reverse=True)

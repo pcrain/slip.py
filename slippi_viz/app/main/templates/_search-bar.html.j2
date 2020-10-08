@@ -1,6 +1,46 @@
 <script type="text/javascript">
-  var nCostumes = {
-
+  function populateSearchFromGet() {
+    var q = getUrlVars();
+    if ("p1char" in q && q["p1char"] != "-1") {
+      var d = "#dd-p1 [data-cid='"+parseInt(q["p1char"])+"']";
+      setPlayer($(d)[0],1);
+      if ("p1cost" in q && q["p1cost"] != "-1") {
+        var d = "#dd-p1cost [data-costid='"+parseInt(q["p1cost"])+"']";
+        setCostume($(d)[0],1);
+      }
+    }
+    if ("p2char" in q && q["p2char"] != "-1") {
+      var d = "#dd-p2 [data-cid='"+parseInt(q["p2char"])+"']";
+      setPlayer($(d)[0],2);
+      if ("p2cost" in q && q["p2cost"] != "-1") {
+        var d = "#dd-p2cost [data-costid='"+parseInt(q["p2cost"])+"']";
+        setCostume($(d)[0],2);
+      }
+    }
+    if ("stage" in q && q["stage"] != "-1") {
+      var d = "#dd-stage [data-sid='"+parseInt(q["stage"])+"']";
+      setStage($(d)[0]);
+    }
+    if ("p1stock" in q && q["p1stock"] != "-1") {
+      var d = "#dd-p1stock [data-stockid='"+q["p1stock"]+"']";
+      setStocks($(d)[0],1);
+    }
+    if ("p2stock" in q && q["p2stock"] != "-1") {
+      var d = "#dd-p2stock [data-stockid='"+q["p2stock"]+"']";
+      setStocks($(d)[0],2);
+    }
+    if ("lengthmin" in q && q["lengthmin"] != "-1") {
+      var d = "#dd-lengthmin [data-lengthid='"+parseInt(q["lengthmin"])+"']";
+      setLength($(d)[0],true);
+    }
+    if ("lengthmax" in q && q["lengthmax"] != "-1") {
+      var d = "#dd-lengthmax [data-lengthid='"+parseInt(q["lengthmax"])+"']";
+      setLength($(d)[0],false);
+    }
+    if ("sort" in q) {
+      var d = "#dd-sort [data-sid='"+q["sort"]+"']";
+      setSort($(d)[0]);
+    }
   }
   function checkSubmit(e) {
      if(e && e.keyCode == 13) {
@@ -11,10 +51,14 @@
     var cid    = $(me).data('cid');
     var cname  = $(me).data('cname');
     var colors = $(me).data('ccols');
+
+    //Reset costume to default
+    setCostume($("#dd-p"+pnum+"cost [data-costid='0']")[0],pnum);
     var costid = $("#b-p"+pnum+"cost").data('id');
     if (costid == "-1") {
       costid = 0;
     }
+
     var imurl  = "{{ url_for('static',filename='icons/stock') }}/"+cname+costid+".png"
     $("#b-p"+pnum).prop('title',cname);
     $("#b-p"+pnum).html("<img src='"+imurl+"'/>");
@@ -195,12 +239,13 @@
 </span>
 
 <script type="text/javascript">
-$("#replaySearchBar").click(function() {
-  $("#s-query").attr("placeholder", "Enter search terms...").removeClass("placeholderLabel");
-  $(".hideUntilParentClicked").addClass("unhiding");
-  $("#searchForm").addClass("clicked");
-  setTimeout(function(){
-    $(".hideUntilParentClicked").addClass("noLongerHidden").css('opacity');
-  }, 100);
-});
+  populateSearchFromGet();
+  $("#replaySearchBar").click(function() {
+    $("#s-query").attr("placeholder", "Enter search terms...").removeClass("placeholderLabel");
+    $(".hideUntilParentClicked").addClass("unhiding");
+    $("#searchForm").addClass("clicked");
+    setTimeout(function(){
+      $(".hideUntilParentClicked").addClass("noLongerHidden").css('opacity');
+    }, 100);
+  });
 </script>

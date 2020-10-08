@@ -28,7 +28,13 @@ The project eventually grew to include replay stats, replay analyses, and a full
   - Before being able to view replays, you will need to configure the path to your Melee 1.02 ISO and Slippi Playback emulator on the "Settings" page.
   - Clicking the search button at the top will allow you to filter replays by a number of attributes, including characters, costumes, stage, stock counts, and game length. Additionally, you can also enter keywords into the search bar to search for specific file names, player names, and player tags.
   - The stats / analysis page for each replay shows color-coded interaction data between players, including what moves were landed during these interactions and how much damage each player did during these interactions over the course of the game. These interactions are defined near the bottom of [this page](https://github.com/pcrain/slippc).
-  - You can press F5 at any time to refresh a page and F12 to return to the replay index in case anything goes wrong.
+
+## Keyboard Shortcuts
+  | Command   | Description                        |
+  | :-------: | ---------------------------------- |
+  | Backspace | back to previous page              |
+  | F5        | refresh current page               |
+  | F12       | reset app and return to index page |
 
 ## Limitations / Known Bugs
   - Slip.py cannot currently index or show stats for games with more than two players. Indexing will be possible in the future, but analysis will likely not be added due to the complexity.

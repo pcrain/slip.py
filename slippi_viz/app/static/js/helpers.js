@@ -27,6 +27,15 @@ function URL_add_parameter(url, param, value){
     return parser.href;
 }
 
+//Retrieve GET variables from the current URL
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
 //Refresh the page after adding a parameter
 function travel(path) {
   location.href = URL_add_parameter(location.href,"path",path);
