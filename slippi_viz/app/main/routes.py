@@ -230,8 +230,8 @@ def stats2_page(tag):
       "ttkeys"   : ["Code","Wins","Losses"], #keys to show in tooltip
     }
   }
-  # barvals["data"] = sorted(barvals["data"],key=lambda x: x["Code"])#[:10]
-  return render_template("stats2.html.j2", title=tag, stats=stats, data=barvals)
+  barvals["data"] = sorted(barvals["data"],key=lambda x: x["Code"])#[:10]
+  return render_template("stats2.html.j2", title=tag, stats=stats, bardata=barvals)
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():

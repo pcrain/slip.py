@@ -1478,3 +1478,32 @@ span#statsGraphs {
 
 span#hgamegraph { grid-area: hgamegraph; }
 span#gamegraph  { grid-area: gamegraph; }
+
+.svgaxis path, .svgaxis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.svg-container {
+  display        : inline-block;
+  position       : relative;
+  width          : 100%;
+  /*height         : 100%;*/
+  vertical-align : top;
+  overflow       : hidden;
+}
+
+div.svgtooltip {
+  z-index        : 100000;
+  position       : absolute;
+  text-align     : center;
+  padding        : 2px;
+  font           : 12px sans-serif;
+  background     : rgba(255,255,255,0.75);
+  border         : 2px solid black;
+  border-radius  : 8px;
+  pointer-events : none;
+}
+
+div.svgtooltip td { padding: 0 4px; }

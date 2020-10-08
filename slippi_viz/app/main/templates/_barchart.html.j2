@@ -1,0 +1,178 @@
+{# https://bl.ocks.org/WillTurman/9c4142944f6132855fd318350f552b7b #}
+
+<script>
+  var jdat     = {{ (jsondata|tojson) }};  //Import JSON data passed through Jinja
+
+  var klab     = jdat["meta"]["labels"];  //Item keys corresponding to X-axis labels
+  var kpos     = jdat["meta"]["pos"];     //Item keys corresponding to positive bars
+  var kneg     = jdat["meta"]["neg"];     //Item keys corresponding to negative bars
+  var ttkeys   = jdat["meta"]["ttkeys"];  //Keys to show in item tooltip
+  var data     = jdat["data"];            //Actual data after parsing through meta info
+
+  // alert(JSON.stringify({{data}}));
+  // alert(JSON.stringify(jdat));
+  // alert(JSON.stringify(ttkeys));
+  // alert(JSON.stringify(data));
+
+  var cwidth   = 1920;  //Width of canvas
+  var cheight  = 850;   //Height of canvas
+  var mleft    = 0;     //Lefthand margin
+  var mright   = 0;     //Righthand margin
+  var xfill    = 0.5;   //Amount of free space bars fill up
+
+  // X axis labels
+  var labels   = data.map(function(item) {return item[klab];});
+  // # of labels
+  var nlabels  = labels.length;
+  // width of canvas minus margins
+  var width    = cwidth - mleft - mright;
+  // space between bars on canvas
+  var xspace   = width/nlabels; //Spacing between tick marks
+  // width of bars on canvas
+  var barwidth = xspace*xfill;
+  //margins around SVG canvas
+  var margin   = {
+    top    : 20,         //Leave enough space for title
+    right  : mright,
+    bottom : xspace*1.5, //Leave enough space for labels
+    left   : mleft
+    };
+
+  //Other pertinent scales and measurements
+  var height     = cheight - margin.top - margin.bottom;
+  var x          = d3.scaleOrdinal().domain(labels).range(d3.range(barwidth, width, xspace));
+  var y          = d3.scaleLinear().range([height, margin.top]);
+  var center     = d3.scaleLinear().range([barwidth/2, width-barwidth/2-2]);
+  var color      = d3.scaleOrdinal().range(["#CC3333", "#33CC33"]);
+  var xAxis      = d3.axisBottom(x);
+  var yAxis      = d3.axisLeft(y).ticks(10);
+  var centerLine = d3.axisTop(center).ticks(0);
+
+  data.forEach(function(d) {
+    var y0_pos = 0;
+    var y0_neg = 0;
+
+    d.components = [
+      {parent: d, sign:  1, key : "wins",   y1: y0_pos, y0: y0_pos += d[kpos]}, //Wins
+      {parent: d, sign: -1, key : "losses", y0: y0_neg, y1: y0_neg -= d[kneg]}, //Losses
+      ];
+  })
+
+  //Scale y axis to max of wins / losses in both directions
+  var y_min = d3.min(data, function(d) { return -d[kneg] - 16; });
+  var y_max = d3.max(data, function(d) { return  d[kpos] + 16; });
+
+  x.domain(labels);
+  y.domain([y_min, y_max]);
+  color.domain(["wins,losses"]);
+
+  var svg = d3.select({{svg_selector|tojson}})
+             .append("div")
+             .classed("svg-container", true)
+             .append("svg")
+              .attr("preserveAspectRatio", "xMinYMin meet")
+              .attr("viewBox", "0 0 "+cwidth+" "+cheight)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var ttdiv = d3.select("body").append("div")
+    .attr("class", "svgtooltip")
+    .style("opacity", 0);
+
+  svg.append("g")
+    .attr("class", "x svgaxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    .selectAll("text")
+      .attr("font-size", d => `${xspace/4}px`)
+      // .attr("y", -barwidth/2)
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .attr("transform", "rotate(90)")
+      .style("text-anchor", "start");
+    ;
+
+  // svg.append("g")
+  //   .attr("class", "y svgaxis")
+  //   .call(yAxis);
+
+  svg.append("g")
+    .attr("class", "centerline")
+    .attr("transform", "translate(0," + y(0) + ")")
+    .call(centerLine);
+
+  // var entry = svg.selectAll(".entry")
+  //   .data(data)
+  //   .enter().append("g")
+  //   .attr("class", "g")
+  //   .attr("transform", function(d) { return "translate(" + x(parseDate(d.date)) + ", 0)"; });
+
+  var entry = svg.selectAll(".entry")
+    .data(data)
+    .enter().append("g")
+    .attr("class", "g")
+    .attr("transform", function(d) { return "translate(" + x(d[klab]) + ", 0)"; });
+
+  entry.selectAll("text")
+    .data(function(d) { return d.components; })
+    .enter().append("text")
+      .attr("font-size", d => `${xspace/3}px`)
+      .text(function(d) { return d.sign*(d.sign == 1 ? d.y0 : d.y1); })
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "central")
+      .attr("x", 0)
+      .attr("y", function(d) { return -d.sign*xspace/6+y(d.sign == 1 ? d.y0 : d.y1); })
+    ;
+  entry.selectAll("rect")
+    .data(function(d) { return d.components; })
+    .enter().append("rect")
+      .attr("width", barwidth)
+      .attr("x", -barwidth/2 )
+      .attr("y", function(d) { return y(d.y0); })
+      .attr("height", function(d) { return Math.abs(y(d.y0) - y(d.y1)); })
+      .attr("stroke-width", 2)
+      .attr("stroke", "black")
+      .style("fill", function(d) { return color(d.key); } )
+      .on("mouseover", function(d) {
+        ttdiv.transition()
+          .duration(200)
+          .style("opacity", .9);
+        ttdiv.html(function(){
+          var ss = "<table>";
+          for (const [i, k] of ttkeys.entries()) {
+            ss += "<tr><td>"+k+"</td><td>"   +d["parent"][k]  +"</td></tr>";
+          }
+          ss += "</table>";
+          return ss;
+          })
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+        })
+      .on("mouseout", function(d) {
+        ttdiv.transition()
+          .duration(500)
+          .style("opacity", 0);
+        })
+    ;
+
+  // var legend = svg.selectAll(".legend")
+  //   .data(color.domain())
+  //   .enter().append("g")
+  //   .attr("class", "legend");
+  //   //.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // legend.append("rect")
+  //   .attr("x", 675)
+  //   .attr("y", function(d, i) { return i * 25 + 300 })
+  //   .attr("width", 18)
+  //   .attr("height", 18)
+  //   .style("fill", color );
+
+  // legend.append("text")
+  //   .attr("x", 700)
+  //   .attr("y", function(d, i) { return i * 25 + 309; })
+  //   .attr("dy", ".35em")
+  //   .style("text-anchor", "start")
+  //   .text(function(d, i) { return legendlabels[i]; });
+</script>
