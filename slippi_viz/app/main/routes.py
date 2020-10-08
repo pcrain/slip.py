@@ -54,16 +54,30 @@ def replays():
       del qdict["page"]
     next_url = url_for('main.replays', page=qdict["nextpage"], **qdict) if rdata.has_next else None
     prev_url = url_for('main.replays', page=qdict["prevpage"], **qdict) if rdata.has_prev else None
-    return render_template("index.html.j2", title="Public Replays", form=ReplaySearchForm(), replays=rdata.items, dirs=ddata, next_url=next_url, prev_url=prev_url)
+
+    #Check if we just launched the app (for autoscan purposes)
+    first                               = current_app.config['JUST_LAUNCHED']
+    current_app.config['JUST_LAUNCHED'] = False
+    s                                   = Settings.load()
+    return render_template("index.html.j2",
+      autoscan = first and s["autoscan"],
+      title    = "Public Replays",
+      form     = ReplaySearchForm(),
+      replays  = rdata.items,
+      dirs     = ddata,
+      next_url = next_url,
+      prev_url = prev_url)
 
 @bp.route('/replays/<r>')
 def replay_viz(r):
     rdata  = Replay.query.filter_by(checksum=r).first()
     rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
+    exists = os.path.exists(os.path.join(rdata.filedir,rdata.filename))
     replay = load_replay(rpath)
     replay["__original_filename"] = rdata.filename
     replay["__filedir"]           = rdata.filedir
     replay["__checksum"]          = r
+    replay["__exists"]            = exists
     return render_template("replay.html.j2", title=rdata.filename, rsummary=rdata, replay=replay)
 
 @bp.route('/upload', methods=['GET'])
@@ -79,8 +93,10 @@ def settings_page():
 def stats_index_page():
   codes = defaultdict(int)
   for row in Replay.query.all():
-    codes[row.p1codetag] += 1
-    codes[row.p2codetag] += 1
+    if row.p1codetag != "": codes[row.p1codetag] += 1
+    # else:                   codes[row.p1metatag] += 1
+    if row.p2codetag != "": codes[row.p2codetag] += 1
+    # else:                   codes[row.p2metatag] += 1
   players = sorted([(k,codes[k]) for k in codes],key=lambda x: x[1], reverse=True)
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 

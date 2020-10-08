@@ -133,15 +133,14 @@ if __name__ == "__main__":
       webView.page().profile().clearHttpCache() #Clear CSS / JS / image cache
       window.setCentralWidget(webView)
 
-      # Back shortcut
-      homepage = WebPage('http://localhost:{}'.format(port))
-      back = QtWidgets.QShortcut(QtGui.QKeySequence("F5"), window);
-      # back.activated.connect(lambda : print("Hi"));
-      back.activated.connect(lambda : homepage.home());
-
       # WebPage Level
+      homepage = WebPage('http://localhost:{}'.format(port))
       homepage.home()
       webView.setPage(homepage)
+
+      # Back shortcut (handled in Javascript now)
+      # back = QtWidgets.QShortcut(QtGui.QKeySequence("F5"), window);
+      # back.activated.connect(lambda : homepage.home());
 
       window.show()
       return qtapp.exec_()

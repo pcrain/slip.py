@@ -33,3 +33,4 @@ class Config(object):
     EXECUTOR_PROPAGATE_EXCEPTIONS  = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FORCE_COMPRESSION              = False
+    JUST_LAUNCHED                  = True #Set to False after first page loaded

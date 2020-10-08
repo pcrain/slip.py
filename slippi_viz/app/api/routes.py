@@ -99,6 +99,13 @@ def api_set_iso_path():
     db.session.commit()
   return jsonify({"status" : "ok"})
 
+@bp.route('/toggleautoscan', methods=['GET'])
+def api_toggle_auto_scan():
+  s = "False" if Settings.load()["autoscan"] else "True"
+  Settings.query.filter_by(name="autoscan").update({"value" : s})
+  db.session.commit()
+  return jsonify({"status" : "ok"})
+
 @bp.route('/purge', methods=['POST'])
 def api_purge():
   # Replay.query.delete()
@@ -189,11 +196,11 @@ def api_scan_progress():
     return jsonify({"status" : f"{d}/{t}"})
 
   with open(os.path.join(current_app.config['TMP_FOLDER'],token),'r') as fin:
-    logoutput = fin.read()
+    logoutput = [line[:-1] for line in fin.readlines()]
 
   details = dict({
-    "details" : _scan_jobs[token]["details"],
     "log"     : logoutput,
+    "details" : _scan_jobs[token]["details"],
     })
   del _scan_jobs[token]
   logline(tmpfile,f"Scan job deleted")

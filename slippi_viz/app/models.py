@@ -64,18 +64,22 @@ class Settings(db.Model):
           "str"  : lambda x: str(x),
           "int"  : lambda x: int(x),
           "num"  : lambda x: float(x),
-          "bool" : lambda x: bool(x),
+          "bool" : lambda x: True if "True" in x else False,
           }
         return { d.name : casts[d.type_](d.value) for d in Settings.query.all() }
 
     def load():
       d = Settings.asDict()
-      if len(d.keys()) == 0:
-        db.session.add(Settings(name="isopath",    type_="str",value=""))
-        db.session.add(Settings(name="emupath",    type_="str",value=""))
-        db.session.add(Settings(name="scanthreads",type_="int",value="2"))
-        db.session.commit()
-        d = Settings.asDict()
+      if not "isopath" in d:
+          db.session.add(Settings(name="isopath",    type_="str" ,value=""))
+      if not "emupath" in d:
+          db.session.add(Settings(name="emupath",    type_="str" ,value=""))
+      if not "scanthreads" in d:
+          db.session.add(Settings(name="scanthreads",type_="int" ,value="2"))
+      if not "autoscan" in d:
+          db.session.add(Settings(name="autoscan",   type_="bool",value="False"))
+          db.session.commit()
+      d = Settings.asDict()
       return d
 
 class ScanDir(db.Model):

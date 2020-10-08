@@ -51,7 +51,11 @@
       </script>
 
       <div id="buttonGrid">
-        <button type="button" onclick='watchReplay()'>Watch Replay</button>
+        {% if r.__exists %}
+          <button type="button" onclick='watchReplay()'>Watch Replay</button>
+        {% else %}
+          <button disabled class="missing" type="button" onclick=''>Replay Not Found</button>
+        {% endif %}
         <button type="button" onclick='openContainingDir({{r.__filedir|tojson}},"{{r.__original_filename}}")'>Open Replay Folder</button>
         <button type="button" onclick='viewRawAnalysis()'>View Raw Analysis</button>
       </div>

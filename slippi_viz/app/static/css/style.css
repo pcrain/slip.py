@@ -8,6 +8,9 @@
   --form-bg                    : rgba(24,20,24,1.00);
   --form-fg-disabled           : rgba(255,255,255,0.5);
   --form-bg-disabled           : rgba(24,20,24,0.5);
+  --form-fg-error              : rgba(255,255,255,1);
+  --form-bg-error              : rgba(255,0,0,0.5);
+  --form-bg-danger             : red;
   --form-border                : rgba(128,128,128,1);
   --form-border-hl             : rgba(128,128,255,1);
   --form-border-focus          : rgba(128,220,160,1);
@@ -73,6 +76,11 @@ input, button, .fake-button {
   margin: 4px 0;
   cursor: pointer;
   font-weight: bold;
+}
+
+button.missing, button.missing:disabled {
+  color            : var(--form-fg-error);
+  background-color : var(--form-bg-error);
 }
 
 button.hasinfo, button.hasinfo:disabled {
@@ -1210,7 +1218,7 @@ span.subtitle {
 .danger-button {
   font-weight      : bold;
   color            : var(--form-fg);
-  background-color : red;
+  background-color : var(--form-bg-danger);
 }
 
 span#statsGrid {
