@@ -10,7 +10,7 @@ class Config(object):
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.3.1"
+    SITE_VERSION                   = "0.3.2"
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
