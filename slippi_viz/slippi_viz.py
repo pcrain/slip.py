@@ -148,4 +148,8 @@ if __name__ == "__main__":
   #Get the real location of this script and change working directory appropriately
   location = (os.path.dirname(os.path.realpath(os.path.abspath(__file__))))
   os.chdir(location)
-  init_gui(app,port=5050,window_title=app.config["SITE_NAME"]+" (F5 to Refresh)",icon=app.config["SITE_ICON"])
+  init_gui(app,
+    port=5050,
+    window_title=app.config["SITE_NAME"]+" (F5 to Refresh, F12 to Reset)",
+    icon=app.config["SITE_ICON"]
+    )
