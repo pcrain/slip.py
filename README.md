@@ -49,4 +49,4 @@ Probably not, but feel free to make suggestions! :) I have limited time to work 
 ## References
 - [slippc](https://github.com/pcrain/slippc), the C++ backend used for parsing and analyzing the replays
 - [Project Slippi](https://github.com/project-slippi/project-slippi) on GitHub
-- Character Portraits: [20XX Ultimate Texture Pack](https://modulous.net/mod/1873/20XX%20Ultimate%20Texture%20Pack)
+- Character Portraits: [20XX Ultimate Texture Pack](https://modulous.net/mod/1873/20XX%20Ultimate%20Texture%20Pack) by Acryte
