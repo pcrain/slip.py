@@ -1,8 +1,27 @@
-SET PATH="%PATH%;%HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts;"
-%HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe install --user .
-
-rem Create a Shortcut https://superuser.com/questions/392061/how-to-make-a-shortcut-from-cmd
+ECHO Checking for Python / Pip
 @echo off
+WHERE pip
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO pip wasn't found in PATH
+  IF EXIST %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe (
+    ECHO pip found in default location
+    SET PATH="%PATH%;%HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts;"
+    @echo on
+    %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe install --user .
+  ) ELSE (
+    ECHO pip wasn't found in default location; please install pip to proceed
+    PAUSE
+    EXIT /B
+  )
+) ELSE (
+  ECHO pip found
+  @echo on
+  pip install --user .
+)
+
+rem Creating shortcut to slip.py
+@echo off
+rem https://superuser.com/questions/392061/how-to-make-a-shortcut-from-cmd
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET LinkName=slip.py
 SET Esc_LinkDest=%%HOMEDRIVE%%%%HOMEPATH%%\Desktop\!LinkName!.lnk

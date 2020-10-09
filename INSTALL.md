@@ -2,13 +2,14 @@ For all operating systems you will need to [download and extract the ZIP file co
 
 ### Windows Install Instructions
   - Install Python 3.8.6 from [the official website](https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe):
+    - Make sure you install pip when prompted under "Optional Features"
     - You may skip this step if Python is already installed
   - Double-click "\_install-win.bat"
   - If the installation is successful, a "slip.py" Desktop shortcut will be created
   - Double-click "slip.py" to launch the Slip.py Browser
 
 ### Linux / OSX Install Instructions
-  - Install Python 3.8 and pip using your package manager
+  - Install Python 3.8 using your package manager (Pip should be included)
   - Make and install [slippc](https://github.com/pcrain/slippc)
   - Create a symlink to the slippc binary in your /home/$USER/bin directory (or anywhere else in your `PATH`) using:
 

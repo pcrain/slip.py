@@ -1352,6 +1352,7 @@ span#statsChars span.portrait:hover {
 
 span.portrait img {
   width: 100%;
+  cursor: pointer;
 }
 
 span#statsChars span.charGrid.main {
@@ -1553,3 +1554,4 @@ span.statFilterButtons {
   /*width: 100%;*/
   grid-area: tabs;
 }
+
