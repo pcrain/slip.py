@@ -1258,7 +1258,7 @@ span#statsGrid {
   span#statsGrid {
     /*grid-gap              : 32px;*/
     grid-template-columns : repeat(2, minmax(0, 1fr));
-    grid-template-rows    : repeat(7, min-content) minmax(300px,1fr);
+    grid-template-rows    : repeat(8, min-content) minmax(300px,1fr);
     grid-template-areas   :
       "title title"
       "subtitle subtitle"
@@ -1277,7 +1277,7 @@ span#statsGrid {
   span#statsGrid {
     /*grid-gap              : 32px;*/
     grid-template-columns : repeat(1, minmax(0, 1fr));
-    grid-template-rows    : repeat(11, min-content) minmax(200px,1fr);
+    grid-template-rows    : repeat(12, min-content) minmax(200px,1fr);
     grid-template-areas   :
       "title"
       "subtitle"
