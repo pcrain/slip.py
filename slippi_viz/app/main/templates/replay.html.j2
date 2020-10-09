@@ -52,7 +52,7 @@
 
       <div id="buttonGrid">
         {% if r.__exists %}
-          <button type="button" onclick='watchReplay()'>Watch Replay</button>
+          <button type="button" {{ "" if r.__canplay else "disabled"}} onclick='watchReplay()'>{{r.__play}}</button>
         {% else %}
           <button disabled class="missing" type="button" onclick=''>Replay Not Found</button>
         {% endif %}

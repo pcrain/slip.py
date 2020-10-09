@@ -90,6 +90,18 @@ def replay_viz(r):
     replay["__filedir"]           = rdata.filedir
     replay["__checksum"]          = r
     replay["__exists"]            = exists
+
+    s      = Settings.load()
+    if s["emupath"] == "" or (not os.path.exists(s["emupath"])):
+      replay["__canplay"] = False
+      replay["__play"]    = "Dolphin Path Not Set"
+    elif s["isopath"] == "" or (not os.path.exists(s["isopath"])):
+      replay["__canplay"] = False
+      replay["__play"]    = "Melee 1.02 ISO Path Not Set"
+    else:
+      replay["__canplay"] = True
+      replay["__play"]    = "Watch Replay"
+
     return render_template("replay.html.j2", title=rdata.filename, rsummary=rdata, replay=replay)
 
 @bp.route('/upload', methods=['GET'])
