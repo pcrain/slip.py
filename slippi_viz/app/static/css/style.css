@@ -10,7 +10,8 @@
   --form-bg-disabled           : rgba(24,20,24,0.5);
   --form-fg-error              : rgba(255,255,255,1);
   --form-bg-error              : rgba(255,0,0,0.5);
-  --form-bg-danger             : red;
+  --form-bg-danger             : rgba(255,0,0,0.5);
+  --form-bg-active             : rgba(0,255,0,0.5);
   --form-border                : rgba(128,128,128,1);
   --form-border-hl             : rgba(128,128,255,1);
   --form-border-focus          : rgba(128,220,160,1);
@@ -1222,6 +1223,12 @@ span.subtitle {
   background-color : var(--form-bg-danger);
 }
 
+.active-button {
+  font-weight      : bold;
+  color            : var(--form-fg);
+  background-color : var(--form-bg-active);
+}
+
 span#statsGrid {
   width                 : 95%;
   margin-top            : 10px;
@@ -1541,3 +1548,8 @@ div.svgtooltip {
 }
 
 div.svgtooltip td { padding: 0 4px; }
+
+span.statFilterButtons {
+  /*width: 100%;*/
+  grid-area: tabs;
+}

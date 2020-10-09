@@ -144,6 +144,9 @@ def get_stats(tag,args):
     .all()
     )
 
+  #Reset number of games based on the number of rows we actually got
+  actualgames = len(rows)
+
   #Set up dict for stats
   stats = {
     "tag"    : tag,                                    #Tag of player we're showing stats for
@@ -154,15 +157,12 @@ def get_stats(tag,args):
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
     }
-  if args.get("ngames",False):
-    if args.get("ndays",False):
-      stats["subtitle"] = f"Showing stats for up to {ngames} games in the last {ndays} days"
-    else:
-      stats["subtitle"] = f"Showing stats for last {ngames} games"
-  elif args.get("ndays",False):
-    stats["subtitle"] = f"Showing stats for last {ndays} days"
+  if args.get("ndays",False):
+    stats["subtitle"] = f"Showing stats for {actualgames} games in the last {ndays} days"
+  elif args.get("ngames",False):
+    stats["subtitle"] = f"Showing stats for last {actualgames} games"
   else:
-    stats["subtitle"] = f"Showing stats for all replays"
+    stats["subtitle"] = f"Showing lifetime stats for {actualgames} games"
 
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days

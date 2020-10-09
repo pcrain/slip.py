@@ -9,6 +9,34 @@
         {{stats.subtitle}}
       </span>
 
+      <script type="text/javascript">
+        function filterResults(me) {
+          var q = $(me).data('q');
+          window.location.href = "/stats/"+{{stats.tag|tojson}}.replace("#","_")+"?"+q;
+        }
+        window.onload = function() {
+          var uvars = getUrlVars();
+          if ("ndays" in uvars) {
+            $("button[data-q='ndays="+uvars["ndays"]+"']").addClass("active-button");
+          }
+          else if ("ngames" in uvars) {
+            $("button[data-q='ngames="+uvars["ngames"]+"']").addClass("active-button");
+          } else {
+            $("button[data-q='']").addClass("active-button");
+          }
+        }
+      </script>
+
+      <span class="statFilterButtons">
+        <button data-q='ndays=7'      onclick="filterResults(this)">Week       </button>
+        <button data-q='ndays=28'     onclick="filterResults(this)">Month      </button>
+        <button data-q='ndays=365'    onclick="filterResults(this)">Year       </button>
+        <button data-q='ngames=100'   onclick="filterResults(this)">100 Games  </button>
+        <button data-q='ngames=1000'  onclick="filterResults(this)">1000 Games </button>
+        <button data-q='ngames=10000' onclick="filterResults(this)">10000 Games</button>
+        <button data-q=''             onclick="filterResults(this)">Lifetime   </button>
+      </span>
+
       {# Mains, Secondaries, and Other Characters #}
       <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
       <span class="h" id="hmatchups"><hr/>Win Rate by Matchup<hr/></span>
