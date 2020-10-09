@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#Run slip.py in Desktop mode
 
 #Import standard modules
 import os, sys, socket

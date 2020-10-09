@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#File for confgiuring dynamic template information
+#File for configuring dynamic template information
 
 def config_generators(app):
   @app.context_processor

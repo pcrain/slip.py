@@ -4,7 +4,6 @@ from datetime          import datetime
 from app               import db, login
 from app.config        import Config
 from flask_login       import UserMixin, AnonymousUserMixin
-from hashlib           import md5
 from sqlalchemy        import or_, and_, event
 import sys, os
 
@@ -46,14 +45,6 @@ class User(UserMixin, db.Model):
         reps = Replay.query.filter_by(user_id=self.id)
         pubs = Replay.query.filter_by(is_public=1)
         return reps.union(pubs).order_by(Replay.uploaded.desc())
-
-#Comparator for GET values such as "lt5" (less than 5)
-def get_cmp(val,arg):
-    if "lt" in arg:
-        return val < int(arg[2:])
-    if "gt" in arg:
-        return val > int(arg[2:])
-    return val > int(arg)
 
 class Settings(db.Model):
     name  = db.Column(db.String(128), primary_key=True)

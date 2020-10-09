@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from flask import current_app
 from datetime import datetime
-import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip, ctypes
+import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip
 
 # Easy colors (print)
 class col:
@@ -66,6 +66,7 @@ def call(coms,inp="",ignoreErrors=False,returnErrors=False):
 def shcall(comstring,inp="",ignoreErrors=False,returnErrors=False):
   return call(shlex.split(comstring),inp,ignoreErrors,returnErrors)
 
+#Load replay data from an analysis JSON
 def load_replay(rf):
     with open(rf,'r') as jin:
         r                  = json.loads(jin.read())
@@ -88,25 +89,25 @@ def load_replay(rf):
             p["__display_tag"] = get_display_tag(p)
     return r
 
+#Determine a nice dispaly tag based on Display Name, Slippi Code, CSS Code, or Port
 def get_display_tag(p):
     if p["tag_player"] == "" or p["tag_player"] == "Player":
         if p["player_type"] == 1:
             return "[Lv. {} CPU]".format(p["cpu_level"])
         if p["tag_css"].strip() != "" :
             return "[{}]".format(p["tag_css"].strip().upper())
+        if p["tag_code"].strip() != "" :
+            return "[{}]".format(p["tag_code"].strip().upper())
         return "[Port {}]".format(1+p["port"])
     return p["tag_player"]
 
+#Get a nicely formatted string representing time elapsed based on frame count
 def get_game_length(frames):
     mins   = frames // 3600
     frames -= 3600*mins
     secs   = frames // 60
     frames -= 60*secs
     return f"{mins:02d}:{secs:02d}.{int((100*frames)/60):02d}"
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ["slp"]
 
 #Fallback in case we can't parse time from a .slp file
 def try_parse_time(t):
@@ -256,7 +257,7 @@ def openFileThunar(path):
     "string:",
     ]
 
-#Open folder (and optionally highlight a file in Windows)
+#Open folder (and optionally highlight a file in supported explorers)
 def openDir(path,isfile=False):
   if os.name == 'nt':
     explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
@@ -271,7 +272,7 @@ def openDir(path,isfile=False):
     output, err = p.communicate("")
     explorer    = output.decode('utf-8').replace(".desktop\n","")
     if isfile and os.path.exists(path):
-      if explorer == "thunar":
+      if explorer in ["thunar"]:
         subprocess.run(openFileThunar(path))
       elif explorer in ["nautilus","nemo"]:
         subprocess.run([explorer, "no-desktop", path])
@@ -279,3 +280,9 @@ def openDir(path,isfile=False):
         subprocess.run([explorer, ntpath.dirname(path)])
     else:
       subprocess.run([explorer, path])
+
+#Open a file selection dialog and return the path of the selected file
+def pickFile(prompt="Select a File",startDir=""):
+  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
+  fn = call(["python",fp,prompt,startDir])
+  return fn

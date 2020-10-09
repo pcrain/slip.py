@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys, os, multiprocessing
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
@@ -12,7 +13,7 @@ class Config(object):
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.4.2"
+    SITE_VERSION                   = "0.4.3"
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables

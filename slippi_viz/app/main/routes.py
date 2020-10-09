@@ -1,18 +1,23 @@
 #!/usr/bin/python
+
+#Flask imports
 from flask import render_template, jsonify, flash, redirect, url_for, request, current_app, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy        import or_, and_
 
+#App imports
 from app import db
 from app.main import bp
 from app.main.forms import ReplaySearchForm
 from app.main.helpers import *
 from app.models import User, Replay, ScanDir, Settings
 
+#Standard imports
 from datetime import datetime, timedelta
 from collections import defaultdict
 import os
 
+#Function to call before any requests
 @bp.before_request
 def before_request():
     if not os.path.exists(current_app.config["DATA_FOLDER"]):
@@ -21,16 +26,19 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
+#Route for favicon for browser
 @bp.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(
       current_app.config["STATIC_FOLDER"],"icons"
-      ), 'pretzel.png', mimetype='image/vnd.microsoft.icon')
+      ), 'wolfhead.png', mimetype='image/vnd.microsoft.icon')
 
+#Route for help page
 @bp.route('/help')
 def help():
   return render_template("help.html.j2", title="Help")
 
+#Route for replay index (home page)
 @bp.route('/')
 @bp.route('/replays')
 def replays():
@@ -80,6 +88,7 @@ def replays():
       next_url = next_url,
       prev_url = prev_url)
 
+#Route for an individual replay's analysis page
 @bp.route('/replays/<r>')
 def replay_viz(r):
     rdata  = Replay.query.filter_by(checksum=r).first()
@@ -104,15 +113,18 @@ def replay_viz(r):
 
     return render_template("replay.html.j2", title=rdata.filename, rsummary=rdata, replay=replay)
 
+#[Deprecated] Route for replay upload page
 @bp.route('/upload', methods=['GET'])
 def upload_page():
   return render_template("upload.html.j2", title="Upload Replays")
 
+#Route for settings page
 @bp.route('/settings', methods=['GET'])
 def settings_page():
   s = Settings.load()
   return render_template("settings.html.j2", title="Settings", settings=s)
 
+#Route for page showing index of players for whom we can display stats
 @bp.route('/stats', methods=['GET'])
 def stats_index_page():
   codes = defaultdict(int)
@@ -124,6 +136,43 @@ def stats_index_page():
   players = sorted([(k,codes[k]) for k in codes],key=lambda x: x[1], reverse=True)
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 
+#Route for scan page
+@bp.route('/scan', methods=['GET'])
+def scan_page():
+  ldirs = []
+
+  for item in ScanDir.query.all():
+    lbase = item.path
+    f     = item.display
+    full  = item.fullpath
+    if not os.path.exists(full): #Broken symlink
+      ldirs.append({
+        "name"  : f,
+        "stats" : {
+            "name"  : f,
+            "path"  : os.path.join(lbase,f),
+            "dirs"  : 0,
+            "files" : 0,
+            "class" : "broken",
+            "click" : "delScanDir",
+            "sort"  : 4,
+          },
+        })
+    elif os.path.isdir(full):
+        ldirs.append({
+            "name"  : f,
+            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
+            })
+  return render_template("scan.html.j2", title="Scan Replays", scandirs=ldirs)
+
+#Route for individual player's stats page
+@bp.route('/stats/<tag>', methods=['GET'])
+def stats_page(tag):
+  tag           = tag.replace("_","#") #Replace underscore with pound sign
+  stats         = get_stats(tag,request.args)
+  return render_template("stats.html.j2", title=tag, stats=stats)
+
+#Function for getting stats on player with a given tag
 def get_stats(tag,args):
   ndays  = int(args.get("ndays", 10000))   #Max number of days to backlog
   ngames = int(args.get("ngames",1000000)) #Max number of games to backlog
@@ -288,45 +337,3 @@ def get_stats(tag,args):
   }
   stats["bytop"]["data"] = sorted(stats["bytop"]["data"],key=lambda x: x["Code"])[:10]
   return stats
-
-@bp.route('/stats/<tag>', methods=['GET'])
-def stats_page(tag):
-  tag           = tag.replace("_","#") #Replace underscore with pound sign
-  stats         = get_stats(tag,request.args)
-  return render_template("stats.html.j2", title=tag, stats=stats)
-
-@bp.route('/stats2/<tag>', methods=['GET'])
-def stats2_page(tag):
-  tag     = tag.replace("_","#") #Replace underscore with pound sign
-  stats   = get_stats(tag,request.args)
-  # return render_template("stats3.html.j2", title=tag, stats=stats, bardata=stats["bydate"])
-  return render_template("stats2.html.j2", title=tag, stats=stats)
-  # return render_template("stats2.html.j2", title=tag, stats=stats, bardata=stats["bytop"])
-
-@bp.route('/scan', methods=['GET'])
-def scan_page():
-  ldirs = []
-
-  for item in ScanDir.query.all():
-    lbase = item.path
-    f     = item.display
-    full  = item.fullpath
-    if not os.path.exists(full): #Broken symlink
-      ldirs.append({
-        "name"  : f,
-        "stats" : {
-            "name"  : f,
-            "path"  : os.path.join(lbase,f),
-            "dirs"  : 0,
-            "files" : 0,
-            "class" : "broken",
-            "click" : "delScanDir",
-            "sort"  : 4,
-          },
-        })
-    elif os.path.isdir(full):
-        ldirs.append({
-            "name"  : f,
-            "stats" : check_single_folder_for_slippi_files(lbase,f,click="delScanDir",classd="scanned")
-            })
-  return render_template("scan.html.j2", title="Scan Replays", scandirs=ldirs)

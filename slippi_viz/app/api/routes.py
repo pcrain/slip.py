@@ -1,30 +1,26 @@
 #!/usr/bin/python
-from flask import request, jsonify, current_app, send_from_directory, render_template
-from sqlalchemy  import or_, and_
 
+#Flask imports
+from flask import request, jsonify, current_app, send_from_directory, render_template
+from sqlalchemy import or_, and_
 from werkzeug.utils import secure_filename
+
+#App imports
 from app import db, executor
 from app.models import User, Replay, ScanDir, Settings
 from app.api import bp
 from app.main.helpers import *
 
-from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
-
-
-# from __main__ import app
+#Standard imports
 from datetime import datetime
-from pathlib import Path
 import json, glob, ntpath, time, os, subprocess, copy, shutil, shlex, traceback
 import concurrent.futures
 
 NODUPES             = True  #Set to True to not allow duplicate reuploads
 NOKEEP              = False #Set to True to delete files after uploading
+_scan_jobs          = {}    #Dictionary of job timers
 
-#Dictionary of job timers
-_scan_jobs = {
-
-}
-
+#[Deprecated] API call for uploading a replay to the server
 @bp.route('/upload', methods=['POST'])
 def api_upload_replay():
     #Populate a return JSON
@@ -60,8 +56,9 @@ def api_upload_replay():
     checksums = set(i.checksum for i in Replay.query.all())
     return analyze_replay(opath,jret,nokeep=NOKEEP,conf=conf,checksums=checksums)
 
+#API call for opening the containing directory for a replay file
 @bp.route('/open', methods=['POST'])
-def api_open_containing_dir():
+def api_open_replay_dir():
   d    = request.get_json()["dir"]
   f    = request.get_json()["name"]
   full = os.path.join(current_app.config['DATA_FOLDER'],d,f)
@@ -69,36 +66,37 @@ def api_open_containing_dir():
   openDir(real,isfile=True)
   return jsonify({"status" : "ok"})
 
+#API call for opening the user data directory for slip.py
 @bp.route('/opendata', methods=['GET'])
 def api_open_data_dir():
   openDir(current_app.config['DATA_FOLDER'])
   return jsonify({"status" : "ok"})
 
+#API call for opening the install directory for slip.py
 @bp.route('/openinstall', methods=['GET'])
 def api_open_install_dir():
   openDir(current_app.config['INSTALL_FOLDER'])
   return jsonify({"status" : "ok"})
 
+#API call for setting the Slippi Playback Dolphin build path
 @bp.route('/setemupath', methods=['GET'])
 def api_set_emu_path():
-  cp = Settings.load()["emupath"]
-  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = call(["python",fp,"Select Slippi Dolphin Executable",cp])
+  fn = pickFile("Select Slippi Dolphin Executable",Settings.load()["emupath"])
   if fn:
     Settings.query.filter_by(name="emupath").update({"value" : fn})
     db.session.commit()
   return jsonify({"status" : "ok"})
 
+#API call for setting the Melee 1.02 ISO path
 @bp.route('/setisopath', methods=['GET'])
 def api_set_iso_path():
-  cp = Settings.load()["isopath"]
-  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = call(["python",fp,"Select Melee 1.02 ISO Path",cp])
+  fn = pickFile("Select Melee 1.02 ISO Path",Settings.load()["isopath"])
   if fn:
     Settings.query.filter_by(name="isopath").update({"value" : fn})
     db.session.commit()
   return jsonify({"status" : "ok"})
 
+#API call for toggling auto scan of replays on startup
 @bp.route('/toggleautoscan', methods=['GET'])
 def api_toggle_auto_scan():
   s = "False" if Settings.load()["autoscan"] else "True"
@@ -106,6 +104,7 @@ def api_toggle_auto_scan():
   db.session.commit()
   return jsonify({"status" : "ok"})
 
+#API call for adjusting the maximum number of threads used for scanning
 @bp.route('/togglescanthreads', methods=['GET'])
 def api_toggle_scan_threads():
   m = current_app.config["MAX_SCAN_THREADS"]
@@ -114,12 +113,14 @@ def api_toggle_scan_threads():
   db.session.commit()
   return jsonify({"status" : "ok"})
 
+#API call for removing all scanned replays from database (JSONs left intact)
 @bp.route('/deletereplays', methods=['POST'])
 def api_delete_all_replays():
   Replay.query.delete()
   db.session.commit()
   return jsonify({"status" : "ok"})
 
+#[Deprecated] API call for deleting all slip.py user data
 @bp.route('/purge', methods=['POST'])
 def api_purge_all_data():
   # Replay.query.delete()
@@ -127,48 +128,30 @@ def api_purge_all_data():
     shutil.rmtree(current_app.config["DATA_FOLDER"])
   return jsonify({"status" : "ok"})
 
-@bp.route('/scan', methods=['POST'])
-def api_scan_dir():
-  global _scan_jobs
-  token             = md5(str(datetime.utcnow()))[:8]
-  _scan_jobs[token] = {
-    "posted"   : datetime.utcnow(),
-    "progress" : 0,
-    "total"    : 0,
-    "adds"     : [],
-    "details"  : [],
-    }
-  executor.submit(scan_job,token)
-  return jsonify({"status" : "Scan Started", "token" : token})
-
+#API call for adding a folder to scan list
 @bp.route('/scan/add', methods=['POST'])
 def api_scan_add():
   d = request.get_json()["dir"]
-
   scandir = ScanDir(
     fullpath = d,
     display  = ntpath.basename(d),
     path     = ntpath.dirname(d),
     lastscan = datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
     )
-
   db.session.add(scandir)
   db.session.commit()
-
   return jsonify({"status" : "ok"})
 
+#API call for removing a folder from scan list
 @bp.route('/scan/del', methods=['POST'])
 def api_scan_del():
-  d = request.get_json()["dir"]
-
-  sd = ScanDir.query.filter(
-    ScanDir.fullpath == d,
-    ).first()
+  d  = request.get_json()["dir"]
+  sd = ScanDir.query.filter(ScanDir.fullpath == d).first()
   db.session.delete(sd)
   db.session.commit()
-
   return jsonify({"status" : "ok"})
 
+#API call for returning pretty list of scanned folders
 @bp.route('/scan/browse', methods=['POST'])
 def api_scan_browse():
   curscans = set()
@@ -196,9 +179,9 @@ def api_scan_browse():
     "subs"   : listing,
     "render" : render_template("_folder_list.html.j2",dirs=listing)
     }
-  # print(j["render"])
   return jsonify(j)
 
+#API call for checking scan progress
 @bp.route('/scan/progress', methods=['POST'])
 def api_scan_progress():
   token                       = request.get_json()["token"]
@@ -223,6 +206,7 @@ def api_scan_progress():
   compressedJsonWrite(details,scanfile)
   return jsonify({"status" : "Done!", "done" : True, "details": f"scan-{now}.json"})
 
+#API call for opening a scan log JSON
 @bp.route('/scanlog/<s>', methods=['GET'])
 def api_get_scan_log(s):
   base = os.path.join(current_app.config['LOG_FOLDER'],s)
@@ -231,6 +215,7 @@ def api_get_scan_log(s):
   openJson(base)
   return jsonify({"status" : "ok"})
 
+#API call for opening a raw analysis JSON
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
   openJson(
@@ -238,6 +223,7 @@ def api_get_raw_analysis(r):
       current_app.config['REPLAY_FOLDER'],r+".slp.json"))
   return jsonify({"status" : "ok"})
 
+#API calls for playing replays
 @bp.route('/play/<c>',           methods=['GET']) #File
 @bp.route('/play/<c>/<sf>',      methods=['GET']) #File, Start
 @bp.route('/play/<c>/<sf>/<ef>', methods=['GET']) #File, Start, End
@@ -254,9 +240,136 @@ def api_play_replay(c,sf=-123,ef=999999):
   subprocess.Popen([emupath,"-b","-e",isopath,"-i",tname])
   return jsonify({"status" : "ok"})
 
-def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
-    global _scan_jobs
+#API call for initiating a scan over all replays in list of scanned folders
+@bp.route('/scan', methods=['POST'])
+def api_begin_scan():
+  global _scan_jobs
+  token             = md5(str(datetime.utcnow()))[:8]
+  _scan_jobs[token] = {
+    "posted"   : datetime.utcnow(),
+    "progress" : 0,
+    "total"    : 0,
+    "adds"     : [],
+    "details"  : [],
+    }
+  executor.submit(scan_job,token)
+  return jsonify({"status" : "Scan Started", "token" : token})
 
+#Function called by api_begin_scan() to delegate individual replay scans
+def scan_job(token):
+  global _scan_jobs
+
+  #Load settings from the database
+  settings    = Settings.load()
+
+  #Create a temporary file for logging progress
+  tmpfile     = os.path.join(current_app.config['TMP_FOLDER'],token)
+
+  #Set up some other variables
+  allreplays  = []
+  rdata       = []
+  checked     = set()
+  checksums   = set()
+  namesizes   = set()
+
+  #Load checksums, filenames, and filesizes for all replays currently in DB
+  logline(tmpfile,f"Fetching cached replay metadata",new=True)
+  for i in Replay.query.all():
+    checksums.add(i.checksum)
+    namesizes.add((os.path.join(i.filedir,i.filename),i.filesize))
+
+  #Recursively list replys in all scanned directories
+  logline(tmpfile,f"Locating .slp Replay files")
+  for item in ScanDir.query.all():
+    get_all_slippi_files(item.fullpath,allreplays,checked)
+  _scan_jobs[token]["total"] = len(allreplays)
+  logline(tmpfile,f"Found {len(allreplays)} total files")
+
+  #Filter out replays whose names and file sizes have not changed
+  logline(tmpfile,f"Filtering unchanged .slp Replay files")
+  replays = [r for r in allreplays if (r,os.stat(r).st_size) not in namesizes]
+  logline(tmpfile,f"Found {len(replays)} changed files ({len(allreplays)-len(replays)} unchanged)")
+
+  #Begin the actual scanning process using a threadpool
+  logline(tmpfile,f"Starting scan")
+  conf      = dict(current_app.config)
+  adds      = []
+  updates   = []
+  #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
+  with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
+    #Submit all scan jobs to the ProcessPoolExecutor to complete as possible
+    tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
+    #As each replay scan finishes...
+    for i,t in enumerate(concurrent.futures.as_completed(tasks)):
+      #Get the result
+      res = t.result()
+      #If there is no result, the browser was closed as the scan was in progress
+      if res is None:
+        logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
+        break
+
+      #If we have a new replay, add it to our list of replays to add
+      if res["replay"] is not None:
+        adds.append(res["replay"])
+
+      #If we have an updated replay, add it to our list of replays to update
+      if res["update"] is not None:
+        updates.append(res["update"])
+
+      #Delete the replay metadata from our result and append it to rdata
+      del res["replay"]
+      rdata.append(res)
+
+      #Update the number of scans completed
+      _scan_jobs[token]["progress"] += 1
+
+  #Add each new replay to the database
+  logline(tmpfile,f"Committing {len(adds)} new entries")
+  db.session.add_all(adds)
+
+  #Update each existing replay as necessary in the database
+  logline(tmpfile,f"Updating {len(updates)} entries: ")
+  for u in updates:
+    Replay.query.filter_by(checksum=u["checksum"]).update(u)
+
+  #Commit all database transactions
+  db.session.commit()
+
+  #Clean up
+  logline(tmpfile,f"Scan completed")
+  _scan_jobs[token]["details"]  = rdata
+  _scan_jobs[token]["progress"] = None
+  return jsonify({"status" : "ok", "details" : rdata})
+
+#Function called by individual worker threads from scan_job()
+def scan_single(i,r,token,conf,checksums):
+  #Put together a basic metadata JSON for the replay to be scanned
+  jret = {
+    "token"           : token,
+    "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
+    "filedir"         : ntpath.dirname(r),
+    "filename"        : ntpath.basename(r),
+    "filename_secure" : ntpath.basename(r),
+    "url"             : "",
+    "status"          : "Success",
+    "error"           : "",
+    "replay"          : None,
+    "update"          : None,
+    }
+
+  #Actually scan the replay and update the metadata JSON
+  jret = analyze_replay(r,jret,nokeep=False,conf=conf,checksums=checksums)
+
+  #Delete all of the keys we don't need
+  del jret["time"]
+  del jret["token"]
+  del jret["filename_secure"]
+
+  #Return the metadata
+  return jret
+
+#Function called by scan_single() for actually analyzing a replay
+def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
     #If database already has a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
     if NODUPES and m in checksums:
@@ -290,7 +403,7 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
       jret["error"]     = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jret
 
-    #Add the replay to the database
+    #Load replay data from the analysis JSON
     try:
       rdata             = load_replay(afile)
     except:
@@ -300,6 +413,7 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
       jret["traceback"] = err.split("\n")
       return jret
 
+    #Add the replay to the database
     replay = Replay(
         checksum  = m,
         filename  = jret["filename_secure"],
@@ -326,97 +440,8 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
         p2display = get_display_tag(rdata["players"][1]),
         stage     = rdata["stage_id"],
         )
-    # _scan_jobs[jret["token"]]["adds"].append(replay)
-    jret["url"] = '/replays/'+m
+
+    #Return metadata JSON to caller
+    jret["url"]    = '/replays/'+m
     jret["replay"] = replay
     return jret
-
-def scan_single(i,r,token,conf,checksums):
-  global _scan_jobs
-  # progfile = os.path.join(current_app.config['TMP_FOLDER'],token+"-progress")
-  # Path(progfile).touch()
-
-  jret = {
-    "token"           : token,
-    "time"            : datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S'),
-    "filedir"         : ntpath.dirname(r),
-    "filename"        : ntpath.basename(r),
-    "filename_secure" : ntpath.basename(r),
-    "url"             : "",
-    "status"          : "Success",
-    "error"           : "",
-    "replay"          : None,
-    "update"          : None,
-    }
-  jret = analyze_replay(r,jret,nokeep=False,conf=conf,checksums=checksums)
-  # rdata.append(rstat)
-  del jret["time"]
-  del jret["token"]
-  del jret["filename_secure"]
-  # _scan_jobs[token]["details"].append(jret)
-  # print(f"Returning {i}")
-  # print(f"Finishing {i}")
-  return jret
-
-def scan_job(token):
-  global _scan_jobs
-
-  settings    = Settings.load()
-
-  tmpfile     = os.path.join(current_app.config['TMP_FOLDER'],token)
-  allreplays  = []
-  rdata       = []
-  checked     = set()
-  checksums   = set()
-  namesizes   = set()
-
-  logline(tmpfile,f"Fetching cached replay metadata",new=True)
-  for i in Replay.query.all():
-    checksums.add(i.checksum)
-    namesizes.add((os.path.join(i.filedir,i.filename),i.filesize))
-
-  logline(tmpfile,f"Locating .slp Replay files")
-  for item in ScanDir.query.all():
-    get_all_slippi_files(item.fullpath,allreplays,checked)
-  _scan_jobs[token]["total"] = len(allreplays)
-  logline(tmpfile,f"Found {len(allreplays)} total files")
-
-  logline(tmpfile,f"Filtering unchanged .slp Replay files")
-  replays = [r for r in allreplays if (r,os.stat(r).st_size) not in namesizes]
-  logline(tmpfile,f"Found {len(replays)} changed files ({len(allreplays)-len(replays)} unchanged)")
-
-  logline(tmpfile,f"Starting scan")
-  conf      = dict(current_app.config)
-  adds      = []
-  updates   = []
-  #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
-  with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
-    tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
-    for i,t in enumerate(concurrent.futures.as_completed(tasks)):
-      # if (datetime.utcnow() - _scan_jobs[token]["posted"]).seconds >= 2:
-      #   pass
-      res = t.result()
-      if res is None:
-        logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
-        break
-      if res["replay"] is not None:
-        adds.append(res["replay"])
-      if res["update"] is not None:
-        updates.append(res["update"])
-      del res["replay"]
-      rdata.append(res)
-      _scan_jobs[token]["progress"] += 1
-
-  logline(tmpfile,f"Committing {len(adds)} new entries")
-  db.session.add_all(adds)
-
-  logline(tmpfile,f"Updating {len(updates)} entries: ")
-  for u in updates:
-    Replay.query.filter_by(checksum=u["checksum"]).update(u)
-
-  db.session.commit()
-  logline(tmpfile,f"Scan completed")
-
-  _scan_jobs[token]["details"]  = rdata
-  _scan_jobs[token]["progress"] = None
-  return jsonify({"status" : "ok", "details" : rdata})

@@ -1,7 +1,7 @@
 #!/usr/bin/python
-from flask_wtf import FlaskForm, csrf
+from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, HiddenField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from wtforms.validators import ValidationError, DataRequired, Length
 from app.models import User
 
 class EditProfileForm(FlaskForm):
