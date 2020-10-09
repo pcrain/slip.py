@@ -45,7 +45,7 @@ def create_app(config_class=Config):
     if not os.path.exists(app.config['LOG_FOLDER']):
         os.mkdir(app.config['LOG_FOLDER'])
     file_handler = RotatingFileHandler(
-        os.path.join(app.config['LOG_FOLDER'],'slippi_viz.log'),
+        os.path.join(app.config['LOG_FOLDER'],app.config['LOG_FILE']),
         maxBytes=10240, backupCount=10
         )
     file_handler.setFormatter(logging.Formatter(

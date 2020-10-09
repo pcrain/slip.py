@@ -125,7 +125,7 @@ if __name__ == "__main__":
       window.setWindowIcon(QtGui.QIcon(icon))
 
       # Tray Icon
-      w = QtWidgets.QWidget()
+      w        = QtWidgets.QWidget()
       trayIcon = SystemTrayIcon(QtGui.QIcon(icon), w, window)
       trayIcon.show()
 
@@ -156,8 +156,7 @@ if __name__ == "__main__":
   location = (os.path.dirname(os.path.realpath(os.path.abspath(__file__))))
   os.chdir(location)
   init_gui(app,
-    port=5050,
-    window_title=app.config["SITE_NAME"]+
-      " (Backspace to go Back, F5 to Refresh, F12 to Reset)",
-    icon=app.config["SITE_ICON"]
+    port         = app.config["SITE_PORT"],
+    window_title = app.config["SITE_NAME"],
+    icon         = app.config["SITE_ICON"]
     )

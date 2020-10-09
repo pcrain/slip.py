@@ -231,13 +231,13 @@ def compressedJsonRead(filename):
     return json.loads(fin.read().decode('utf-8'))
 
 #Open JSON in OS's default JSON viewer
-def openJson(path):
+def openJson(path,mimetype="application/json"):
   if os.name == 'nt':
     notepad = os.path.join(os.getenv('WINDIR'), 'notepad.exe')
     subprocess.run([notepad, path])
   else:
     #Query default file viewer
-    exp_query   = ["xdg-mime","query","default","application/json"]
+    exp_query   = ["xdg-mime","query","default",mimetype]
     p           = subprocess.Popen(exp_query, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate("")
     notepad     = output.decode('utf-8').replace(".desktop\n","")
@@ -286,3 +286,13 @@ def pickFile(prompt="Select a File",startDir=""):
   fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
   fn = call(["python",fp,prompt,startDir])
   return fn
+
+#HTML escape a string
+def htmlEscape(s):
+  return (s
+    .replace('&','&amp;' )
+    .replace('"','&quot;')
+    .replace("'",'&#39;' )
+    .replace('<','&lt;'  )
+    .replace('>','&gt;'  )
+    )

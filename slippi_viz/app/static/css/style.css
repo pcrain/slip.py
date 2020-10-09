@@ -1555,3 +1555,6 @@ span.statFilterButtons {
   grid-area: tabs;
 }
 
+.link {
+  cursor: pointer;
+}

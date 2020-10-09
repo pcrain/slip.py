@@ -171,3 +171,16 @@ function removeParam(key, sourceURL) {
 function addParam(param,url) {
   return stripUrlParams(url + "&" + param);
 }
+
+// Open a log file
+function viewLogFile(e) {
+  $.ajax({
+    type        : "get",
+    url         : "/errors/errorlog/"+e,
+    data        : JSON.stringify({}),
+    dataType    : "json",
+    contentType : "application/json",
+    cache       : false,
+    processData : false
+  });
+}

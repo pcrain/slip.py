@@ -12,8 +12,9 @@ class Config(object):
     ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
+    SITE_VERSION                   = "0.4.4"
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.4.3"
+    SITE_PORT                      = 5050
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
@@ -30,6 +31,7 @@ class Config(object):
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
     LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
+    LOG_FILE                       = 'slippi_viz.log'
     TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")
     SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
 
@@ -38,4 +40,4 @@ class Config(object):
     EXECUTOR_PROPAGATE_EXCEPTIONS  = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FORCE_COMPRESSION              = False
-    JUST_LAUNCHED                  = True #Set to False after first page loaded
+    JUST_LAUNCHED                  = True #Autoset to False after first page loads

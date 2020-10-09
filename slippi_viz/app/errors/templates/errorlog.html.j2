@@ -1,0 +1,11 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    <h1>Error Logs</h1>
+    {% for error in errors %}
+      <h3><a title="Click to download log file" class='link' onclick='viewLogFile({{error[0]|tojson}})'>{{error[0]}}:</a></h3>
+      <span class="errorblock">
+        <code>{{error[1]}}</code>
+      </span>
+    {% endfor %}
+{% endblock %}
