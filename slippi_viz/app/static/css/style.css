@@ -1237,8 +1237,8 @@ span#statsGrid {
     grid-template-columns : repeat(4, minmax(0, 1fr));
     grid-template-rows    : repeat(5, min-content) minmax(300px,1fr);
     grid-template-areas   :
-      "title    title     title      title"
-      "subtitle subtitle  subtitle   subtitle"
+      "title    title     tabs       tabs"
+      "subtitle subtitle  tabs       tabs"
       "hchars   hmatchups hmostgames hnewgames "
       "chars    matchups  mostgames  newgames  "
       "chars    matchups  hhistory   hhistory  "
@@ -1255,6 +1255,7 @@ span#statsGrid {
     grid-template-areas   :
       "title title"
       "subtitle subtitle"
+      "tabs tabs"
       "hchars hmatchups"
       "chars matchups"
       "hmostgames hnewgames"
@@ -1273,6 +1274,7 @@ span#statsGrid {
     grid-template-areas   :
       "title"
       "subtitle"
+      "tabs"
       "hchars"
       "chars"
       "hmatchups"
@@ -1299,7 +1301,7 @@ span#statsGrid td {
 
 span#statsGrid span.h, span#statsGraphs span.h {
   font-weight : bold;
-  font-size   : 24px;
+  font-size   : 14px;
 }
 
 span#hchars     { grid-area: hchars; }
@@ -1498,7 +1500,7 @@ span#gamegraph  { grid-area: gamegraph; }
 
 .svgaxis path, .svgaxis line {
   fill: none;
-  stroke: #000;
+  stroke: #FFF;
   shape-rendering: crispEdges;
 }
 

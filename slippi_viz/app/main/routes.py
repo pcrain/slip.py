@@ -113,52 +113,74 @@ def stats_index_page():
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 
 def get_stats(tag,args):
-  ndays = 29         #Number of days to backlog
-  mlen  = 10         #Length of recent / most player opponent lists
-  count = 10000      #Number of games to fetch
+  ndays  = int(args.get("ndays", 10000))   #Max number of days to backlog
+  ngames = int(args.get("ngames",1000000)) #Max number of games to backlog
+  mlen   = 10                              #Length of recent / most player opponent lists
+
+  #Get data from last ndays days
+  dmap     = {}   #map of dates to winrates
+  earliest = (datetime.now()-timedelta(days=ndays)).strftime('%Y-%m-%d')
 
   #Start with a basic search for tag in either player slot
   p1and=[Replay.p1codetag==tag]
   p2and=[Replay.p2codetag==tag]
 
+  #Check if we're filtering by character
   if "char" in args:
     p1and.append(Replay.p1char==args["char"])
     p2and.append(Replay.p2char==args["char"])
 
+  #Set up a giant and statement, and check if we're filtering by date
+  bigand = [or_(and_(*p1and),and_(*p2and))]
+  if ndays >= 0:
+    bigand.append(Replay.played > earliest)
+
   #Get all relevant rows from the database
   rows = (Replay.query
     .filter(
-      or_(
-        and_(*p1and),
-        and_(*p2and)
-      )
+      and_(*bigand)
     ).order_by(Replay.played.desc())
-    .limit(count)
+    .limit(ngames)
     .all()
     )
 
   #Set up dict for stats
   stats = {
     "tag"    : tag,                                    #Tag of player we're showing stats for
-    "name"   : None,                                   #Display name for player we're showing stats for
+    "name"   : tag,                                   #Display name for player we're showing stats for
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
     "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
     }
+  if args.get("ngames",False):
+    if args.get("ndays",False):
+      stats["subtitle"] = f"Showing stats for up to {ngames} games in the last {ndays} days"
+    else:
+      stats["subtitle"] = f"Showing stats for last {ngames} games"
+  elif args.get("ndays",False):
+    stats["subtitle"] = f"Showing stats for last {ndays} days"
+  else:
+    stats["subtitle"] = f"Showing stats for all replays"
+
+  #Populate bar chart up to today, but only down to the earliest match played in a timeframe
+  #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days
+  mindate  = datetime.strptime(rows[-1].played[:10], '%Y-%m-%d')
+  smindate = mindate.strftime('%Y-%m-%d')
+  smaxdate = datetime.now().strftime('%Y-%m-%d')
+  newdays  = 0
+  while smindate <= smaxdate:
+    dmap[smindate] = [0,0,0]
+    mindate        = mindate+timedelta(days=1)
+    smindate       = mindate.strftime('%Y-%m-%d')
+    newdays       += 1
+  ndays = newdays
 
   #Set up miscellaneous variables
   olast  = None #last opponent
   top    = {}   #most played opponents
   tagmap = {}   #map of codes to display tags
-  dmap   = {}   #map of dates to winrates
-
-  #Get data from last ndays days
-  today     = datetime.now()
-  for i in range(ndays-1,-1,-1):
-    timestamp       = (today-timedelta(days=i)).strftime('%Y-%m-%d')
-    dmap[timestamp] = [0,0,0]
 
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
@@ -176,7 +198,7 @@ def get_stats(tag,args):
     ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
 
     #Get latest dates, display names and tags
-    if not stats["name"]:
+    if stats["name"] == tag:
       stats["name"] = pname
     if not tagmap.get(otag,None):
       tagmap[otag] = oname
@@ -196,9 +218,8 @@ def get_stats(tag,args):
       top[otag] = [0,0,0,otag]
     top[otag][res] += 1
 
-    #Only track matches that fall within the requested date range
-    if gdate in dmap:
-      dmap[gdate][res] += 1
+    #Track dates of matches that fall within the requested date range
+    dmap[gdate][res] += 1
 
     olast = otag #Set last-played opponent
 
@@ -228,6 +249,7 @@ def get_stats(tag,args):
     } for k in dmap],
     "meta" : {
       "labels"   : "Date",
+      "lshow"    : [0,ndays-1],
       "pos"      : "Wins",
       "neg"      : "Losses",
       "ttkeys"   : ["Date","Wins","Losses"], #keys to show in tooltip
@@ -242,6 +264,7 @@ def get_stats(tag,args):
     } for item in stats["top"]],
     "meta" : {
       "labels"   : "Code",
+      "lshow"    : list(range(len(stats["top"]))),
       "pos"      : "Wins",
       "neg"      : "Losses",
       "ttkeys"   : ["Code","Wins","Losses"], #Jinja does not preserve dict key order
@@ -253,8 +276,8 @@ def get_stats(tag,args):
 
 @bp.route('/stats/<tag>', methods=['GET'])
 def stats_page(tag):
-  tag   = tag.replace("_","#") #Replace underscore with pound sign
-  stats = get_stats(tag,request.args)
+  tag           = tag.replace("_","#") #Replace underscore with pound sign
+  stats         = get_stats(tag,request.args)
   return render_template("stats.html.j2", title=tag, stats=stats)
 
 @bp.route('/stats2/<tag>', methods=['GET'])

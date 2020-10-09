@@ -3,6 +3,7 @@
   var jdat     = {{ (jsondata|tojson) }};  //Import JSON data passed through Jinja
 
   var klab     = jdat["meta"]["labels"];  //Item keys corresponding to X-axis labels
+  var lshow    = jdat["meta"]["lshow"];   //Labels to show on X axis for
   var kpos     = jdat["meta"]["pos"];     //Item keys corresponding to positive bars
   var kneg     = jdat["meta"]["neg"];     //Item keys corresponding to negative bars
   var ttkeys   = jdat["meta"]["ttkeys"];  //Keys to show in item tooltip
@@ -14,11 +15,12 @@
   // alert(JSON.stringify(ttkeys));
   // alert(JSON.stringify(data));
 
-  var cwidth   = 1920;  //Width of canvas
-  var cheight  = 800;   //Height of canvas
-  var mleft    = 80;     //Lefthand margin
-  var mright   = 80;     //Righthand margin
-  var xfill    = 0.5;   //Amount of free space bars fill up
+  var cwidth      = 1920;  //Width of canvas
+  var cheight     = 800;   //Height of canvas
+  var mleft       = 80;     //Lefthand margin
+  var mright      = 80;     //Righthand margin
+  var xfill       = 0.5;   //Amount of free space bars fill up
+  var maxfontsize = 60;    //Scaling factor for maximum font size
 
   // X axis labels
   var labels   = data.map(function(item) {return item[klab];});
@@ -84,7 +86,7 @@
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis)
     .selectAll("text")
-      .attr("opacity", function(d,i) { return (i % 7 == 0) ? 1 : 0; })
+      .attr("opacity", function(d,i) { return (lshow.includes(i)) ? 1 : 0; })
       .attr("font-size", d => `${Math.min(xspace/2,40)}px`)
       .attr("fill", "white")
       .attr("y", 40*Math.cos(rot*Math.PI/180))
@@ -118,13 +120,13 @@
   entry.selectAll("text")
     .data(function(d) { return d.components; })
     .enter().append("text")
-      .attr("font-size", d => `${xspace/2}px`)
+      .attr("font-size", function(d) { return Math.min(xspace,maxfontsize)/2+"px"; })
       .attr("fill", "white")
       .text(function(d) { return d.sign*(d.sign == 1 ? d.y0 : d.y1); })
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "central")
       .attr("x", 0)
-      .attr("y", function(d) { return -d.sign*xspace/3+y(d.sign == 1 ? d.y0 : d.y1); })
+      .attr("y", function(d) { return -d.sign*Math.min(maxfontsize,xspace)/3+y(d.sign == 1 ? d.y0 : d.y1); })
     ;
   entry.selectAll("rect")
     .data(function(d) { return d.components; })

@@ -6,7 +6,7 @@
         Player Stats for {{stats.name}} ({{stats.tag}})
       </span>
       <span class="subtitle">
-        Showing most recent {{stats.count}} games
+        {{stats.subtitle}}
       </span>
 
       {# Mains, Secondaries, and Other Characters #}
@@ -14,7 +14,7 @@
       <span class="h" id="hmatchups"><hr/>Win Rate by Matchup<hr/></span>
       <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
-      <span class="h" id="hhistory"><hr/>Games Played by Day<hr/></span>
+      <span class="h" id="hhistory"><hr/>Games Played by Date<hr/></span>
 
       <span id="statsChars">
         {% for c in stats.char %}
