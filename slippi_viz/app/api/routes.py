@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
 # from __main__ import app
 from datetime import datetime
 from pathlib import Path
-import json, glob, ntpath, time, os, subprocess, copy, shutil, shlex
+import json, glob, ntpath, time, os, subprocess, copy, shutil, shlex, traceback
 import concurrent.futures
 
 NODUPES             = True  #Set to True to not allow duplicate reuploads
@@ -257,10 +257,8 @@ def api_play_replay(c,sf=-123,ef=999999):
 def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
     global _scan_jobs
 
-    #If we've already analyzed a replay with the same md5, update its info and call it a day
+    #If database already has a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
-    # samemd5 = Replay.query.filter_by(checksum=m).all()
-    # samemd5 = []
     if NODUPES and m in checksums:
       jret["update"] = {
         "filedir"  : jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
@@ -272,21 +270,36 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
       jret["error"]  = 'Replay already in database'
       return jret
 
-    #If an analysis of this file already exists, don't bother analyzing it
+    #Determine the file name for the analysis JSON
     afile = os.path.join(conf['REPLAY_FOLDER'], m+".slp.json")
-    if not os.path.exists(afile):
-      #Try to actually analyze the replay; if we can't, call it a day
-      _,err = call([conf['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
 
-    if nokeep:
-      os.remove(local_file)
+    #If an analysis of this replay already exists, don't bother analyzing it
+    if conf["ANALYZE_MISSING"] or (not os.path.exists(afile)):
+      #Try to actually analyze the replay; if we can't, call it a day
+      try:
+        _,err = call([conf['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
+      except:
+        err               = traceback.format_exc()
+        jret["status"]    = 'Failure'
+        jret["error"]     = f"Failed to run {conf['ANALYZER']} on {local_file}; got the following error:"
+        jret["traceback"] = err.split("\n")
+        return jret
+
     if not os.path.exists(afile):
-      jret["status"] = 'Failure'
-      jret["error"]  = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
+      jret["status"]    = 'Failure'
+      jret["error"]     = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
       return jret
 
     #Add the replay to the database
-    rdata  = load_replay(afile)
+    try:
+      rdata             = load_replay(afile)
+    except:
+      err               = traceback.format_exc()
+      jret["status"]    = 'Failure'
+      jret["error"]     = f"Failed to load replay JSON from {afile}; got the following error:"
+      jret["traceback"] = err.split("\n")
+      return jret
+
     replay = Replay(
         checksum  = m,
         filename  = jret["filename_secure"],

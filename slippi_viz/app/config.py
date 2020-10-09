@@ -8,19 +8,22 @@ class Config(object):
     SIMULTANEOUS_UPLOADS           = 100
     MAX_SCAN_THREADS               = multiprocessing.cpu_count()
     DEF_STATS                      = "?submit=&ndays=28" #Default stats page query
+    ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.4.1"
+    SITE_VERSION                   = "0.4.2"
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
     INSTALL_FOLDER                 = os.path.dirname(basedir)
     STATIC_FOLDER                  = os.path.join(basedir,"static")
     if os.name == 'nt':
+      DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Documents","Slippi")
       DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")
       ANALYZER                     = "slippc.exe"
     else:
+      DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Slippi")
       DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
       ANALYZER                     = "slippc"
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")

@@ -1,6 +1,13 @@
 #!/usr/bin/python
 #Run Slippi Viz in the default web browser
 
+import sys
+if sys.version[:3] != "3.8":
+  print("You must use Python 3.8.x to run this App")
+  print(f"Your version: {sys.version.split()[0]}")
+  input("Press any key to exit")
+  sys.exit(1)
+
 import os, sys, subprocess
 PY_VER = "38"
 APP_URL= "http://127.0.0.1:5000"

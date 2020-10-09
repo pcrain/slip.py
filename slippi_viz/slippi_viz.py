@@ -3,6 +3,12 @@
 #Import standard modules
 import os, sys, socket
 
+if sys.version[:3] != "3.8":
+  print("You must use Python 3.8.x to run this App")
+  print(f"Your version: {sys.version.split()[0]}")
+  input("Press any key to exit")
+  sys.exit(1)
+
 #On Windows, make sure necessary Python paths are in PATH
 PY_VER = "38"
 if os.name == 'nt':

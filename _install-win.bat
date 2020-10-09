@@ -1,5 +1,6 @@
-ECHO Checking for Python / Pip
 @echo off
+ECHO Leave this window open until installation is complete
+ECHO Checking for Python / Pip
 WHERE pip
 IF %ERRORLEVEL% NEQ 0 (
   ECHO pip wasn't found in PATH
@@ -10,6 +11,7 @@ IF %ERRORLEVEL% NEQ 0 (
     %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe install --user .
   ) ELSE (
     ECHO pip wasn't found in default location; please install pip to proceed
+    ECHO You may close this window
     PAUSE
     EXIT /B
   )
@@ -38,4 +40,6 @@ SET LOG=".\%~N0_runtime.log"
 %SystemRoot%\System32\cscript.exe //nologo .\!cSctVBS!
 DEL !cSctVBS! /f /q
 )1>>!LOG! 2>>&1
+
+ECHO Installation of slip.py successful! You may close this window
 PAUSE

@@ -5,9 +5,8 @@ from app               import db, login
 from app.config        import Config
 from flask_login       import UserMixin, AnonymousUserMixin
 from hashlib           import md5
-from sqlalchemy        import or_, and_
-import sys
-
+from sqlalchemy        import or_, and_, event
+import sys, os
 
 class Anonymous(AnonymousUserMixin):
   def __init__(self):
@@ -89,6 +88,19 @@ class ScanDir(db.Model):
     display   = db.Column(db.String(), index=True)
     path      = db.Column(db.String(), index=True)
     lastscan  = db.Column(db.String(19))
+
+@event.listens_for(ScanDir.__table__, 'after_create')
+def insert_initial_values(*args, **kwargs):
+    #Add default replay folder on startup
+    if os.path.exists(Config.DEF_REPLAY_FOLDER):
+        db.session.add(ScanDir(
+          fullpath = Config.DEF_REPLAY_FOLDER,
+          display  = os.path.basename(Config.DEF_REPLAY_FOLDER),
+          path     = os.path.dirname(Config.DEF_REPLAY_FOLDER),
+          lastscan = "2000-01-01_00-00-00",
+          ))
+        db.session.commit()
+
 
 class Replay(db.Model):
     id        = db.Column(db.Integer, primary_key=True)

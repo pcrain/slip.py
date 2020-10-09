@@ -1,7 +1,7 @@
 For all operating systems you will need to [download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
 
 ### Windows Install Instructions
-  - Install Python 3.8.6 from [the official website](https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe):
+  - Install Python 3.8 from [the official website](https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe):
     - Make sure you install pip when prompted under "Optional Features"
     - You may skip this step if Python is already installed
   - Double-click "\_install-win.bat"
