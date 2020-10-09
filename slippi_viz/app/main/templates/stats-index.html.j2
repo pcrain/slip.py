@@ -6,7 +6,7 @@
       <table>
         {% for p in players if p[0] != "" %}
           <tr>
-            <td><a href="/stats/{{ p[0]|replace('#', '_', 1) }}?ndays=28">{{p[0]}}</a></td>
+            <td><a href="/stats/{{ p[0]|replace('#', '_', 1) }}{{DEF_STATS}}">{{p[0]}}</a></td>
             <td>{{p[1]}} games</td>
           </tr>
         {% endfor%}

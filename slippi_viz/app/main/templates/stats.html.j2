@@ -11,8 +11,21 @@
 
       <script type="text/javascript">
         function filterResults(me) {
-          var q = $(me).data('q');
-          window.location.href = "/stats/"+{{stats.tag|tojson}}.replace("#","_")+"?"+q;
+          var here = window.location.href;
+          var q    = $(me).data('q');
+          here     = removeParam("ndays",removeParam("ngames",here));
+          if (q != "") {
+            here = addParam(q,here);
+          }
+          window.location.href = here;
+        }
+        function changeChar(c) {
+          var here = window.location.href;
+          here     = removeParam("char",here);
+          if (c >= 0) {
+            here = addParam("char="+c,here);
+          }
+          window.location.href = here;
         }
         window.onload = function() {
           var uvars = getUrlVars();
@@ -60,11 +73,11 @@
             <span class="charGrid {{role}}">
               <span class="portrait">
                 {% if playpercent < 100 %}
-                  {% set url="/stats/"+stats.tag|replace('#', '_', 1)+"?char="+c[0]|string %}
+                  {% set click="changeChar("+(c[0]|string)+")" %}
                 {% else %}
-                  {% set url="/stats/"+stats.tag|replace('#', '_', 1) %}
+                  {% set click="changeChar(-1)" %}
                 {% endif %}
-                <a href="{{url}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
+                <a onclick="{{click}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
               </span>
               <span class="playtime">
                 {{ playpercent }}%
@@ -123,7 +136,8 @@
               {% else %}
                 {% set outcome = "d" %}
               {% endif %}
-              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}">{{ o[3] }}</a></td>
+              {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
+              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td>
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>
@@ -160,7 +174,8 @@
               {% else %}
                 {% set outcome = "d" %}
               {% endif %}
-              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}">{{ o[3] }}</a></td>
+              {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
+              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td>
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>

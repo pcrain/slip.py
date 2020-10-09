@@ -166,7 +166,10 @@ def get_stats(tag,args):
 
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days
-  mindate  = datetime.strptime(rows[-1].played[:10], '%Y-%m-%d')
+  if len(rows) > 0:
+    mindate  = datetime.strptime(rows[-1].played[:10], '%Y-%m-%d')
+  else:
+    mindate  = datetime.now()
   smindate = mindate.strftime('%Y-%m-%d')
   smaxdate = datetime.now().strftime('%Y-%m-%d')
   newdays  = 0

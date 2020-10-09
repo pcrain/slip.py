@@ -123,3 +123,51 @@ document.onkeyup = function(e) {
   //   alert("Ctrl + Alt + Shift + U shortcut combination was pressed");
   // }
 };
+
+// Strip duplicate URL paramters
+// https://stackoverflow.com/questions/31075133/strip-duplicate-parameters-from-the-url
+function stripUrlParams(url, parameter) {
+    //prefer to use l.search if you have a location/link object
+    var urlparts= url.split('?');
+    if (urlparts.length>=2) {
+
+        var stuff = urlparts[1];
+        pars = stuff.split("&");
+        var comps = {};
+        for (i = pars.length - 1; i >= 0; i--)
+        {
+            spl = pars[i].split("=");
+            comps[spl[0]] = spl[1];
+        }
+        pars = [];
+        for (var a in comps)
+            pars.push(a + "=" + comps[a]);
+        url = urlparts[0] + '?' + pars.join('&');
+        return url;
+    } else {
+        return url;
+    }
+}
+
+function removeParam(key, sourceURL) {
+    var rtn = sourceURL.split("?")[0],
+        param,
+        params_arr = [],
+        queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+    if (queryString !== "") {
+        params_arr = queryString.split("&");
+        for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+            param = params_arr[i].split("=")[0];
+            if (param === key) {
+                params_arr.splice(i, 1);
+            }
+        }
+        rtn = rtn + "?" + params_arr.join("&");
+    }
+    return rtn;
+}
+
+// Add a parameter to the current page's URL and refresh the page
+function addParam(param,url) {
+  return stripUrlParams(url + "&" + param);
+}

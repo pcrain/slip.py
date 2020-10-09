@@ -7,10 +7,11 @@ class Config(object):
     POSTS_PER_PAGE                 = 60
     SIMULTANEOUS_UPLOADS           = 100
     MAX_SCAN_THREADS               = multiprocessing.cpu_count()
+    DEF_STATS                      = "?submit=&ndays=28" #Default stats page query
 
     #Global template variables
     SITE_NAME                      = "Slip.py Browser"
-    SITE_VERSION                   = "0.3.3"
+    SITE_VERSION                   = "0.4.0"
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
 
     #Data location variables
