@@ -14,6 +14,7 @@
       <span class="h" id="hmatchups"><hr/>Win Rate by Matchup<hr/></span>
       <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
+      <span class="h" id="hhistory"><hr/>Games Played by Day<hr/></span>
 
       <span id="statsChars">
         {% for c in stats.char %}
@@ -139,6 +140,15 @@
             </tr>
           {% endfor %}
         </table>
+      </span>
+
+      {# Most Recent Games #}
+      <span id="statsHistory">
+        <div class="barDiv svg-container">
+          {% set svg_selector = "div.bardiv" %}
+          {% set jsondata     = stats["bydate"] %}
+          {% include '_barchart.html.j2' %}
+        </div>
       </span>
 
     </span>

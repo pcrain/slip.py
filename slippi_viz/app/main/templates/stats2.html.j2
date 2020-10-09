@@ -3,7 +3,7 @@
 {% block content %}
   <div class="barDiv">
     {% set svg_selector = "div.bardiv" %}
-    {% set jsondata     = bardata %}
+    {% set jsondata     = bardata["bydate"] %}
     {% include '_barchart.html.j2' %}
   </div>
 {% endblock %}

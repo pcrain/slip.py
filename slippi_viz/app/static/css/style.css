@@ -1235,11 +1235,14 @@ span#statsGrid {
 @media screen and (min-width: 1200px) {
   span#statsGrid {
     grid-template-columns : repeat(4, minmax(0, 1fr));
+    grid-template-rows    : repeat(5, min-content) minmax(300px,1fr);
     grid-template-areas   :
       "title    title     title      title"
       "subtitle subtitle  subtitle   subtitle"
       "hchars   hmatchups hmostgames hnewgames "
       "chars    matchups  mostgames  newgames  "
+      "chars    matchups  hhistory   hhistory  "
+      "chars    matchups  history    history  "
       ;
   }
 }
@@ -1248,6 +1251,7 @@ span#statsGrid {
   span#statsGrid {
     /*grid-gap              : 32px;*/
     grid-template-columns : repeat(2, minmax(0, 1fr));
+    grid-template-rows    : repeat(7, min-content) minmax(300px,1fr);
     grid-template-areas   :
       "title title"
       "subtitle subtitle"
@@ -1255,6 +1259,8 @@ span#statsGrid {
       "chars matchups"
       "hmostgames hnewgames"
       "mostgames newgames"
+      "hhistory hhistory"
+      "history history"
       ;
   }
 }
@@ -1263,6 +1269,7 @@ span#statsGrid {
   span#statsGrid {
     /*grid-gap              : 32px;*/
     grid-template-columns : repeat(1, minmax(0, 1fr));
+    grid-template-rows    : repeat(11, min-content) minmax(200px,1fr);
     grid-template-areas   :
       "title"
       "subtitle"
@@ -1274,6 +1281,8 @@ span#statsGrid {
       "mostgames"
       "hnewgames"
       "newgames"
+      "hhistory"
+      "history"
       ;
   }
 }
@@ -1297,6 +1306,11 @@ span#hchars     { grid-area: hchars; }
 span#hmatchups  { grid-area: hmatchups; }
 span#hnewgames  { grid-area: hnewgames; }
 span#hmostgames { grid-area: hmostgames; }
+span#hhistory   { grid-area: hhistory; }
+
+span#statsHistory {
+  grid-area             : history;
+}
 
 span#statsChars {
   grid-area             : chars;
@@ -1361,10 +1375,12 @@ span#statsMatchups {
 
 span#statsMost {
   grid-area: mostgames;
+  /*height: min-content;*/
 }
 
 span#statsNew {
   grid-area: newgames;
+  /*height: min-content;*/
 }
 
 span#statsGrid {
@@ -1490,9 +1506,14 @@ span#gamegraph  { grid-area: gamegraph; }
   display        : inline-block;
   position       : relative;
   width          : 100%;
-  /*height         : 100%;*/
+  height         : 100%;
   vertical-align : top;
   overflow       : hidden;
+}
+
+.svg-container svg {
+  max-width: 100%;
+  height: 100%;
 }
 
 div.svgtooltip {

@@ -114,7 +114,7 @@ def stats_index_page():
 
 def get_stats(tag,args):
   ndays = 29         #Number of days to backlog
-  mlen  = 26         #Length of recent / most player opponent lists
+  mlen  = 10         #Length of recent / most player opponent lists
   count = 10000      #Number of games to fetch
 
   #Start with a basic search for tag in either player slot
@@ -150,10 +150,15 @@ def get_stats(tag,args):
 
   #Set up miscellaneous variables
   olast  = None #last opponent
-  latest = None #date of last match played
   top    = {}   #most played opponents
   tagmap = {}   #map of codes to display tags
   dmap   = {}   #map of dates to winrates
+
+  #Get data from last ndays days
+  today     = datetime.now()
+  for i in range(ndays-1,-1,-1):
+    timestamp       = (today-timedelta(days=i)).strftime('%Y-%m-%d')
+    dmap[timestamp] = [0,0,0]
 
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
@@ -175,13 +180,6 @@ def get_stats(tag,args):
       stats["name"] = pname
     if not tagmap.get(otag,None):
       tagmap[otag] = oname
-    if not latest:
-      latest    = gdate
-      asdate    = datetime.strptime(latest, '%Y-%m-%d')
-      #Get data from last ndays days
-      for i in range(ndays-1,-1,-1):
-        timestamp = (asdate-timedelta(days=i)).strftime('%Y-%m-%d')
-        dmap[timestamp] = [0,0,0]
 
     #Determine the game results
     if pstocks > ostocks:   res = 0 #win
@@ -263,8 +261,9 @@ def stats_page(tag):
 def stats2_page(tag):
   tag     = tag.replace("_","#") #Replace underscore with pound sign
   stats   = get_stats(tag,request.args)
+  # return render_template("stats3.html.j2", title=tag, stats=stats, bardata=stats["bydate"])
+  return render_template("stats2.html.j2", title=tag, stats=stats)
   # return render_template("stats2.html.j2", title=tag, stats=stats, bardata=stats["bytop"])
-  return render_template("stats2.html.j2", title=tag, stats=stats, bardata=stats["bydate"])
 
 @bp.route('/scan', methods=['GET'])
 def scan_page():

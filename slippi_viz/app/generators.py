@@ -8,7 +8,7 @@ def config_generators(app):
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",     "click" : ""},
       # {"name": "Upload",    "src" : "/upload",   "img" : "header-matchups.png", "class" : "mu",       "click" : ""},
       {"name": "Stats",     "src" : "/stats",    "img" : "header-pr.png",       "class" : "stats",    "click" : ""},
-      {"name": "Stats2",    "src" : "/stats2/CAPT_931",   "img" : "header-pr.png",       "class" : "stats",    "click" : ""},
+      # {"name": "Stats2",    "src" : "/stats2/CAPT_931",   "img" : "header-pr.png",       "class" : "stats",    "click" : ""},
       {"name": "Scan",      "src" : "/scan",     "img" : "header-search.png",   "class" : "scan",     "click" : ""},
       {"name": "Settings",  "src" : "/settings", "img" : "header-mush.png",     "class" : "settings", "click" : ""},
       ])
