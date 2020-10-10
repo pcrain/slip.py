@@ -180,7 +180,7 @@ def get_stats(tag,args):
 
   #Get data from last ndays days
   dmap     = {}   #map of dates to winrates
-  earliest = (datetime.utcnow()-timedelta(days=ndays)).strftime('%Y-%m-%d')
+  earliest = (datetime.now()-timedelta(days=ndays)).strftime('%Y-%m-%d')
 
   #Start with a basic search for tag in either player slot
   p1and=[Replay.p1codetag==tag]
@@ -228,11 +228,12 @@ def get_stats(tag,args):
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days
   if len(rows) > 0:
-    mindate  = datetime.strptime(rows[-1].played[:10], '%Y-%m-%d')
+    minstamp = localStamp(rows[-1].played)
+    mindate  = datetime.strptime(minstamp[:10], '%Y-%m-%d')
   else:
-    mindate  = datetime.utcnow()
+    mindate  = datetime.now()
   smindate = mindate.strftime('%Y-%m-%d')
-  smaxdate = datetime.utcnow().strftime('%Y-%m-%d')
+  smaxdate = datetime.now().strftime('%Y-%m-%d')
   newdays  = 0
   while smindate <= smaxdate:
     dmap[smindate] = [0,0,0]
@@ -249,7 +250,7 @@ def get_stats(tag,args):
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
     #Determine player's and opponent's stats for the game
-    gdate   = r.played[:10]                          #date the game was played
+    gdate   = localStamp(r.played)[:10]              #date the game was played
     p       = 1 if r.p1codetag == tag else 2         #player's port number
     pname   = r.p1metatag if p == 1 else r.p2metatag #player's display name
     oname   = r.p2metatag if p == 1 else r.p1metatag #opponent's display tag
