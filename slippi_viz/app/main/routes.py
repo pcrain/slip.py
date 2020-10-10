@@ -180,7 +180,7 @@ def get_stats(tag,args):
 
   #Get data from last ndays days
   dmap     = {}   #map of dates to winrates
-  earliest = (datetime.now()-timedelta(days=ndays)).strftime('%Y-%m-%d')
+  earliest = (datetime.utcnow()-timedelta(days=ndays)).strftime('%Y-%m-%d')
 
   #Start with a basic search for tag in either player slot
   p1and=[Replay.p1codetag==tag]
@@ -230,9 +230,9 @@ def get_stats(tag,args):
   if len(rows) > 0:
     mindate  = datetime.strptime(rows[-1].played[:10], '%Y-%m-%d')
   else:
-    mindate  = datetime.now()
+    mindate  = datetime.utcnow()
   smindate = mindate.strftime('%Y-%m-%d')
-  smaxdate = datetime.now().strftime('%Y-%m-%d')
+  smaxdate = datetime.utcnow().strftime('%Y-%m-%d')
   newdays  = 0
   while smindate <= smaxdate:
     dmap[smindate] = [0,0,0]

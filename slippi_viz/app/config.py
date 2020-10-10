@@ -12,7 +12,7 @@ class Config(object):
     ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
-    SITE_VERSION                   = "0.4.4"
+    SITE_VERSION                   = "0.4.5"
     SITE_NAME                      = "Slip.py Browser"
     SITE_PORT                      = 5050
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
