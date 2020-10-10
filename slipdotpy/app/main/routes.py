@@ -7,9 +7,9 @@ from sqlalchemy import or_, and_
 
 #App imports
 from app import db
+from app.helpers import *
 from app.main import bp
 from app.main.forms import ReplaySearchForm
-from app.main.helpers import *
 from app.models import User, Replay, ScanDir, Settings
 
 #Standard imports
@@ -90,7 +90,7 @@ def replays():
 
 #Route for an individual replay's analysis page
 @bp.route('/replays/<r>')
-def replay_viz(r):
+def replay_analysis_page(r):
     rdata  = Replay.query.filter_by(checksum=r).first()
     rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
     exists = os.path.exists(os.path.join(rdata.filedir,rdata.filename))

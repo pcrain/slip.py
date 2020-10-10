@@ -13,6 +13,7 @@ class Config(object):
 
     #Global template variables
     SITE_VERSION                   = "0.4.6"
+    SITE_INTNAME                   = "slipdotpy"
     SITE_NAME                      = "Slip.py Browser"
     SITE_PORT                      = 5050
     SITE_ICON                      = os.path.join(basedir,"static","icons","wolfhead.png")
@@ -22,16 +23,16 @@ class Config(object):
     STATIC_FOLDER                  = os.path.join(basedir,"static")
     if os.name == 'nt':
       DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Documents","Slippi")
-      DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),"slippi_viz")
+      DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),SITE_INTNAME)
       ANALYZER                     = "slippc.exe"
     else:
       DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Slippi")
-      DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share","slippi_viz")
+      DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share",SITE_INTNAME)
       ANALYZER                     = "slippc"
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
     LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
-    LOG_FILE                       = 'slippi_viz.log'
+    LOG_FILE                       = SITE_INTNAME+'.log'
     TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")
     SQLALCHEMY_DATABASE_URI        = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(DATA_FOLDER, 'app.db')
 

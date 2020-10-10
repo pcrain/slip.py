@@ -11,5 +11,4 @@ app.db
 migrations
 build
 dist
-slippi_viz.spec
 *~

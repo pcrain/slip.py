@@ -14,7 +14,7 @@ import os, sys, subprocess
 PY_VER = "38"
 
 #Set appropriate environment variables
-os.environ["FLASK_APP"]      = "slippi_viz"
+os.environ["FLASK_APP"]      = "slip.py"
 os.environ["FLASK_DEBUG"]    = "1"
 os.environ["FLASK_RUN_PORT"] = str(Config.SITE_PORT)
 

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 from flask import render_template, current_app as ca
 from app import db
+from app.helpers import htmlEscape, openJson
 from app.errors import bp
-from app.main.helpers import htmlEscape, openJson
 import os, traceback
 
 #Route for 404 (not found) page

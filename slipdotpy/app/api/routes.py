@@ -7,9 +7,9 @@ from werkzeug.utils import secure_filename
 
 #App imports
 from app import db, executor
+from app.helpers import *
 from app.models import User, Replay, ScanDir, Settings
 from app.api import bp
-from app.main.helpers import *
 
 #Standard imports
 from datetime import datetime

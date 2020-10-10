@@ -27,7 +27,7 @@ rem https://superuser.com/questions/392061/how-to-make-a-shortcut-from-cmd
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET LinkName=slip.py
 SET Esc_LinkDest=%%HOMEDRIVE%%%%HOMEPATH%%\Desktop\!LinkName!.lnk
-SET Esc_LinkTarget=%%HOMEDRIVE%%%%HOMEPATH%%\AppData\Roaming\Python\Python38\site-packages\slippi_viz\slippi_viz.py
+SET Esc_LinkTarget=%%HOMEDRIVE%%%%HOMEPATH%%\AppData\Roaming\Python\Python38\site-packages\slipdotpy\slip.py
 SET cSctVBS=CreateShortcut.vbs
 SET LOG=".\%~N0_runtime.log"
 ((

@@ -4,14 +4,14 @@ import os
 
 #Get version from slip.py's config file
 def get_version():
-  with open(os.path.join("slippi_viz","app","config.py"),'r') as fin:
+  with open(os.path.join("slipdotpy","app","config.py"),'r') as fin:
     for line in [f for f in fin.readlines() if "SITE_VERSION" in f]:
       return line.split('"')[1]
 
 setup(
-    name                 = 'slippi_viz',
+    name                 = 'slipdotpy',
     version              = get_version(),
-    packages             = ["slippi_viz"],
+    packages             = ["slipdotpy"],
     include_package_data = True,
     zip_safe             = False,
     install_requires     = [
