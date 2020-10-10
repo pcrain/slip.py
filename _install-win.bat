@@ -5,12 +5,12 @@ WHERE pip
 IF %ERRORLEVEL% NEQ 0 (
   ECHO pip wasn't found in PATH
   IF EXIST %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe (
-    ECHO pip found in default location
+    ECHO pip for Python 3.8 found in default location
     SET PATH="%PATH%;%HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts;"
     @echo on
     %HOMEDRIVE%%HOMEPATH%\AppData\Local\Programs\Python\Python38\Scripts\pip.exe install --user .
   ) ELSE (
-    ECHO pip wasn't found in default location; please install pip to proceed
+    ECHO pip wasn't found in default location; please install python 3.8 and pip to proceed
     ECHO You may close this window
     PAUSE
     EXIT /B

@@ -10,6 +10,7 @@ For all operating systems you will need to [download and extract the ZIP file co
 
 ### Linux / OSX Install Instructions
   - Install Python 3.8 using your package manager (Pip should be included)
+    - While Python 3.8 is recommended, Python 3.6 and up should work fine
   - Make and install [slippc](https://github.com/pcrain/slippc)
   - Create a symlink to the slippc binary in your /home/$USER/bin directory (or anywhere else in your `PATH`) using:
 
@@ -22,4 +23,4 @@ For all operating systems you will need to [download and extract the ZIP file co
   - If the installation is successful, slip.py will be installed to ~/.local/lib/python3.8/site-packages/slipdotpy/slip.py
   - Run slip.py to launch the Flask desktop application
   - Alternately, run slip-server.py in a terminal to launch the Flask web application
-  - [Optional] You may wish to create a symlink to slip-server.py and/or slip.py for easier access
+  - [Optional] You may wish to create a symlink to slip.py and/or slip-server.py for easier access

@@ -4,14 +4,14 @@
 #Import standard modules
 import os, sys, socket, time
 
-if sys.version[:3] != "3.8":
-  print("You must use Python 3.8.x to run this App")
+PY_VER = sys.version[:3].replace(".","")
+if int(PY_VER) < 36:
+  print("You must use at least Python 3.6.x to run this App")
   print(f"Your version: {sys.version.split()[0]}")
   input("Press any key to exit")
   sys.exit(1)
 
 #On Windows, make sure necessary Python paths are in PATH
-PY_VER = "38"
 if os.name == 'nt':
   sys.path.append(os.path.expanduser(os.path.join(
     "~","AppData","Roaming","Python",f"Python{PY_VER}","site-packages")))

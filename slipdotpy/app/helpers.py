@@ -1,8 +1,7 @@
 #!/usr/bin/python
 from flask import current_app
-from datetime import datetime
-from dateutil import tz
-import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip
+from datetime import datetime, timedelta
+import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip, time
 
 # Easy colors (print)
 class col:
@@ -300,10 +299,9 @@ def htmlEscape(s):
 
 #Convert Slippi UTC dates to local date
 def localDate(d):
-  zone     = datetime.utcnow().astimezone().tzinfo
-  utcnow   = d.replace(tzinfo=tz.tzutc())
-  newlocal = utcnow.astimezone(zone)
-  return newlocal
+  is_dst     = time.daylight and time.localtime().tm_isdst > 0
+  utc_offset = -(time.altzone if is_dst else time.timezone)
+  return d+timedelta(seconds=utc_offset)
 
 #Convert Slippi UTC timestamps to local timestamps
 def localStamp(s,f="%Y-%m-%d_%H-%M-%S"):

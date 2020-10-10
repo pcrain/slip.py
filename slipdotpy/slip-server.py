@@ -2,16 +2,16 @@
 #Run Slippi Viz in the default web browser
 
 import sys
-if sys.version[:3] != "3.8":
-  print("You must use Python 3.8.x to run this App")
+
+PY_VER = sys.version[:3].replace(".","")
+if int(PY_VER) < 36:
+  print("You must use at least Python 3.6.x to run this App")
   print(f"Your version: {sys.version.split()[0]}")
   input("Press any key to exit")
   sys.exit(1)
 
 from app.config import Config
-
 import os, sys, subprocess
-PY_VER = "38"
 
 #Set appropriate environment variables
 os.environ["FLASK_APP"]      = "slip.py"
