@@ -3,7 +3,7 @@
 #Flask imports
 from flask import render_template, jsonify, flash, redirect, url_for, request, current_app, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy        import or_, and_
+from sqlalchemy import or_, and_
 
 #App imports
 from app import db

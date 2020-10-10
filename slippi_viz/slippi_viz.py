@@ -2,7 +2,7 @@
 #Run slip.py in Desktop mode
 
 #Import standard modules
-import os, sys, socket
+import os, sys, socket, time
 
 if sys.version[:3] != "3.8":
   print("You must use Python 3.8.x to run this App")
@@ -19,7 +19,25 @@ if os.name == 'nt':
     "~","AppData","Roaming","Python",f"Python{PY_VER}","Scripts"))
   sys.path.append(os.path.expanduser(flaskpath))
 
-#Import remaining modules
+#Import app config
+from app.config import Config
+
+#If we're running thie directly, verify our requested port is open
+if __name__ == "__main__":
+  try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(('localhost',Config.SITE_PORT))
+    sock.close()
+  except OSError:
+    print(f"Slip.py port {Config.SITE_PORT} already in use!")
+    print(f"Close all instances of the Slip.py Browser and try again")
+    print(f"If this error persists, you may need to reboot your computer")
+    print("Exiting in 5 seconds")
+    time.sleep(5)
+    sys.exit(1)
+
+#Import remaining app modules
 from app import create_app, db, generators #, cli
 from app.models import User, Replay
 
@@ -41,7 +59,7 @@ if __name__ == "__main__":
   from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
   #Next three classes / functions are inlined code (modified) from pyfladesk
   class ApplicationThread(QtCore.QThread):
-    def __init__(self, application, port=5000):
+    def __init__(self, application, port):
       super(ApplicationThread, self).__init__()
       self.application = application
       self.port        = port

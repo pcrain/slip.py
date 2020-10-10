@@ -8,13 +8,17 @@ if sys.version[:3] != "3.8":
   input("Press any key to exit")
   sys.exit(1)
 
+from app.config import Config
+
 import os, sys, subprocess
 PY_VER = "38"
-APP_URL= "http://127.0.0.1:5000"
 
 #Set appropriate environment variables
-os.environ["FLASK_APP"]   = "slippi_viz"
-os.environ["FLASK_DEBUG"] = "1"
+os.environ["FLASK_APP"]      = "slippi_viz"
+os.environ["FLASK_DEBUG"]    = "1"
+os.environ["FLASK_RUN_PORT"] = str(Config.SITE_PORT)
+
+APP_URL= "http://127.0.0.1:"+str(Config.SITE_PORT)
 
 #On Windows, make sure necessary Python paths are in PATH
 if os.name == 'nt':

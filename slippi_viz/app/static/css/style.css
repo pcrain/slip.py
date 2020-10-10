@@ -180,12 +180,10 @@ button img {
 }
 
 #bodyContainer {
-  /* 100% - 2*(min-width of navbar) */
-  /*width: calc(100% - 100px); */
-  /*max-width: 1200px;*/
-  /*width: calc(100% - 55px);*/
-  display: inline-block; /* Causes rendering issues */
-  /*display: inline;*/
+  /* Causes rendering issues */
+  /*display: inline-block; */
+  /* Works better than inline-block, but untested */
+  display: inline;
   margin: 0;
   outline:none; /* Disable border when focused */
   width: 100%;
@@ -390,7 +388,7 @@ td.align-right  { text-align: right; }
 .int_DEFENSIVE    { background-color: black; }
 
 span#replayListing {
-  display: grid;
+  display: inline-grid;
   grid-template-areas:
     "p1grid   innergrid p2grid"
 }
