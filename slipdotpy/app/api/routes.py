@@ -20,6 +20,13 @@ NODUPES             = True  #Set to True to not allow duplicate reuploads
 NOKEEP              = False #Set to True to delete files after uploading
 _scan_jobs          = {}    #Dictionary of job timers
 
+#API call for getting messages about ongoing / completed background tasks
+@bp.route('/getmessages', methods=['POST'])
+def api_get_messages():
+  messages = jsonify({"messages":current_app.config["BG_MESSAGES"]})
+  current_app.config["BG_MESSAGES"] = []
+  return messages
+
 #[Deprecated] API call for uploading a replay to the server
 @bp.route('/upload', methods=['POST'])
 def api_upload_replay():
@@ -243,6 +250,9 @@ def api_play_replay(c,sf=-123,ef=999999):
 #API call for initiating a scan over all replays in list of scanned folders
 @bp.route('/scan', methods=['POST'])
 def api_begin_scan():
+  if current_app.config['SCAN_IN_PROGRESS']:
+    return jsonify({"status" : "Scan Already In Progress"})
+
   global _scan_jobs
   token             = md5(str(datetime.utcnow()))[:8]
   _scan_jobs[token] = {
@@ -295,12 +305,15 @@ def scan_job(token):
   conf      = dict(current_app.config)
   adds      = []
   updates   = []
+
   #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
+  current_app.config['SCAN_IN_PROGRESS'] = True
   with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
     #Submit all scan jobs to the ProcessPoolExecutor to complete as possible
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     #As each replay scan finishes...
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
+      print(f"Background scan: {i+1}/{len(replays)} replays scanned",end="\r")
       #Get the result
       res = t.result()
       #If there is no result, the browser was closed as the scan was in progress
@@ -334,6 +347,10 @@ def scan_job(token):
 
   #Commit all database transactions
   db.session.commit()
+  current_app.config['SCAN_IN_PROGRESS'] = False
+  current_app.config["BG_MESSAGES"].append(
+    "Background Scan Completed! Reload page to see changes."
+    )
 
   #Clean up
   logline(tmpfile,f"Scan completed")

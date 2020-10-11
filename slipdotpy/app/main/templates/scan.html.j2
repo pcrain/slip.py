@@ -15,9 +15,15 @@
           <button onclick='browseDir()' class="fake-submit">
             Add Folder
           </button>
-          <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>
-            Begin Scan
-          </button>
+          {% if SCAN_IN_PROGRESS %}
+            <button type="button" id=scan-button class="fake-submit" disabled>
+              Background Scan in Progress
+            </button>
+          {% else %}
+            <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>
+              Begin Scan
+            </button>
+          {% endif %}
           <button disabled id=log-button type="button" onclick='' hidden>
             View Scan Log
           </button>
@@ -111,6 +117,7 @@
                 if (!("done" in rjson["responseJSON"])) {
                   setTimeout(checkProgress, 500);
                 } else {
+                  getMessages(true);
                   toastr.success('Scan complete!')
                   $("#log-button").prop("disabled",false);
                   $("#log-button").show();

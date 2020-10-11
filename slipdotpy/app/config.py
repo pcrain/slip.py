@@ -41,4 +41,8 @@ class Config(object):
     EXECUTOR_PROPAGATE_EXCEPTIONS  = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FORCE_COMPRESSION              = False
-    JUST_LAUNCHED                  = True #Autoset to False after first page loads
+
+    #Modified during run time
+    JUST_LAUNCHED                  = True  #Autoset to False after first page loads
+    SCAN_IN_PROGRESS               = False #Autoset as needed when scans are initiated
+    BG_MESSAGES                    = []    #List of messages regarding background tasks

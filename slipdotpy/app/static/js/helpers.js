@@ -184,3 +184,30 @@ function viewLogFile(e) {
     processData : false
   });
 }
+
+//Retrieve in messages regarding background jobs and display them as toasts
+function getMessages(ignore=false) {
+  $.ajax({
+      type        : "post",
+      url         : "/api/getmessages",
+      data        : JSON.stringify({}),
+      dataType    : "json",
+      contentType : "application/json",
+      cache       : false,
+      processData : false,
+      success: function (rjson) {
+        if (ignore) {
+          return; //Basically a way to clear messages without displaying them
+        }
+        for (var i = 0; i < rjson["messages"].length; i++) {
+          toastr.info(rjson["messages"][i]);
+        }
+      }
+  });
+}
+
+// Register an event handler for receiving messages for background tasks
+function listenForMessages() {
+  getMessages();
+  window.setInterval(getMessages, 5000);
+}
