@@ -11,5 +11,5 @@ app.db
 migrations
 build
 dist
-slip.spec
+slipdotpy.spec
 *~

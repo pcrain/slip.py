@@ -1,6 +1,10 @@
-For all operating systems you will need to [download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
 
-### Windows Install Instructions
+### Windows Easy Install Instructions
+  - Head to the [release page](https://github.com/pcrain/slip.py/releases/latest) and download the latest official release executable
+  - ***Note***: the easy install release has slower startup times than the standard install
+
+### Windows Standard Install Instructions
+  - [Download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
   - Install Python 3.8 from [the official website](https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe):
     - Make sure you install pip when prompted under "Optional Features"
     - You may skip this step if Python is already installed
@@ -8,7 +12,8 @@ For all operating systems you will need to [download and extract the ZIP file co
   - If the installation is successful, a "slip.py" Desktop shortcut will be created
   - Double-click "slip.py" to launch the Slip.py Browser
 
-### Linux / OSX Install Instructions
+### Linux / OSX Standard Install Instructions
+  - [Download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
   - Install Python 3.8 using your package manager (Pip should be included)
     - While Python 3.8 is recommended, Python 3.6 and up should work fine
   - Make and install [slippc](https://github.com/pcrain/slippc)
