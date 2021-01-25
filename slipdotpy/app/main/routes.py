@@ -26,6 +26,29 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
+#Route for rendering default stock images
+@bp.route('/static/icons/stock/<path:filename>')
+def get_stock_icon(filename):
+    basepath = os.path.join(current_app.config["STATIC_FOLDER"],"icons","stock")
+    if not os.path.exists(os.path.join(basepath,filename)):
+      #Check if the default costume is available
+      filename = filename[:-5]+"0.png"
+      if not os.path.exists(os.path.join(basepath,filename)):
+        return send_from_directory(basepath, '_NONE0.png')
+    return send_from_directory(basepath,filename)
+
+#Route for rendering default CSS images
+@bp.route('/static/icons/css/<path:filename>')
+def get_css_icon(filename):
+    basepath = os.path.join(current_app.config["STATIC_FOLDER"],"icons","css")
+    if not os.path.exists(os.path.join(basepath,filename)):
+      #Check if the default costume is available
+      filename = filename[:-5]+"0.png"
+      if not os.path.exists(os.path.join(basepath,filename)):
+        print("NO CANFIND")
+        return send_from_directory(basepath, '_NONE0.png')
+    return send_from_directory(basepath,filename)
+
 #Route for favicon for browser
 @bp.route('/favicon.ico')
 def favicon():
@@ -211,7 +234,7 @@ def get_stats(tag,args):
   #Set up dict for stats
   stats = {
     "tag"    : tag,                                    #Tag of player we're showing stats for
-    "name"   : tag,                                   #Display name for player we're showing stats for
+    "name"   : tag,                                    #Display name for player we're showing stats for
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
     "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
@@ -274,8 +297,10 @@ def get_stats(tag,args):
     else:                   res = 2 #draw
 
     #Increment appropriate character, costume, opponent, and result choices, creating new ones as needed
-    stats["char"][pchar][pcolor+1] += 1
-    stats["opp"][ochar][res+1]     += 1
+    if pchar < 26 and pcolor < 6:
+      stats["char"][pchar][pcolor+1] += 1
+    if ochar < 26:
+      stats["opp"][ochar][res+1]     += 1
     if otag != olast:
       stats["recent"].append([0,0,0,otag])
     stats["recent"][-1][res]  += 1

@@ -11,8 +11,16 @@
       {% endif %}
     {% endif %} #}
 
-    {% set p1char = intchardata[rsummary.p1char]['intname'] %}
-    {% set p2char = intchardata[rsummary.p2char]['intname'] %}
+    {% if rsummary.p1char in intchardata %}
+      {% set p1char = intchardata[rsummary.p1char]['intname'] %}
+    {% else %}
+      {% set p1char = intchardata[-1]['intname'] %}
+    {% endif %}
+    {% if rsummary.p2char in intchardata %}
+      {% set p2char = intchardata[rsummary.p2char]['intname'] %}
+    {% else %}
+      {% set p1char = intchardata[-1]['intname'] %}
+    {% endif %}
 
     <span class="rs-tag1" title="{{ rsummary.p1display }} ({{rsummary.p1codetag}})">{{ rsummary.p1display }}</span>
     <span class="rs-tag2" title="{{ rsummary.p2display }} ({{rsummary.p2codetag}})">{{ rsummary.p2display }}</span>

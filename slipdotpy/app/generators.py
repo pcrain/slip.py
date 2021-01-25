@@ -42,7 +42,7 @@ def config_generators(app):
       {"id" : 3,  "name" : "Mr. Game & Watch", "intname" : "WATCH",   "csspos" : 23, "colors" : 4,},
       {"id" : 9,  "name" : "Marth",            "intname" : "MARTH",   "csspos" : 24, "colors" : 5,},
       {"id" : 23, "name" : "Roy",              "intname" : "ROY",     "csspos" : 25, "colors" : 5,},
-      {"id" : -1, "name" : "All Characters",   "intname" : "_NONE",   "csspos" : 26, "colors" : 6,},
+      {"id" : -1, "name" : "All Characters",   "intname" : "UNKNOWN", "csspos" : 26, "colors" : 6,},
       ]
     intchardata = { c["id"] : c for c in chardata}
     return dict(chardata=chardata,intchardata=intchardata)

@@ -71,6 +71,7 @@ function autoScan() {
               setTimeout(checkProgress, 500);
             } else {
               toastr.success('Scan complete! Refreshing page.');
+              getMessages(true);
               setTimeout(function(){location.reload();}, 1000);
               // $("#log-button").prop("disabled",false);
               // $("#log-button").show();
