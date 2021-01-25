@@ -167,7 +167,7 @@ if __name__ == "__main__":
       reset    = QtWidgets.QShortcut(QtGui.QKeySequence("F12"), window);
       reset.activated.connect(lambda : homepage.home()); #hard app reset
 
-      window.show()
+      window.showMaximized()
       return qtapp.exec_()
 
   #Get the real location of this script and change working directory appropriately

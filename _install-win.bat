@@ -8,8 +8,19 @@ SET found=0
 FOR /L %%G IN (6,1,9) DO (
   SET pyver=3%%G
 
-  rem Python / Pip installed for all users
+  rem Python / Pip installed for all users, default path
   SET abase=%HOMEDRIVE%\Python3%%G
+  SET apip=!abase!\Scripts
+
+  IF EXIST !apip!\pip.exe (
+    SET base=!abase!
+    SET pip=!apip!
+    SET found=1
+    )
+  if !found!==1 GOTO :found
+
+  rem Python / Pip installed for all users, program files path
+  SET abase=%HOMEDRIVE%\Program Files\Python3%%G
   SET apip=!abase!\Scripts
 
   IF EXIST !apip!\pip.exe (
@@ -34,8 +45,6 @@ ECHO You may close this window
 PAUSE
 GOTO :eof
 
-
-
 :found
 ECHO Python version is %pyver%
 ECHO Python path is %base%
@@ -47,25 +56,33 @@ GOTO :continue
 :continue
 ECHO Checking for Python / Pip
 WHERE pip
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO pip wasn't found in PATH
-  IF EXIST %pip%\pip.exe (
-    ECHO pip for Python %pyver% found at %pip%
-    SET PATH="%PATH%;%pip%;"
-    @echo on
-    %pip%\pip.exe install --user .
-  ) ELSE (
-    ECHO pip was not found; please install python 3.8 and pip to proceed
-    ECHO You may close this window
-    PAUSE
-    EXIT /B
-  )
-) ELSE (
-  ECHO pip found
-  @echo on
-  pip install --user .
+IF %ERRORLEVEL% == 0 (
+  GOTO :inpath
 )
+ECHO pip wasn't found in PATH
+ECHO %pip%
+IF EXIST %pip%\pip.exe (
+  GOTO :notinpath
+)
+ECHO pip was not found; please install python 3.8 and pip to proceed
+ECHO You may close this window
+PAUSE
+GOTO :eof
 
+:inpath
+ECHO pip found
+@echo on
+pip install --user .
+GOTO :shortcuts
+
+:notinpath
+ECHO pip for Python %pyver% found at %pip%
+SET PATH="%PATH%;%pip%;"
+@echo on
+%pip%\pip.exe install --user .
+GOTO :shortcuts
+
+:shortcuts
 rem Creating shortcut to slip.py
 @echo off
 rem https://superuser.com/questions/392061/how-to-make-a-shortcut-from-cmd
