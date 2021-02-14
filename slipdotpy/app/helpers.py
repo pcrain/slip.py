@@ -125,7 +125,7 @@ def get_all_slippi_files(topdir,files,checked):
   checked.add(rpath)
   for f in os.listdir(topdir):
     path = os.path.join(topdir,f)
-    if os.path.isfile(path) and path[-4:] == ".slp":
+    if os.path.isfile(path) and path[-4:] in [".slp",".zlp"]:
       files.append(path)
     elif os.path.isdir(path):
       get_all_slippi_files(path,files,checked)
@@ -214,7 +214,7 @@ def count_slippi_files(path):
         s = os.path.join(path,f)
         if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
             ndirs += 1
-        elif f[-4:] == ".slp":
+        elif f[-4:] in [".slp",".zlp"]:
             nfiles += 1
     return {"dirs" : ndirs, "files" : nfiles}
   except PermissionError:

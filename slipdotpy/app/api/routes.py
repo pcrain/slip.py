@@ -239,8 +239,14 @@ def api_play_replay(c,sf=-123,ef=999999):
   isopath  = settings["isopath"]
   emupath  = settings["emupath"]
   r        = Replay.query.filter_by(checksum=c).first()
-  p        = json.dumps(os.path.join(r.filedir,r.filename))
-  jdata    = f"""{{"mode":"queue","queue":[{{"path":{p},"startFrame":{sf},"endFrame":{ef}}}]}}\r\n"""
+  p        = json.dumps(os.path.join(r.filedir,r.filename))[1:-1]
+  if p[-4:] == ".zlp": #If compressed, decompress
+    temppath = os.path.join(current_app.config['DATA_FOLDER'],"_tmp.slp")
+    if os.path.exists(temppath):
+      os.remove(temppath)
+    shcall(f"""{current_app.config['ANALYZER']} -i {p} -X {temppath}""")
+    p = temppath
+  jdata    = f"""{{"mode":"queue","queue":[{{"path":"{p}","startFrame":{sf},"endFrame":{ef}}}]}}\r\n"""
   tname    = os.path.join(current_app.config['DATA_FOLDER'],"__replay__.json")
   with open(tname,'w') as fout:
     fout.write(jdata)
