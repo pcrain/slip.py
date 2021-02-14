@@ -92,23 +92,28 @@
         };
       </script>
 
-      <div id="buttonGrid">
+      <div id="leftbuttonGrid">
+        {% if nav_prev %}
+          <button id="prevGameButton" type="button" onclick='prevReplay()'>Prev. Replay</button>
+        {% else %}
+          <button disabled id="prevGameButton" type="button">Prev. Replay</button>
+        {% endif %}
+        <button type="button" onclick='openContainingDir({{r.__filedir|tojson}},"{{r.__original_filename}}")'>Open Replay Folder</button>
         {% if r.__exists %}
           <button type="button" {{ "" if r.__canplay else "disabled"}} onclick='watchReplay()'>{{r.__play}}</button>
         {% else %}
           <button disabled class="missing" type="button" onclick=''>Replay Not Found</button>
         {% endif %}
-        <button type="button" onclick='openContainingDir({{r.__filedir|tojson}},"{{r.__original_filename}}")'>Open Replay Folder</button>
-        <button type="button" onclick='viewRawAnalysis()'>View Raw Analysis</button>
       </div>
 
-      <div id="navbuttonGrid">
-        {% if nav_prev %}
-          <button id="prevGameButton" type="button" onclick='prevReplay()'>Prev. Replay</button>
-        {% endif %}
+      <div id="rightbuttonGrid">
         {% if nav_next %}
           <button id="nextGameButton" type="button" onclick='nextReplay()'>Next Replay</button>
+        {% else %}
+          <button disabled id="nextGameButton" type="button">Next Replay</button>
         {% endif %}
+        <button type="button" onclick='viewRawAnalysis()'>View Raw Analysis</button>
+        <button disabled id="fakeButton" type="button" style="opacity: 0;"></button>
       </div>
 
       <div id="replayDataGrid">
