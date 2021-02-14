@@ -46,3 +46,4 @@ class Config(object):
     JUST_LAUNCHED                  = True  #Autoset to False after first page loads
     SCAN_IN_PROGRESS               = False #Autoset as needed when scans are initiated
     BG_MESSAGES                    = []    #List of messages regarding background tasks
+    REPLAY_NAV                     = {}    #Dictionary for tracking previous / next replay

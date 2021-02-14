@@ -78,10 +78,23 @@ def replays():
         break
 
     if (q is None) and (ddir == ""):
-        rdata = current_user.all_replays().paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+        replays = current_user.all_replays()
     else:
-        rdata = Replay.search(request.args).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+        replays = Replay.search(request.args)
 
+
+    # Get IDs for all replays corresponding to the current filter
+    checksum_list = replays.with_entities(Replay.checksum).all()
+    for i,c in enumerate(checksum_list):
+      current_app.config['REPLAY_NAV'][c[0]] = {}
+      if i > 0:
+        current_app.config['REPLAY_NAV'][c[0]]["prev"] = checksum_list[i-1][0]
+      if i < (len(checksum_list) - 1):
+        current_app.config['REPLAY_NAV'][c[0]]["next"] = checksum_list[i+1][0]
+
+    rdata = replays.paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+
+    # Get directory data
     ddata = []
     if ddir == "":
         for item in scandirs:
