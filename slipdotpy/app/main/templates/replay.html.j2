@@ -65,6 +65,8 @@
             <div class="stat">Game Length</div>
             <div class="stat">End Stocks</div>
             <div class="stat">End %</div>
+            <div class="stat">Actions / Min.</div>
+            <div class="stat">Action States / Min.</div>
             <div class="stat">Time Airborne</div>
             <div class="stat">Ledge Grabs</div>
 
@@ -123,6 +125,7 @@
             <div class="stat">Meteor Cancels</div>
             <div class="stat">Intangible Ledgedashes</div>
             <div class="stat">Mean GALINT</div>
+            <div class="stat">Max GALINT</div>
 
           <div class="heading">Miscellaneous</div>
             <div class="stat">Taunts</div>
@@ -148,6 +151,8 @@
 
             {{ _stathi("end_stocks" )}}
             {{ _stat("end_pct","%.0f","%")}}
+            {{ _stathi("actions_per_min","%.1f","")}}
+            {{ _stathi("states_per_min" ,"%.1f","")}}
             <div class="{{pi}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>
             {{ _stat("ledge_grabs" )}}
 
@@ -206,6 +211,7 @@
             {{ _stathi("meteor_cancels") }}
             {{ _stathi("galint_ledgedashes") }}
             {{ _stathi("mean_galint") }}
+            {{ _stathi("max_galint") }}
 
             {# Miscellaneous #}
             {{ _stat("taunts")}}
