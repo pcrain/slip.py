@@ -14,7 +14,9 @@ class Anonymous(AnonymousUserMixin):
 
   def all_replays(self):
     pubs = Replay.query.filter_by(is_public=1)
-    return pubs.order_by(Replay.played.desc())
+    pubs = pubs.order_by(Replay.played.desc())
+    pubs = pubs.group_by(Replay.checksum)
+    return pubs
     # return pubs.order_by(Replay.uploaded.desc())
 
 login.anonymous_user = Anonymous
@@ -205,6 +207,8 @@ class Replay(db.Model):
             q = q.order_by(Replay.uploaded.desc())
         else:
             q = q.order_by(Replay.played.desc())
+
+        q = q.group_by(Replay.checksum)
 
         return q
 

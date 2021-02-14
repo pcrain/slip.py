@@ -285,14 +285,18 @@ def scan_job(token):
   allreplays  = []
   rdata       = []
   checked     = set()
-  checksums   = set()
+  checksums   = {}
   namesizes   = set()
 
   #Load checksums, filenames, and filesizes for all replays currently in DB
   logline(tmpfile,f"Fetching cached replay metadata",new=True)
   for i in Replay.query.all():
-    checksums.add(i.checksum)
-    namesizes.add((os.path.join(i.filedir,i.filename),i.filesize))
+    p = os.path.join(i.filedir,i.filename)
+    if i.checksum not in checksums:
+      checksums[i.checksum] = [p]
+    else:
+      checksums[i.checksum].append(p)
+    namesizes.add((p,i.filesize))
 
   #Recursively list replys in all scanned directories
   logline(tmpfile,f"Locating .slp Replay files")
@@ -329,9 +333,9 @@ def scan_job(token):
 
       #If we have a new replay, add it to our list of replays to add
       if res["replay"] is not None:
-        c = res["url"].split("/")[-1]
-        if not c in checksums: #Double check we didn't run into identical replays in the same scan
-          checksums.add(c)
+        # c = res["url"].split("/")[-1]
+        # if not c in checksums: #Double check we didn't run into identical replays in the same scan
+          # checksums.add(c)
           adds.append(res["replay"])
 
       #If we have an updated replay, add it to our list of replays to update
@@ -352,7 +356,10 @@ def scan_job(token):
   #Update each existing replay as necessary in the database
   logline(tmpfile,f"Updating {len(updates)} entries: ")
   for u in updates:
-    Replay.query.filter_by(checksum=u["checksum"]).update(u)
+    Replay.query.filter_by(checksum=u["checksum"],filename=u["oldfilename"],filedir=u["oldfiledir"]).update({
+      "filedir"  : u["filedir"],
+      "filename" : u["filename"],
+      })
 
   #Commit all database transactions
   db.session.commit()
@@ -399,15 +406,22 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
     #If database already has a replay with the same md5, update its info and call it a day
     m       = md5file(local_file)
     if NODUPES and m in checksums:
-      jret["update"] = {
-        "filedir"  : jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
-        "filename" : jret["filename_secure"],
-        "checksum" : m,
-      }
-      jret["status"] = 'Duplicate'
-      jret["url"]    = '/replays/'+m
-      jret["error"]  = 'Replay already in database'
-      return jret
+      # Check if this file was moved, or added
+      for dupe in checksums[m]:
+        if not os.path.exists(dupe):
+          print(f"""{dupe} DUPE""")
+          jret["update"] = {
+            "oldfiledir"  : ntpath.dirname(dupe),
+            "oldfilename" : ntpath.basename(dupe),
+            "filedir"     : jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
+            "filename"    : jret["filename_secure"],
+            "checksum"    : m,
+          }
+          jret["status"] = 'Duplicate'
+          jret["url"]    = '/replays/'+m
+          jret["error"]  = 'Replay already in database'
+          return jret
+      pass #If we didn't run into any missing files, this is a new file!
 
     #Determine the file name for the analysis JSON
     afile = os.path.join(conf['REPLAY_FOLDER'], m+".slp.json")
