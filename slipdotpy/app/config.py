@@ -45,5 +45,6 @@ class Config(object):
     #Modified during run time
     JUST_LAUNCHED                  = True  #Autoset to False after first page loads
     SCAN_IN_PROGRESS               = False #Autoset as needed when scans are initiated
+    SCAN_REQUEST_STOPPED           = False #Whether we've requested to stop an in progress scan
     BG_MESSAGES                    = []    #List of messages regarding background tasks
     REPLAY_NAV                     = {}    #Dictionary for tracking previous / next replay based on last search

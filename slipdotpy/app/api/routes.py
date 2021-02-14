@@ -27,42 +27,6 @@ def api_get_messages():
   current_app.config["BG_MESSAGES"] = []
   return messages
 
-#[Deprecated] API call for uploading a replay to the server
-@bp.route('/upload', methods=['POST'])
-def api_upload_replay():
-    #Populate a return JSON
-    jret = {
-      "time"            : datetime.utcnow(),
-      "status"          : "Success",
-      "error"           : "",
-      "url"             : "",
-      "filename"        : "",
-      "filename_secure" : "",
-      "replay"          : None,
-      "update"          : None,
-      }
-
-    # Error if no file attribute
-    if 'file' not in request.files:
-        jret["status"] = 'Failure'
-        jret["error"]  = 'No file part'
-        return jsonify(jret)
-
-    # Check if file is actually submitted
-    file = request.files['file']
-    if file.filename == '' or not file:
-        jret["status"] = 'Failure'
-        jret["error"]  = 'No selected file'
-        return jsonify(jret)
-
-    jret["filename"]        = file.filename
-    jret["filename_secure"] = secure_filename(file.filename)
-    opath                   = os.path.join(current_app.config['UPLOAD_FOLDER'], jret["filename_secure"])
-    file.save(opath)
-    conf      = dict(current_app.config)
-    checksums = set(i.checksum for i in Replay.query.all())
-    return analyze_replay(opath,jret,nokeep=NOKEEP,conf=conf,checksums=checksums)
-
 #API call for opening the containing directory for a replay file
 @bp.route('/open', methods=['POST'])
 def api_open_replay_dir():
@@ -188,6 +152,16 @@ def api_scan_browse():
     }
   return jsonify(j)
 
+#API call for stopping an in-progress scan
+@bp.route('/scan/stop', methods=['POST'])
+def api_scan_request_stop():
+  current_app.config['SCAN_REQUEST_STOPPED'] = True
+  for token in _scan_jobs:
+    tfile = os.path.join(current_app.config['TMP_FOLDER'],token)
+    if os.path.exists(tfile):
+      os.rename(tfile,tfile+"-aborted")
+  return jsonify({"status" : "ok"})
+
 #API call for checking scan progress
 @bp.route('/scan/progress', methods=['POST'])
 def api_scan_progress():
@@ -302,13 +276,13 @@ def scan_job(token):
   logline(tmpfile,f"Locating .slp Replay files")
   for item in ScanDir.query.all():
     get_all_slippi_files(item.fullpath,allreplays,checked)
-  _scan_jobs[token]["total"] = len(allreplays)
   logline(tmpfile,f"Found {len(allreplays)} total files")
 
   #Filter out replays whose names and file sizes have not changed
   logline(tmpfile,f"Filtering unchanged .slp Replay files")
   replays = [r for r in allreplays if (r,os.stat(r).st_size) not in namesizes]
   logline(tmpfile,f"Found {len(replays)} changed files ({len(allreplays)-len(replays)} unchanged)")
+  _scan_jobs[token]["total"] = len(replays)
 
   #Begin the actual scanning process using a threadpool
   logline(tmpfile,f"Starting scan")
@@ -318,17 +292,21 @@ def scan_job(token):
 
   #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
   current_app.config['SCAN_IN_PROGRESS'] = True
+  current_app.config['SCAN_REQUEST_STOPPED'] = False
   with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
     #Submit all scan jobs to the ProcessPoolExecutor to complete as possible
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     #As each replay scan finishes...
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
+      if current_app.config['SCAN_REQUEST_STOPPED']:
+        break
+
       print(f"Background scan: {i+1}/{len(replays)} replays scanned",end="\r")
       #Get the result
       res = t.result()
       #If there is no result, the browser was closed as the scan was in progress
       if res is None:
-        logline(tmpfile,f"Browser closed by user after {i}/{len(replays)} files")
+        logline(tmpfile,f"Scan stopped by user after {i}/{len(replays)} files")
         break
 
       #If we have a new replay, add it to our list of replays to add
@@ -363,10 +341,11 @@ def scan_job(token):
 
   #Commit all database transactions
   db.session.commit()
-  current_app.config['SCAN_IN_PROGRESS'] = False
   current_app.config["BG_MESSAGES"].append(
     "Background Scan Completed! Reload page to see changes."
     )
+  current_app.config['SCAN_IN_PROGRESS'] = False
+  current_app.config['SCAN_REQUEST_STOPPED'] = False
 
   #Clean up
   logline(tmpfile,f"Scan completed")
@@ -376,6 +355,9 @@ def scan_job(token):
 
 #Function called by individual worker threads from scan_job()
 def scan_single(i,r,token,conf,checksums):
+  if os.path.exists(os.path.join(current_app.config['TMP_FOLDER'],token+"-aborted")):
+    return None
+
   #Put together a basic metadata JSON for the replay to be scanned
   jret = {
     "token"           : token,
@@ -402,14 +384,16 @@ def scan_single(i,r,token,conf,checksums):
   return jret
 
 #Function called by scan_single() for actually analyzing a replay
-def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums=set()):
+def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
+    if current_app.config['SCAN_REQUEST_STOPPED']:
+      return None
+
     #If database already has a replay with the same md5, update its info and call it a day
-    m       = md5file(local_file)
-    if NODUPES and m in checksums:
+    m = md5file(local_file)
+    if checksums.get(m,None) is not None:
       # Check if this file was moved, or added
       for dupe in checksums[m]:
         if not os.path.exists(dupe):
-          print(f"""{dupe} DUPE""")
           jret["update"] = {
             "oldfiledir"  : ntpath.dirname(dupe),
             "oldfilename" : ntpath.basename(dupe),

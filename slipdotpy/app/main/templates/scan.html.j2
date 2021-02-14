@@ -16,8 +16,8 @@
             Add Folder
           </button>
           {% if SCAN_IN_PROGRESS %}
-            <button type="button" id=scan-button class="fake-submit" disabled>
-              Background Scan in Progress
+            <button type="button" id=scan-button class="fake-submit" onclick='stopScan()'>
+              Scan in Progress (Click to Stop)
             </button>
           {% else %}
             <button type="button" id=scan-button class="fake-submit" onclick='beginScan()'>
@@ -70,6 +70,23 @@
         });
       }
 
+      function stopScan() {
+        $.ajax({
+            type        : "post",
+            url         : "/api/scan/stop",
+            data        : JSON.stringify({}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+              var ubutton       = document.getElementById("scan-button");
+              ubutton.innerText = "Scan Stopped"
+              ubutton.disabled  = true;
+            }
+        });
+      }
+
       function browseDir(d="",s="") {
         // TODO: not sure if we're safe against quoted directory names
         // b = $("#browseList");
@@ -99,7 +116,7 @@
         var ubutton  = document.getElementById("scan-button");
         var token    = "";
 
-        ubutton.disabled = true;
+        ubutton.onclick = stopScan;
 
         function checkProgress() {
           $.ajax({
@@ -111,7 +128,13 @@
               cache       : false,
               processData : false,
               success: function (rjson) {
-                ubutton.innerText = "Scanning " + rjson["status"];// first set the value
+                if (rjson["status"] != "Done!") {
+                  ubutton.innerText = "Scanning " + rjson["status"] + " (Click to Stop)";// first set the value
+                } else {
+                  ubutton.disabled = true;
+                  ubutton.innerText = "Scanning " + rjson["status"];// first set the value
+
+                }
               },
               complete: function (rjson) {
                 if (!("done" in rjson["responseJSON"])) {
