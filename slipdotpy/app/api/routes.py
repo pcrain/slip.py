@@ -323,7 +323,10 @@ def scan_job(token):
 
       #If we have a new replay, add it to our list of replays to add
       if res["replay"] is not None:
-        adds.append(res["replay"])
+        c = res["url"].split("/")[-1]
+        if not c in checksums: #Double check we didn't run into identical replays in the same scan
+          checksums.add(c)
+          adds.append(res["replay"])
 
       #If we have an updated replay, add it to our list of replays to update
       if res["update"] is not None:
