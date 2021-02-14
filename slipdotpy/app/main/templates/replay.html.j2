@@ -11,6 +11,7 @@
       </span> #}
 
       <script type="text/javascript">
+        var uvars = getUrlVars();
 
         // Fetch global navigation list
         {% if "next" in REPLAY_NAV[r.__checksum] %}
@@ -67,13 +68,23 @@
         }
         function prevReplay() {
           if (nav_prev) {
-            window.location.href = "{{ url_for('main.replays')}}/"+nav_prev;
+            scroll = document.getElementById("bodyWrapper").scrollTop;
+            url    = "{{ url_for('main.replays')}}/"+nav_prev;
+            url = URL_add_parameter(url,"scroll",scroll);
+            window.location.href = url;
           }
         }
         function nextReplay() {
           if (nav_next) {
-            window.location.href = "{{ url_for('main.replays')}}/"+nav_next;
+            scroll = document.getElementById("bodyWrapper").scrollTop;
+            url    = "{{ url_for('main.replays')}}/"+nav_next;
+            url = URL_add_parameter(url,"scroll",scroll);
+            window.location.href = url;
           }
+        }
+
+        window.onload = function(e) {
+          document.getElementById("bodyWrapper").scrollTop = uvars["scroll"]
         }
 
         document.onkeydown = function(e) {
