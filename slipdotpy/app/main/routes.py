@@ -86,7 +86,6 @@ def replays():
     else:
         replays = Replay.search(request.args)
 
-
     # Get IDs for all replays corresponding to the current filter
     checksum_list = replays.with_entities(Replay.checksum).all()
     for i,c in enumerate(checksum_list):
@@ -165,6 +164,12 @@ def replay_analysis_page(r):
 @bp.route('/upload', methods=['GET'])
 def upload_page():
   return render_template("upload.html.j2", title="Upload Replays")
+
+#Route for organize page
+@bp.route('/organize', methods=['GET'])
+def organize_page():
+  s = Settings.load()
+  return render_template("organize.html.j2", title="Organize")
 
 #Route for settings page
 @bp.route('/settings', methods=['GET'])

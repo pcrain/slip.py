@@ -49,6 +49,59 @@ def api_open_install_dir():
   openDir(current_app.config['INSTALL_FOLDER'])
   return jsonify({"status" : "ok"})
 
+#API call for opening the quarantine directory for slip.py
+@bp.route('/openquarantine', methods=['GET'])
+def api_open_quarantine_dir():
+  openDir(current_app.config['QUAR_FOLDER'])
+  return jsonify({"status" : "ok"})
+
+#API call for moving CPU replays to quarantine
+@bp.route('/quarantine_cpu_replays', methods=['POST'])
+def api_quarantine_cpu():
+  cpu_folder = os.path.join(current_app.config['QUAR_FOLDER'],"cpu")
+  os.makedirs(cpu_folder,exist_ok=True)
+  num_moved    = 0
+  couldnt_move = 0
+  for i in Replay.query.filter(or_(
+    Replay.p1display.like(f"""%CPU]"""),
+    Replay.p2display.like(f"""%CPU]"""))).all():
+      p = os.path.join(i.filedir,i.filename)
+      moved = False
+      try:
+        shutil.move(p,cpu_folder)
+        moved = True
+      except shutil.Error:
+        continue
+      if moved:
+        db.session.delete(i)
+        num_moved += 1
+  db.session.commit()
+  openDir(cpu_folder)
+  return jsonify({"status" : "ok", "num_moved" : num_moved})
+
+#API call for moving unfinished games to quarantine
+@bp.route('/quarantine_lras_replays', methods=['POST'])
+def api_quarantine_lras():
+  lras_folder = os.path.join(current_app.config['QUAR_FOLDER'],"lras")
+  os.makedirs(lras_folder,exist_ok=True)
+  num_moved  = 0
+  for i in Replay.query.filter(and_(
+    Replay.p1stocks > 2,
+    Replay.p2stocks > 2)).all():
+      p = os.path.join(i.filedir,i.filename)
+      moved = False
+      try:
+        shutil.move(p,lras_folder)
+        moved = True
+      except shutil.Error:
+        continue
+      if moved:
+        db.session.delete(i)
+        num_moved += 1
+  db.session.commit()
+  openDir(lras_folder)
+  return jsonify({"status" : "ok", "num_moved" : num_moved})
+
 #API call for setting the Slippi Playback Dolphin build path
 @bp.route('/setemupath', methods=['GET'])
 def api_set_emu_path():

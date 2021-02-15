@@ -31,6 +31,7 @@ class Config(object):
       ANALYZER                     = "slippc"
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
     REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
+    QUAR_FOLDER                    = os.path.join(DATA_FOLDER,"quarantine")
     LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
     LOG_FILE                       = SITE_INTNAME+'.log'
     TMP_FOLDER                     = os.path.join(DATA_FOLDER,"_tmp")

@@ -1,0 +1,58 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    <span id="settingsGrid">
+      <span class="title">Replay Organization</span>
+      <button id="q-cpu-button" onclick="quarantineCpuReplays()">Quarantine CPU Replays</button>
+      <button id="q-lras-button" onclick="quarantineLrasReplays()">Quarantine L-R-A-Start Replays</button>
+    </span>
+
+    <script>
+      function change(u,reload=true) {
+        $.ajax({
+          url : u,
+          success: function() { if(reload) { location.reload(); } }
+        });
+      }
+
+      function quarantineCpuReplays() {
+        if (confirm("Move replays with CPU players to quarantine? (1/2)")) {
+          if (confirm("Are you sure? (2/2)")) {
+            $.ajax({
+              type        : "post",
+              url         : "/api/quarantine_cpu_replays",
+              data        : JSON.stringify({}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                $("#q-cpu-button").text(rjson["num_moved"]+" CPU Replays moved to quarantine");
+                $("#q-cpu-button").attr("disabled","disabled");
+              }
+            });
+          }
+        }
+      }
+
+      function quarantineLrasReplays() {
+        if (confirm("Move replays with L-R-A-Starts with 3+ stocks to quarantine? (1/2)")) {
+          if (confirm("Are you sure? (2/2)")) {
+            $.ajax({
+              type        : "post",
+              url         : "/api/quarantine_lras_replays",
+              data        : JSON.stringify({}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                $("#q-lras-button").text(rjson["num_moved"]+" LRAS Replays moved to quarantine");
+                $("#q-lras-button").attr("disabled","disabled");
+              }
+            });
+          }
+        }
+      }
+    </script>
+{% endblock %}

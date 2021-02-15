@@ -242,6 +242,7 @@ hr {
 .ni-scan     img { filter: drop-shadow(0px 0px 5px yellow) drop-shadow(0px 0px 1px lightgray) ; }
 .ni-settings img { filter: drop-shadow(0px 0px 5px orange) drop-shadow(0px 0px 1px lightgray) ; }
 .ni-stats    img { filter: drop-shadow(0px 0px 5px violet) drop-shadow(0px 0px 1px lightgray) ; }
+.ni-organize img { filter: drop-shadow(0px 0px 5px lime)   drop-shadow(0px 0px 1px lightgray) ; }
 
 .navbar_top {
   display               : inline-grid;

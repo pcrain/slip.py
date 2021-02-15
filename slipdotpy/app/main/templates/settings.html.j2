@@ -6,6 +6,7 @@
       {# <button id="purge-button" class="danger-button" onclick="purge()">Purge Data</button> #}
       <button id="data-button" onclick="change('/api/opendata',false)">Open Data Folder<br/><span class="set">{{ DATA_FOLDER }}</span></button>
       <button id="install-button" onclick="change('/api/openinstall',false)">Open Install Folder<br/><span class="set">{{ INSTALL_FOLDER }}</span></button>
+      <button id="data-button" onclick="change('/api/openquarantine',false)">Open Quarantine Folder<br/><span class="set">{{ QUAR_FOLDER }}</span></button>
       <button id="emu-button" onclick="change('/api/setemupath')">
         Set Playback Slippi Path<br/><span class="set">{{ settings["emupath"] }}</span>
       </button>
