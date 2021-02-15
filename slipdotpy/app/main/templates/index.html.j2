@@ -51,7 +51,11 @@
         </span>
       {% endfor %}
       {% if replays|length == 0 %}
-        <h2>No replays here...yet!</h2>
+        {% if dirs|length == 0 %}
+          <h2>Nothing to scan yet! Add a folder on the <a href="{{url_for('main.scan_page')}}">Scan</a> page!</h2>
+        {% else %}
+          <h2>No replays here...yet!</h2>
+        {% endif %}
       {% endif %}
     </span>
   </span>

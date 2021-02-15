@@ -265,9 +265,9 @@ def openDir(path,isfile=False):
   if os.name == 'nt':
     explorer = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
     if isfile and os.path.exists(path):
-      subprocess.run([explorer, '/select,', path])
+      subprocess.Popen([explorer, '/select,', path])
     else:
-      subprocess.run([explorer, path])
+      subprocess.Popen([explorer, path])
   else:
     #Query default file explorer
     exp_query   = ["xdg-mime","query","default","inode/directory"]
@@ -276,13 +276,13 @@ def openDir(path,isfile=False):
     explorer    = output.decode('utf-8').replace(".desktop\n","")
     if isfile and os.path.exists(path):
       if explorer in ["thunar"]:
-        subprocess.run(openFileThunar(path))
+        subprocess.Popen(openFileThunar(path))
       elif explorer in ["nautilus","nemo"]:
-        subprocess.run([explorer, "no-desktop", path])
+        subprocess.Popen([explorer, "no-desktop", path])
       else: #Explorer not supported; settle for opening directory
-        subprocess.run([explorer, ntpath.dirname(path)])
+        subprocess.Popen([explorer, ntpath.dirname(path)])
     else:
-      subprocess.run([explorer, path])
+      subprocess.Popen([explorer, path])
 
 #Open a file selection dialog and return the path of the selected file
 def pickFile(prompt="Select a File",startDir=""):

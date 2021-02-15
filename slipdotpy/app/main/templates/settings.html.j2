@@ -19,7 +19,6 @@
       <button id="threads-button" onclick="change('/api/togglescanthreads')">
         Scanning threads (Max: {{MAX_SCAN_THREADS}})<br/><span class="set">{{ settings["scanthreads"] }}</span>
       </button>
-      <button id="missing-button" onclick="clearMissingReplays()">Clear Missing Replays from Cache</button>
       <button id="purge-button" class="danger-button" onclick="clearAllReplays()">Clear All Replays from Cache</button>
     </span>
 
@@ -29,26 +28,6 @@
           url : u,
           success: function() { if(reload) { location.reload(); } }
         });
-      }
-
-      function clearMissingReplays() {
-        if (confirm("Remove database entries for replays no longer on file system? (1/2)")) {
-          if (confirm("Are you sure? (2/2)")) {
-            $.ajax({
-              type        : "post",
-              url         : "/api/deletemissingreplays",
-              data        : JSON.stringify({}),
-              dataType    : "json",
-              contentType : "application/json",
-              cache       : false,
-              processData : false,
-              success: function (rjson) {
-                $("#missing-button").text(rjson["num_deleted"]+" Missing Replays Cleared");
-                $("#missing-button").attr("disabled","disabled");
-              }
-            });
-          }
-        }
       }
 
       function clearAllReplays() {
