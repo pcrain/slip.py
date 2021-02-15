@@ -19,22 +19,30 @@ The project eventually grew to include replay stats, replay analyses, and a full
   - Full-featured replay search engine. Looking for that game last week where you 4-stocked a Fox with your sick DK? No problem!
   - Stats for each replay. Wondering what your average ledgedash GALINT was? Want to know how many times you accidentally full hopped instead of short hopped? Slip.py will show you all of that and much more.
   - Punish analyses. Detailed breakdowns of every move in every punish you landed + when and how you landed them, color coded for your convenience!
+  - Replay organization options. Want to get rid of all of those replays where your opponent quits out in the middle of your combo on the first stock? Click one button and it's as good as done!
 
 ## Installation
   Check out the [installation instructions here](INSTALL.md)!
 
 ## Usage Tips
-  - Before being able to browse replays, you need to add folders to scan. Click on the "Scan" button in the navigation bar, add at least one folder using the "Add Folder" button and navigating to a directory containing slippi files, and click "Begin Scan".
-  - Before being able to view replays, you will need to configure the path to your Melee 1.02 ISO and Slippi Playback emulator on the "Settings" page.
+  - Before being able to browse replays, you need to add folders to scan. Click on the "Scan" button in the navigation bar, add at least one folder using the "Add Folder" button and navigating to a directory containing slippi files, and click "Begin Scan". The default Slippi replay location is added by default if it exists.
+  - Before being able to view replays, you will need to configure the path to your Melee 1.02 ISO and Slippi Playback emulator on the "Settings" page. If you have the [Slippi Desktop app](https://slippi.gg/downloads) installed, your playback Dolphin is likely at "```C:\Users\[your login name]\AppData\Roaming\Slippi Desktop App\dolphin```".
   - Clicking the search button at the top will allow you to filter replays by a number of attributes, including characters, costumes, stage, stock counts, and game length. Additionally, you can also enter keywords into the search bar to search for specific file names, player names, and player tags.
   - The stats / analysis page for each replay shows color-coded interaction data between players, including what moves were landed during these interactions and how much damage each player did during these interactions over the course of the game. These interactions are defined near the bottom of [this page](https://github.com/pcrain/slippc).
+  - You can configure the maximum number of threads to use during the replay scanning process on the Settings page of the app. The default is half the number of processors your computer has; note that using too many threads may cause your system to become unresponsive, so increase at your own risk.
 
 ## Keyboard Shortcuts
-  | Command   | Description                        |
-  | :-------: | ---------------------------------- |
-  | Backspace | back to previous page              |
-  | F5        | refresh current page               |
-  | F12       | reset app and return to index page |
+  | Command     | Description                                     |
+  | :---------: | :---------------------------------------------: |
+  | Left Arrow  | Go to previous replay / results page            |
+  | Right Arrow | Go to next replay / results page                |
+  | Up Arrow    | (On replay page) Go back to last search results |
+  | Backspace   | Go back to last page in history                 |
+  | Alt+Left    | Go back to last page in history                 |
+  | Alt+Right   | Go forward to next page in history              |
+  | F5          | Refresh current page                            |
+  | F12         | Reset app                                       |
+
 
 ## Limitations / Known Bugs
   - Slip.py cannot currently index or show stats for games with more than two players. Indexing will be possible in the future, but analysis will likely not be added due to the complexity.

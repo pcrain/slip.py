@@ -1,7 +1,6 @@
 
 ### Windows Easy Install Instructions
   - Head to the [release page](https://github.com/pcrain/slip.py/releases/latest) and download the latest official release executable
-  - ***Note***: the easy install release has slower startup times than the standard install
 
 ### Windows Standard Install Instructions
   - [Download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
