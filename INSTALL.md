@@ -1,6 +1,8 @@
 
 ### Windows Easy Install Instructions
-  - Head to the [release page](https://github.com/pcrain/slip.py/releases/latest) and download the latest official release executable
+  - Head to the [release page](https://github.com/pcrain/slip.py/releases/latest) and download the latest official release .zip
+  - Extract the .zip anywhere and run slipdotpy.exe
+  - [Optional] You may wish to create a shortcut to slipdotpy.exe for easier access
 
 ### Windows Standard Install Instructions
   - [Download and extract the ZIP file containing the latest version of slip.py](https://github.com/pcrain/slip.py/archive/master.zip).
