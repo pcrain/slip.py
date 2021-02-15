@@ -84,6 +84,18 @@ def api_toggle_scan_threads():
   db.session.commit()
   return jsonify({"status" : "ok"})
 
+#API call for removing scanned replays no longer on the file system from database (JSONs left intact)
+@bp.route('/deletemissingreplays', methods=['POST'])
+def api_delete_missing_replays():
+  num_deleted = 0
+  for i in Replay.query.all():
+    p = os.path.join(i.filedir,i.filename)
+    if not os.path.exists(p):
+      db.session.delete(i)
+      num_deleted += 1
+  db.session.commit()
+  return jsonify({"status" : "ok", "num_deleted" : num_deleted})
+
 #API call for removing all scanned replays from database (JSONs left intact)
 @bp.route('/deletereplays', methods=['POST'])
 def api_delete_all_replays():
