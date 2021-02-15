@@ -355,10 +355,9 @@ def scan_job(token):
   adds      = []
   updates   = []
 
-  #TODO: might spawn multiple GUIs on Windows now that we're using init_gui
   current_app.config['SCAN_IN_PROGRESS'] = True
   current_app.config['SCAN_REQUEST_STOPPED'] = False
-  with concurrent.futures.ProcessPoolExecutor(max_workers=settings["scanthreads"]) as ex:
+  with concurrent.futures.ThreadPoolExecutor(max_workers=settings["scanthreads"]) as ex:
     #Submit all scan jobs to the ProcessPoolExecutor to complete as possible
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     #As each replay scan finishes...
@@ -420,7 +419,7 @@ def scan_job(token):
 
 #Function called by individual worker threads from scan_job()
 def scan_single(i,r,token,conf,checksums):
-  if os.path.exists(os.path.join(current_app.config['TMP_FOLDER'],token+"-aborted")):
+  if os.path.exists(os.path.join(conf['TMP_FOLDER'],token+"-aborted")):
     return None
 
   #Put together a basic metadata JSON for the replay to be scanned
@@ -450,9 +449,6 @@ def scan_single(i,r,token,conf,checksums):
 
 #Function called by scan_single() for actually analyzing a replay
 def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
-    if current_app.config['SCAN_REQUEST_STOPPED']:
-      return None
-
     #If database already has a replay with the same md5, update its info and call it a day
     m = md5file(local_file)
     if checksums.get(m,None) is not None:
