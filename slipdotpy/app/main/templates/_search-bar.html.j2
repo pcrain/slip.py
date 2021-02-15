@@ -52,8 +52,8 @@
     var cname  = $(me).data('cname');
     var colors = $(me).data('ccols');
 
-    //Reset costume to default
-    setCostume($("#dd-p"+pnum+"cost [data-costid='0']")[0],pnum);
+    //Reset costume to "any"
+    setCostume($("#dd-p"+pnum+"cost [data-costid='-1']")[0],pnum);
     var costid = $("#b-p"+pnum+"cost").data('id');
     if (costid == "-1") {
       costid = 0;
