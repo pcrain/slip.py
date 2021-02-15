@@ -58,7 +58,7 @@ def api_open_quarantine_dir():
 #API call for moving CPU replays to quarantine
 @bp.route('/quarantine_cpu_replays', methods=['POST'])
 def api_quarantine_cpu():
-  cpu_folder = os.path.join(current_app.config['QUAR_FOLDER'],"cpu")
+  cpu_folder = os.path.join(current_app.config['QUAR_FOLDER'],"cpu-players")
   os.makedirs(cpu_folder,exist_ok=True)
   num_moved    = 0
   couldnt_move = 0
@@ -82,7 +82,7 @@ def api_quarantine_cpu():
 #API call for moving unfinished games to quarantine
 @bp.route('/quarantine_lras_replays', methods=['POST'])
 def api_quarantine_lras():
-  lras_folder = os.path.join(current_app.config['QUAR_FOLDER'],"lras")
+  lras_folder = os.path.join(current_app.config['QUAR_FOLDER'],"lra-starts")
   os.makedirs(lras_folder,exist_ok=True)
   num_moved  = 0
   for i in Replay.query.filter(and_(
