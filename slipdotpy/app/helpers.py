@@ -79,12 +79,14 @@ def load_replay(rf):
                 p["__int"+k] = v
             for k,v in p["interaction_damage"].items():
                 p["__dmg"+k] = v
+            p["__air_pct"] = 100 * p["air_frames"] / (r["game_length"])
             p["__l_cancels_hit_pct"] = 0
             if p["l_cancels_hit"] > 0:
                 p["__l_cancels_hit_pct"] = 100 * p["l_cancels_hit"] / (p["l_cancels_hit"]+p["l_cancels_missed"])
             p["__tech_hit_pct"] = 100
+            p["__techs_hit"] = p["techs"]+p["walltechs"]+p["walltechjumps"]
             if p["missed_techs"] > 0:
-                p["__tech_hit_pct"] = 100 * (p["techs"]+p["walltechs"]+p["walltechjumps"]) / (p["techs"]+p["walltechs"]+p["walltechjumps"]+p["missed_techs"])
+                p["__tech_hit_pct"] = 100 * (p["__techs_hit"]) / (p["__techs_hit"]+p["missed_techs"])
             p["num_moves_landed"] = p["moves_landed"]["_total"]
             p["__display_tag"] = get_display_tag(p)
     return r

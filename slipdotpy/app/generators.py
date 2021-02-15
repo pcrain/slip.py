@@ -174,10 +174,16 @@ def config_generators(app):
   def utility_functions():
     #Check if P1 / P2 has a higher value for a statistic and highlight if so
     def hl_if_higher(replay,index,key):
-      return "hl-green" if replay["p"][index-1][key] > replay["p"][2-index][key] else ""
+      try:
+        return "hl-green" if replay["p"][index-1][key] > replay["p"][2-index][key] else ""
+      except:
+        return""
     #Check if P1 / P2 has a lower value for a statistic and highlight if so
     def hl_if_lower(replay,index,key):
-      return "hl-green" if replay["p"][index-1][key] < replay["p"][2-index][key] else ""
+      try:
+        return "hl-green" if replay["p"][index-1][key] < replay["p"][2-index][key] else ""
+      except:
+        return""
     def frame_to_timestamp(f):
       f -= 123
       m  = f//3600

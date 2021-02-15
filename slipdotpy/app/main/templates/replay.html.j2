@@ -127,164 +127,165 @@
         <button disabled id="fakeButton" type="button" style="opacity: 0;"></button>
       </div>
 
+      {% macro _statshared(stathead,inner) -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}}">{{inner}}</div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _stat(stathead,statname,f="%.0f",suffix="") -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}}">
+            {% if statname in p %}
+              {{ f|format(p[statname])+suffix }}
+            {% else %}
+              ???
+            {% endif %}
+          </div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _stathi(stathead,statname,f="%.0f",suffix="") -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">
+            {% if statname in p %}
+              {{ f|format(p[statname])+suffix }}
+            {% else %}
+              ???
+            {% endif %}
+          </div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _statlo(stathead,statname,f="%.0f",suffix="") -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+            <div class="{{pi}} {{hl_if_lower(r,loop.index,statname)}}">
+              {% if statname in p %}
+                {{ f|format(p[statname])+suffix }}
+              {% else %}
+                ???
+              {% endif %}
+            </div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _stathipct(stathead,statname,pctname,f="%.0f") -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}} {{hl_if_higher(r,loop.index,pctname)}}">
+            {% if statname in p %}
+              {{ p[statname] }} ({{ "%.0f%%"|format(p[pctname]) }})
+            {% else %}
+              ???
+            {% endif %}
+          </div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _statred(stathead,statname,f="%.0f",suffix="") -%}
+        <div class="stat">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}} {{'hl-red' if p[statname] > 0}}">
+            {% if statname in p %}
+              {{ f|format(p[statname])+suffix }}
+            {% else %}
+              ???
+            {% endif %}
+          </div>
+        {% endfor %}
+      {%- endmacro %}
+      {% macro _stathiint(stathead,stattype,statname,f="%.0f",suffix="") -%}
+        <div class="stat op-{{stattype}}">{{stathead}}</div>
+        {% for p in r.p %}
+          {% set pi = "p"+loop.index|string+"item" %}
+          <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">
+            {% if statname in p %}
+              {{ f|format(p[statname])+suffix }}
+            {% else %}
+              ???
+            {% endif %}
+          </div>
+        {% endfor %}
+      {%- endmacro %}
+
       <div id="replayDataGrid">
           <div class="heading">Overview</div>
-            <div class="stat">Game Length</div>
-            <div class="stat">End Stocks</div>
-            <div class="stat">End %</div>
-            <div class="stat">Actions / Min.</div>
-            <div class="stat">Action States / Min.</div>
-            <div class="stat">Time Airborne</div>
-            <div class="stat">Ledge Grabs</div>
+            {{ _stathi("Missing","missing" )}}
+            {{ _statshared("Game Length",frame_to_timestamp(r.game_length) )}}
+            {{ _stathi("End Stocks","end_stocks" )}}
+            {{ _stat("End %","end_pct","%.0f","%")}}
+            {{ _stathi("Actions / Min.","actions_per_min","%.1f","")}}
+            {{ _stathi("Action States / Min.","states_per_min" ,"%.1f","")}}
+            {{ _stat("Time Airborne","__air_pct","%.2f","%")}}
+            {{ _stat("Ledge Grabs","ledge_grabs" )}}
 
           <div class="heading">Interactions (Damage Dealt)</div>
             {% for k in interactions %}
-              <div class="stat op-{{k}}">{{k.title()}}</div>
+              {{ _stathiint(k.title(),k,'__dmg'+k,"%.0f","%")}}
             {% endfor %}
 
           <div class="heading">Neutral</div>
-            <div class="stat">Neutral Wins</div>
-            <div class="stat">Counterattacks</div>
-            <div class="stat">Pokes</div>
-            <div class="stat">Reverse Edgeguards</div>
-            <div class="stat">Dashdances</div>
-            <div class="stat">Short Hops</div>
-            <div class="stat">Full Hops</div>
+            {{ _stathi("Neutral Wins","neutral_wins" )}}
+            {{ _stathi("Counterattacks","counters" )}}
+            {{ _stathi("Pokes","pokes" )}}
+            {{ _stathi("Reverse Edgeguards","reverse_edgeguards" )}}
+            {{ _stathi("Dashdances","dashdances" )}}
+            {{ _stathi("Short Hops","short_hops" )}}
+            {{ _stathi("Full Hops","full_hops" )}}
 
           <div class="heading">Offense</div>
-            <div class="stat">Damage Dealt</div>
-            <div class="stat">Total Openings</div>
-            <div class="stat">Damage / Opening</div>
-            <div class="stat">Openings / Kill</div>
-            <div class="stat">Damage / Kill</div>
-            <div class="stat">Moves Landed</div>
-            <div class="stat">Shield Stabs</div>
-            <div class="stat">Shields Broken</div>
-            <div class="stat">Grabs Landed</div>
-            <div class="stat">Stage Spikes</div>
+            {{ _stathi("Damage Dealt","damage_dealt","%.2f","%")}}
+            {{ _stathi("Total Openings","total_openings" )}}
+            {{ _stathi("Damage / Opening","mean_opening_percent" )}}
+            {{ _statlo("Openings / Kill","mean_kill_openings" )}}
+            {{ _statlo("Damage / Kill","mean_kill_percent" )}}
+            {{ _stathi("Moves Landed","num_moves_landed" )}}
+            {{ _stathi("Shield Stabs","shield_stabs" )}}
+            {{ _stathi("Shields Broken","shield_breaks" )}}
+            {{ _stathi("Grabs Landed","grabs" )}}
+            {{ _stathi("Stage Spikes","stage_spikes" )}}
 
           <div class="heading">Defense</div>
-            <div class="stat">Airdodges</div>
-            <div class="stat">Spotdodges</div>
-            <div class="stat">Rolls</div>
-            <div class="stat">Grabs Escaped</div>
-            <div class="stat">Attacks Shielded</div>
-            <div class="stat">Attacks Powershielded</div>
-            <div class="stat">Floor Techs</div>
-            <div class="stat">Wall Techs</div>
-            <div class="stat">Wall Tech Jumps</div>
-            <div class="stat">Frames in Shield</div>
-            <div class="stat">Shield Damage Taken</div>
-            <div class="stat">Lowest Shield Health</div>
+            {{ _stathi("Airdodges","airdodges") }}
+            {{ _stathi("Spotdodges","spotdodges") }}
+            {{ _stathi("Rolls","rolls") }}
+            {{ _stathi("Grabs Escaped","grab_escapes") }}
+            {{ _stathi("Attacks Shielded","hits_blocked") }}
+            {{ _stathi("Attacks Powershielded","powershields") }}
+            {{ _stathi("Floor Techs","techs") }}
+            {{ _stathi("Wall Techs","walltechs") }}
+            {{ _stathi("Wall Tech Jumps","walltechjumps") }}
+            {{ _statlo("Frames in Shield","shield_time") }}
+            {{ _statlo("Shield Damage Taken","shield_damage") }}
+            {{ _stathi("Lowest Shield Health","shield_lowest") }}
 
           <div class="heading">Technique</div>
-            <div class="stat">L Cancels Hit</div>
-            <div class="stat">Techs Hit</div>
-            <div class="stat">Wavedashes</div>
-            <div class="stat">Wavelands</div>
-            <div class="stat">Shield Drops</div>
-            <div class="stat">No Impact Lands</div>
-            <div class="stat">Pivots</div>
-            <div class="stat">Edge-cancelled Aerials</div>
-            <div class="stat">Edge-cancelled Specials</div>
-            <div class="stat">Teeter-cancelled Aerials</div>
-            <div class="stat">Teeter-cancelled Specials</div>
-            <div class="stat">Meteor Cancels</div>
-            <div class="stat">Intangible Ledgedashes</div>
-            <div class="stat">Mean GALINT</div>
-            <div class="stat">Max GALINT</div>
+            {{ _stathipct("L Cancels Hit","l_cancels_hit","__l_cancels_hit_pct") }}
+            {{ _stathipct("Techs Hit","__techs_hit","__tech_hit_pct") }}
+            {{ _stathi("Wavedashes","wavedashes") }}
+            {{ _stathi("Wavelands","wavelands") }}
+            {{ _stathi("Shield Drops","shield_drops") }}
+            {{ _stathi("No Impact Lands","no_impact_lands") }}
+            {{ _stathi("Pivots","pivots") }}
+            {{ _stathi("Edge-cancelled Aerials","edge_cancel_aerials") }}
+            {{ _stathi("Edge-cancelled Specials","edge_cancel_specials") }}
+            {{ _stathi("Teeter-cancelled Aerials","teeter_cancel_aerials") }}
+            {{ _stathi("Teeter-cancelled Specials","teeter_cancel_specials") }}
+            {{ _stathi("Meteor Cancels","meteor_cancels") }}
+            {{ _stathi("Intangible Ledgedashes","galint_ledgedashes") }}
+            {{ _stathi("Mean GALINT","mean_galint") }}
+            {{ _stathi("Max GALINT","max_galint") }}
 
           <div class="heading">Miscellaneous</div>
-            <div class="stat">Taunts</div>
-            <div class="stat">Phantom Hits</div>
-            <div class="stat">Self Destucts</div>
+            {{ _stat("Taunts","taunts")}}
+            {{ _stat("Phantom Hits","phantom_hits")}}
+            {{ _statred("Self Destucts","self_destructs")}}
 
-          {% for p in r.p %}
-            {% set outer_loop = loop %}
-            {% set pi = "p"+loop.index|string+"item" %}
-            {% macro _stat(statname,f="%.0f",suffix="") -%}
-                <div class="{{pi}}">{{ f|format(p[statname])+suffix }}</div>
-            {%- endmacro %}
-            {% macro _stathi(statname,f="%.0f",suffix="") -%}
-                <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">{{ f|format(p[statname])+suffix }}</div>
-            {%- endmacro %}
-            {% macro _statlo(statname,f="%.0f",suffix="") -%}
-                <div class="{{pi}} {{hl_if_lower(r,loop.index,statname)}}">{{ f|format(p[statname])+suffix }}</div>
-            {%- endmacro %}
-
-            {# Overview #}
-            <div class="{{pi}}">{{frame_to_timestamp(r.game_length)}}</div>
-
-
-            {{ _stathi("end_stocks" )}}
-            {{ _stat("end_pct","%.0f","%")}}
-            {{ _stathi("actions_per_min","%.1f","")}}
-            {{ _stathi("states_per_min" ,"%.1f","")}}
-            <div class="{{pi}}">{{ "%.2f"|format(100*p["air_frames"]/r["game_length"]) }}%</div>
-            {{ _stat("ledge_grabs" )}}
-
-            {# Interactions #}
-            {% for k in interactions %}
-                {{ _stathi('__dmg'+k,"%.0f","%")}}
-            {% endfor %}
-
-            {# Neutral #}
-            {{ _stathi("neutral_wins" )}}
-            {{ _stathi("counters" )}}
-            {{ _stathi("pokes" )}}
-            {{ _stathi("reverse_edgeguards" )}}
-            {{ _stathi("dashdances" )}}
-            {{ _stathi("short_hops" )}}
-            {{ _stathi("full_hops" )}}
-
-            {# Offense #}
-            {{ _stathi("damage_dealt","%.2f","%")}}
-            {{ _stathi("total_openings" )}}
-            {{ _stathi("mean_opening_percent" )}}
-            {{ _statlo("mean_kill_openings" )}}
-            {{ _statlo("mean_kill_percent" )}}
-            {{ _stathi("num_moves_landed" )}}
-            {{ _stathi("shield_stabs" )}}
-            {{ _stathi("shield_breaks" )}}
-            {{ _stathi("grabs" )}}
-            {{ _stathi("stage_spikes" )}}
-
-            {# Defense #}
-            {{ _stathi("airdodges") }}
-            {{ _stathi("spotdodges") }}
-            {{ _stathi("rolls") }}
-            {{ _stathi("grab_escapes") }}
-            {{ _stathi("hits_blocked") }}
-            {{ _stathi("powershields") }}
-            {{ _stathi("techs") }}
-            {{ _stathi("walltechs") }}
-            {{ _stathi("walltechjumps") }}
-            {{ _statlo("shield_time") }}
-            {{ _statlo("shield_damage") }}
-            {{ _stathi("shield_lowest") }}
-
-            {# Tech #}
-            <div class="{{pi}} {{hl_if_higher(r,loop.index,'__l_cancels_hit_pct')}}">{{ p["l_cancels_hit"] }} ({{ "%.0f%%"|format(p["__l_cancels_hit_pct"]) }})</div>
-            <div class="{{pi}} {{hl_if_higher(r,loop.index,'__tech_hit_pct')}}">{{ (p["techs"]+p["walltechs"]+p["walltechjumps"]) }} ({{ "%.0f%%"|format(p["__tech_hit_pct"]) }})</div>
-            {{ _stathi("wavedashes") }}
-            {{ _stathi("wavelands") }}
-            {{ _stathi("shield_drops") }}
-            {{ _stathi("no_impact_lands") }}
-            {{ _stathi("pivots") }}
-            {{ _stathi("edge_cancel_aerials") }}
-            {{ _stathi("edge_cancel_specials") }}
-            {{ _stathi("teeter_cancel_aerials") }}
-            {{ _stathi("teeter_cancel_specials") }}
-            {{ _stathi("meteor_cancels") }}
-            {{ _stathi("galint_ledgedashes") }}
-            {{ _stathi("mean_galint") }}
-            {{ _stathi("max_galint") }}
-
-            {# Miscellaneous #}
-            {{ _stat("taunts")}}
-            {{ _stat("phantom_hits")}}
-            <div class="{{pi}} {{'hl-red' if p['self_destructs'] > 0}}">{{ p["self_destructs"] }}</div>
-          {% endfor %}
       </div> {# replayDataGrid #}
 
       {# Move / Punish List #}
