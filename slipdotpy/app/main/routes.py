@@ -71,6 +71,10 @@ def replays():
     page     = request.args.get('page', 1, type=int)
     scandirs = ScanDir.query.all()
 
+    #Stash our last search for use with backspace button later
+    current_app.config["LAST_SEARCH"] = request.args
+    print(current_app.config["LAST_SEARCH"])
+
     #If we're at a top-level scanned directory, back out to index
     for item in scandirs:
       if item.path == ddir:
@@ -123,6 +127,14 @@ def replays():
       dirs     = ddata,
       next_url = next_url,
       prev_url = prev_url)
+
+#Route for re-executing the last search
+@bp.route('/last_search', methods=['GET'])
+def last_search():
+  query = ""
+  for i,(k,v) in enumerate(current_app.config["LAST_SEARCH"].items()):
+    query += f"""{"?" if i==0 else "&"}{k}={v}"""
+  return redirect(url_for('main.replays')+query)
 
 #Route for an individual replay's analysis page
 @bp.route('/replays/<r>')

@@ -83,6 +83,10 @@
           }
         }
 
+        function returnToSearch() {
+          window.location.href = "{{ url_for('main.last_search')}}";
+        }
+
         window.onload = function(e) {
           document.getElementById("bodyWrapper").scrollTop = uvars["scroll"]
         }
@@ -91,6 +95,10 @@
             switch(e.which) {
                 case 37: // left
                 prevReplay();
+                break;
+
+                case 38: // up
+                returnToSearch();
                 break;
 
                 case 39: // right
@@ -124,7 +132,7 @@
           <button disabled id="nextGameButton" type="button">Next Replay</button>
         {% endif %}
         <button type="button" onclick='viewRawAnalysis()'>View Raw Analysis</button>
-        <button disabled id="fakeButton" type="button" style="opacity: 0;"></button>
+        <button type="button" onclick='returnToSearch()'>Back to Search Results</button>
       </div>
 
       {% macro _statcommon(title,headclass,statname,f="%.0f",suffix="",hlfunc=no_hl,pctname='') -%}
@@ -171,17 +179,17 @@
       <div id="replayDataGrid">
         <div class="heading">Overview</div>
           {# {{    _stathi("Missing",             "missing"                     )}} #}
-          {{      _stat("Game Length",         "__game_secs",     "%s"       )}}
-          {{    _stathi("End Stocks",          "end_stocks"                  )}}
-          {{      _stat("End %",               "end_pct",         "%.0f", "%")}}
-          {{    _stathi("Actions / Min.",      "actions_per_min", "%.1f", "" )}}
+          {{      _stat("Game Length"         ,"__game_secs",     "%s"       )}}
+          {{    _stathi("End Stocks"          ,"end_stocks"                  )}}
+          {{      _stat("End %"               ,"end_pct",         "%.0f", "%")}}
+          {{    _stathi("Actions / Min."      ,"actions_per_min", "%.1f", "" )}}
           {{    _stathi("Action States / Min.","states_per_min" , "%.1f", "" )}}
-          {{      _stat("Time Airborne",       "__air_pct",       "%.2f", "%")}}
-          {{      _stat("Ledge Grabs",         "ledge_grabs"                 )}}
+          {{      _stat("Time Airborne"       ,"__air_pct",       "%.2f", "%")}}
+          {{      _stat("Ledge Grabs"         ,"ledge_grabs"                 )}}
 
         <div class="heading">Interactions (Damage Dealt)</div>
           {% for k in interactions %}
-           {{_stathiint(k.title(),             k,'__dmg'+k,       "%.0f", "%")}}
+           {{_stathiint(k.title()             ,k,'__dmg'+k,       "%.0f", "%")}}
           {% endfor %}
 
         <div class="heading">Neutral</div>

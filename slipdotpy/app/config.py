@@ -48,3 +48,4 @@ class Config(object):
     SCAN_REQUEST_STOPPED           = False #Whether we've requested to stop an in progress scan
     BG_MESSAGES                    = []    #List of messages regarding background tasks
     REPLAY_NAV                     = {}    #Dictionary for tracking previous / next replay based on last search
+    LAST_SEARCH                    = ""    #GET parameters for the last search we ran
