@@ -1,11 +1,31 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-  {% if autoscan %}
-    <script type="text/javascript">
+  <script type="text/javascript">
+    {% if autoscan %}
       autoScan();
-    </script>
-  {% endif %}
+    {% endif %}
+    document.onkeydown = function(e) {
+        switch(e.which) {
+            {% if prev_url %}
+            case 37: // left
+              window.location.href = "{{ prev_url }}";
+            break;
+            {% endif %}
+
+            {% if next_url %}
+            case 39: // right
+            if ("{{ next_url }}" != "") {
+              window.location.href = "{{ next_url }}";
+            }
+            break;
+            {% endif %}
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    };
+  </script>
   <span id="replayListingGrid">
     {% if prev_url %}
       <a id="prev-a" class="nostyle" href="{{ prev_url }}"><button id="prev" type="button">&lt;</button></a>
