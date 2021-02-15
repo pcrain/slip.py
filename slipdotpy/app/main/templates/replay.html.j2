@@ -127,164 +127,119 @@
         <button disabled id="fakeButton" type="button" style="opacity: 0;"></button>
       </div>
 
-      {% macro _statshared(stathead,inner) -%}
-        <div class="stat">{{stathead}}</div>
+      {% macro _statcommon(title,headclass,statname,f="%.0f",suffix="",hlfunc=no_hl,pctname='') -%}
+        <div class="stat {{headclass}}">{{title}}</div>
         {% for p in r.p %}
           {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}}">{{inner}}</div>
-        {% endfor %}
-      {%- endmacro %}
-      {% macro _stat(stathead,statname,f="%.0f",suffix="") -%}
-        <div class="stat">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}}">
+          <div class="{{pi}} {{hlfunc(r,loop.index,statname)}}">
             {% if statname in p %}
-              {{ f|format(p[statname])+suffix }}
-            {% else %}
-              ???
-            {% endif %}
-          </div>
-        {% endfor %}
-      {%- endmacro %}
-      {% macro _stathi(stathead,statname,f="%.0f",suffix="") -%}
-        <div class="stat">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">
-            {% if statname in p %}
-              {{ f|format(p[statname])+suffix }}
-            {% else %}
-              ???
-            {% endif %}
-          </div>
-        {% endfor %}
-      {%- endmacro %}
-      {% macro _statlo(stathead,statname,f="%.0f",suffix="") -%}
-        <div class="stat">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-            <div class="{{pi}} {{hl_if_lower(r,loop.index,statname)}}">
-              {% if statname in p %}
+              {% if pctname == '' %}
                 {{ f|format(p[statname])+suffix }}
+              {% elif pctname in p %}
+                {{ p[statname] }} ({{ "%.0f%%"|format(p[pctname]) }})
               {% else %}
                 ???
               {% endif %}
-            </div>
-        {% endfor %}
-      {%- endmacro %}
-      {% macro _stathipct(stathead,statname,pctname,f="%.0f") -%}
-        <div class="stat">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}} {{hl_if_higher(r,loop.index,pctname)}}">
-            {% if statname in p %}
-              {{ p[statname] }} ({{ "%.0f%%"|format(p[pctname]) }})
+            {% elif statname in r %}
+              {{ f|format(r[statname])+suffix }}
             {% else %}
               ???
             {% endif %}
           </div>
         {% endfor %}
       {%- endmacro %}
-      {% macro _statred(stathead,statname,f="%.0f",suffix="") -%}
-        <div class="stat">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}} {{'hl-red' if p[statname] > 0}}">
-            {% if statname in p %}
-              {{ f|format(p[statname])+suffix }}
-            {% else %}
-              ???
-            {% endif %}
-          </div>
-        {% endfor %}
+
+      {% macro _stat(title,statname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"",statname,f,suffix,no_hl)}}
       {%- endmacro %}
-      {% macro _stathiint(stathead,stattype,statname,f="%.0f",suffix="") -%}
-        <div class="stat op-{{stattype}}">{{stathead}}</div>
-        {% for p in r.p %}
-          {% set pi = "p"+loop.index|string+"item" %}
-          <div class="{{pi}} {{hl_if_higher(r,loop.index,statname)}}">
-            {% if statname in p %}
-              {{ f|format(p[statname])+suffix }}
-            {% else %}
-              ???
-            {% endif %}
-          </div>
-        {% endfor %}
+      {% macro _stathi(title,statname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"",statname,f,suffix,hl_if_higher)}}
+      {%- endmacro %}
+      {% macro _statlo(title,statname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"",statname,f,suffix,hl_if_lower)}}
+      {%- endmacro %}
+      {% macro _statred(title,statname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"",statname,f,suffix,red_if_nonzero)}}
+      {%- endmacro %}
+      {% macro _stathipct(title,statname,pctname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"",statname,f,suffix,hl_if_higher,pctname)}}
+      {%- endmacro %}
+      {% macro _stathiint(title,stattype,statname,f="%.0f",suffix="") -%}
+        {{_statcommon(title,"op-"+stattype,statname,f,suffix,hl_if_higher)}}
       {%- endmacro %}
 
       <div id="replayDataGrid">
-          <div class="heading">Overview</div>
-            {{ _stathi("Missing","missing" )}}
-            {{ _statshared("Game Length",frame_to_timestamp(r.game_length) )}}
-            {{ _stathi("End Stocks","end_stocks" )}}
-            {{ _stat("End %","end_pct","%.0f","%")}}
-            {{ _stathi("Actions / Min.","actions_per_min","%.1f","")}}
-            {{ _stathi("Action States / Min.","states_per_min" ,"%.1f","")}}
-            {{ _stat("Time Airborne","__air_pct","%.2f","%")}}
-            {{ _stat("Ledge Grabs","ledge_grabs" )}}
+        <div class="heading">Overview</div>
+          {{    _stathi("Missing",             "missing"                     )}}
+          {{      _stat("Game Length",         "__game_secs",     "%s"       )}}
+          {{    _stathi("End Stocks",          "end_stocks"                  )}}
+          {{      _stat("End %",               "end_pct",         "%.0f", "%")}}
+          {{    _stathi("Actions / Min.",      "actions_per_min", "%.1f", "" )}}
+          {{    _stathi("Action States / Min.","states_per_min" , "%.1f", "" )}}
+          {{      _stat("Time Airborne",       "__air_pct",       "%.2f", "%")}}
+          {{      _stat("Ledge Grabs",         "ledge_grabs"                 )}}
 
-          <div class="heading">Interactions (Damage Dealt)</div>
-            {% for k in interactions %}
-              {{ _stathiint(k.title(),k,'__dmg'+k,"%.0f","%")}}
-            {% endfor %}
+        <div class="heading">Interactions (Damage Dealt)</div>
+          {% for k in interactions %}
+           {{_stathiint(k.title(),             k,'__dmg'+k,       "%.0f", "%")}}
+          {% endfor %}
 
-          <div class="heading">Neutral</div>
-            {{ _stathi("Neutral Wins","neutral_wins" )}}
-            {{ _stathi("Counterattacks","counters" )}}
-            {{ _stathi("Pokes","pokes" )}}
-            {{ _stathi("Reverse Edgeguards","reverse_edgeguards" )}}
-            {{ _stathi("Dashdances","dashdances" )}}
-            {{ _stathi("Short Hops","short_hops" )}}
-            {{ _stathi("Full Hops","full_hops" )}}
+        <div class="heading">Neutral</div>
+          {{    _stathi("Neutral Wins"       , "neutral_wins"                )}}
+          {{    _stathi("Counterattacks"     , "counters"                    )}}
+          {{    _stathi("Pokes"              , "pokes"                       )}}
+          {{    _stathi("Reverse Edgeguards" , "reverse_edgeguards"          )}}
+          {{    _stathi("Dashdances"         , "dashdances"                  )}}
+          {{    _stathi("Short Hops"         , "short_hops"                  )}}
+          {{    _stathi("Full Hops"          , "full_hops"                   )}}
 
-          <div class="heading">Offense</div>
-            {{ _stathi("Damage Dealt","damage_dealt","%.2f","%")}}
-            {{ _stathi("Total Openings","total_openings" )}}
-            {{ _stathi("Damage / Opening","mean_opening_percent" )}}
-            {{ _statlo("Openings / Kill","mean_kill_openings" )}}
-            {{ _statlo("Damage / Kill","mean_kill_percent" )}}
-            {{ _stathi("Moves Landed","num_moves_landed" )}}
-            {{ _stathi("Shield Stabs","shield_stabs" )}}
-            {{ _stathi("Shields Broken","shield_breaks" )}}
-            {{ _stathi("Grabs Landed","grabs" )}}
-            {{ _stathi("Stage Spikes","stage_spikes" )}}
+        <div class="heading">Offense</div>
+          {{    _stathi("Damage Dealt"     , "damage_dealt",      "%.2f", "%")}}
+          {{    _stathi("Total Openings"   , "total_openings"                )}}
+          {{    _stathi("Damage / Opening" , "mean_opening_percent"          )}}
+          {{    _statlo("Openings / Kill"  , "mean_kill_openings"            )}}
+          {{    _statlo("Damage / Kill"    , "mean_kill_percent"             )}}
+          {{    _stathi("Moves Landed"     , "num_moves_landed"              )}}
+          {{    _stathi("Shield Stabs"     , "shield_stabs"                  )}}
+          {{    _stathi("Shields Broken"   , "shield_breaks"                 )}}
+          {{    _stathi("Grabs Landed"     , "grabs"                         )}}
+          {{    _stathi("Stage Spikes"     , "stage_spikes"                  )}}
 
-          <div class="heading">Defense</div>
-            {{ _stathi("Airdodges","airdodges") }}
-            {{ _stathi("Spotdodges","spotdodges") }}
-            {{ _stathi("Rolls","rolls") }}
-            {{ _stathi("Grabs Escaped","grab_escapes") }}
-            {{ _stathi("Attacks Shielded","hits_blocked") }}
-            {{ _stathi("Attacks Powershielded","powershields") }}
-            {{ _stathi("Floor Techs","techs") }}
-            {{ _stathi("Wall Techs","walltechs") }}
-            {{ _stathi("Wall Tech Jumps","walltechjumps") }}
-            {{ _statlo("Frames in Shield","shield_time") }}
-            {{ _statlo("Shield Damage Taken","shield_damage") }}
-            {{ _stathi("Lowest Shield Health","shield_lowest") }}
+        <div class="heading">Defense</div>
+          {{    _stathi("Airdodges"             ,"airdodges"                 )}}
+          {{    _stathi("Spotdodges"            ,"spotdodges"                )}}
+          {{    _stathi("Rolls"                 ,"rolls"                     )}}
+          {{    _stathi("Grabs Escaped"         ,"grab_escapes"              )}}
+          {{    _stathi("Attacks Shielded"      ,"hits_blocked"              )}}
+          {{    _stathi("Attacks Powershielded" ,"powershields"              )}}
+          {{    _stathi("Floor Techs"           ,"techs"                     )}}
+          {{    _stathi("Wall Techs"            ,"walltechs"                 )}}
+          {{    _stathi("Wall Tech Jumps"       ,"walltechjumps"             )}}
+          {{    _statlo("Frames in Shield"      ,"shield_time"               )}}
+          {{    _statlo("Shield Damage Taken"   ,"shield_damage"             )}}
+          {{    _stathi("Lowest Shield Health"  ,"shield_lowest"             )}}
 
-          <div class="heading">Technique</div>
-            {{ _stathipct("L Cancels Hit","l_cancels_hit","__l_cancels_hit_pct") }}
-            {{ _stathipct("Techs Hit","__techs_hit","__tech_hit_pct") }}
-            {{ _stathi("Wavedashes","wavedashes") }}
-            {{ _stathi("Wavelands","wavelands") }}
-            {{ _stathi("Shield Drops","shield_drops") }}
-            {{ _stathi("No Impact Lands","no_impact_lands") }}
-            {{ _stathi("Pivots","pivots") }}
-            {{ _stathi("Edge-cancelled Aerials","edge_cancel_aerials") }}
-            {{ _stathi("Edge-cancelled Specials","edge_cancel_specials") }}
-            {{ _stathi("Teeter-cancelled Aerials","teeter_cancel_aerials") }}
-            {{ _stathi("Teeter-cancelled Specials","teeter_cancel_specials") }}
-            {{ _stathi("Meteor Cancels","meteor_cancels") }}
-            {{ _stathi("Intangible Ledgedashes","galint_ledgedashes") }}
-            {{ _stathi("Mean GALINT","mean_galint") }}
-            {{ _stathi("Max GALINT","max_galint") }}
+        <div class="heading">Technique</div>
+          {{ _stathipct("L Cancels Hit"            ,"l_cancels_hit","__l_cancels_hit_pct" )}}
+          {{ _stathipct("Techs Hit"                ,"__techs_hit",  "__tech_hit_pct"      )}}
+          {{    _stathi("Wavedashes"               ,"wavedashes"                          )}}
+          {{    _stathi("Wavelands"                ,"wavelands"                           )}}
+          {{    _stathi("Shield Drops"             ,"shield_drops"                        )}}
+          {{    _stathi("No Impact Lands"          ,"no_impact_lands"                     )}}
+          {{    _stathi("Pivots"                   ,"pivots"                              )}}
+          {{    _stathi("Edge-cancelled Aerials"   ,"edge_cancel_aerials"                 )}}
+          {{    _stathi("Edge-cancelled Specials"  ,"edge_cancel_specials"                )}}
+          {{    _stathi("Teeter-cancelled Aerials" ,"teeter_cancel_aerials"               )}}
+          {{    _stathi("Teeter-cancelled Specials","teeter_cancel_specials"              )}}
+          {{    _stathi("Meteor Cancels"           ,"meteor_cancels"                      )}}
+          {{    _stathi("Intangible Ledgedashes"   ,"galint_ledgedashes"                  )}}
+          {{    _stathi("Mean GALINT"              ,"mean_galint"                         )}}
+          {{    _stathi("Max GALINT"               ,"max_galint"                          )}}
 
-          <div class="heading">Miscellaneous</div>
-            {{ _stat("Taunts","taunts")}}
-            {{ _stat("Phantom Hits","phantom_hits")}}
-            {{ _statred("Self Destucts","self_destructs")}}
+        <div class="heading">Miscellaneous</div>
+          {{      _stat("Taunts"       , "taunts")}}
+          {{      _stat("Phantom Hits" , "phantom_hits")}}
+          {{   _statred("Self Destucts", "self_destructs")}}
 
       </div> {# replayDataGrid #}
 

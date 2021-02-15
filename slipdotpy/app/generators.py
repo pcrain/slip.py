@@ -172,6 +172,9 @@ def config_generators(app):
 
   @app.context_processor
   def utility_functions():
+    #Dummy no highlight function
+    def no_hl(replay,index,key):
+      return ""
     #Check if P1 / P2 has a higher value for a statistic and highlight if so
     def hl_if_higher(replay,index,key):
       try:
@@ -184,6 +187,12 @@ def config_generators(app):
         return "hl-green" if replay["p"][index-1][key] < replay["p"][2-index][key] else ""
       except:
         return""
+    #Check if P1 / P2 has a nonzero stat
+    def red_if_nonzero(replay,index,key):
+      try:
+        return 'hl-red' if replay["p"][index-1][key] > 0 else ""
+      except:
+        return""
     def frame_to_timestamp(f):
       f -= 123
       m  = f//3600
@@ -194,7 +203,9 @@ def config_generators(app):
       return f"{m}:{s:02d}.{c:02d}"
 
     return dict(
+      no_hl              = no_hl,
       hl_if_higher       = hl_if_higher,
       hl_if_lower        = hl_if_lower,
-      frame_to_timestamp = frame_to_timestamp
+      red_if_nonzero     = red_if_nonzero,
+      frame_to_timestamp = frame_to_timestamp,
       )

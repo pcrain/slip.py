@@ -73,6 +73,7 @@ def load_replay(rf):
         r["__file"]        = rf.split("/")[-1].split(".")[0]
         r["__act_length"]  = r["game_length"]-84
         r["__game_length"] = get_game_length(r["game_length"]-123)
+        r["__game_secs"]   = frame_to_timestamp(r["game_length"])
         r["p"]             = r["players"]
         for p in r["p"]:
             for k,v in p["interaction_frames"].items():
@@ -312,3 +313,12 @@ def localStamp(s,f="%Y-%m-%d_%H-%M-%S"):
   newstamp = newlocal.strftime(f)
   return newstamp
 
+#Convert a frame number to a timestamp
+def frame_to_timestamp(f):
+  f -= 123
+  m  = f//3600
+  f -= m*3600
+  s  = f//60
+  f -= s*60
+  c  = int(100*f/60.0)
+  return f"{m}:{s:02d}.{c:02d}"
