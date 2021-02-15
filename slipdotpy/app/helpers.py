@@ -57,7 +57,12 @@ def md5file(fname):
 
 #Call a process and return its output
 def call(coms,inp="",ignoreErrors=False,returnErrors=False):
-  p = subprocess.Popen(coms, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  if os.name == 'nt': #Suppres spawning of consoles
+    s = subprocess.STARTUPINFO()
+    s.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    p = subprocess.Popen(coms, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=s)
+  else:
+    p = subprocess.Popen(coms, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate(inp.encode("utf-8"))
   oc = output.decode('utf-8',errors='replace' if ignoreErrors else 'strict')
   return (oc,err.decode('utf-8')) if returnErrors else oc

@@ -9,10 +9,11 @@ options = [
   os.path.join('slipdotpy','slip.py'),
   '--noupx',
   '--noconfirm',
+  '--noconsole',
   # '--onefile',
   '--windowed',
   '--add-data','{}{}app'.format(os.path.join('slipdotpy','app'),sep),
-  '--add-binary','{}{}slippc.exe'.format(os.path.join('slipdotpy','slippc.exe'),sep),
+  '--add-binary','{}{}slippc'.format(os.path.join('slipdotpy','slippc.exe'),sep),
   '--icon',os.path.join(os.getcwd(),'slipdotpy','app','static','icons','wolfhead.ico'),
   '--name','slipdotpy',
   ]

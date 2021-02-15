@@ -24,7 +24,7 @@ class Config(object):
     if os.name == 'nt':
       DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Documents","Slippi")
       DATA_FOLDER                  = os.path.join(os.path.expandvars(r'%LOCALAPPDATA%'),SITE_INTNAME)
-      ANALYZER                     = "slippc.exe"
+      ANALYZER                     = os.path.join("slippc","slippc.exe")
     else:
       DEF_REPLAY_FOLDER            = os.path.join(os.path.expanduser("~"),"Slippi")
       DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share",SITE_INTNAME)
