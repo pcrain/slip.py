@@ -3,6 +3,6 @@
     <span class="dsIcon"><img src="{{ url_for('static',filename='icons/folder-white.svg')}}"></img></span>
     <span class="dsTitle">{{dsummary.name}}</span>
     <span class="dsSubs has{{dsummary.dirs}}">{{dsummary.dirs}} subfolder(s)</span>
-    <span class="dsReplays has{{dsummary.files}}">{{dsummary.files}} replay(s)</span>
+    <span class="dsReplays has{{dsummary.files}}">{{dsummary.files}} {{dsummary.ftype}}(s)</span>
   </span>
 </span>

@@ -55,7 +55,7 @@ def config_var():
     return app.config
 
 #If we're running this script directly, launch the web GUI
-if __name__ == "__main__":
+def launch_web_gui():
   from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
   #Next three classes / functions are inlined code (modified) from pyfladesk
   class ApplicationThread(QtCore.QThread):
@@ -178,3 +178,6 @@ if __name__ == "__main__":
     window_title = app.config["SITE_NAME"],
     icon         = app.config["SITE_ICON"]
     )
+
+if __name__ == "__main__":
+  launch_web_gui()

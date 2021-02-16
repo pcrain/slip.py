@@ -41,6 +41,11 @@ function travel(path) {
   location.href = URL_add_parameter(location.href,"path",path);
 }
 
+//Refresh the page after adding a parameter
+function select(path) {
+  location.href = URL_add_parameter(location.href,"file",path);
+}
+
 //Dummy function for doing nothing
 function doNothing() {
     return;

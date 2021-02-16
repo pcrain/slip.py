@@ -2,6 +2,11 @@
 from flask import current_app
 from datetime import datetime, timedelta
 import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip, time
+import tkinter as tk
+from tkinter import filedialog
+from multiprocessing import Process, Queue
+
+from PyQt5 import QtCore, QtWidgets
 
 # Easy colors (print)
 class col:
@@ -153,6 +158,77 @@ def has_hidden_attribute(filepath):
     return False #TODO: can't check for hidden files on Windows right now
     return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
 
+#Count all files / subdirectories at a path
+def count_files(path,fiterfunc=None):
+  ndirs  = 0
+  nfiles = 0
+  try:
+    if os.access(path, os.R_OK) and os.access(path, os.W_OK):
+      for f in os.listdir(path):
+        s = os.path.join(path,f)
+        if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
+            ndirs += 1
+        elif (fiterfunc is None) or fiterfunc(f):
+            nfiles += 1
+    return {"dirs" : ndirs, "files" : nfiles}
+  except PermissionError:
+    return {"dirs" : ndirs, "files" : nfiles}
+
+#Count slippi files / subdirectories at a path
+def count_slippi_files(path):
+  return count_files(path,lambda x: x[-4:] in [".slp",".zlp"])
+
+#Get info about all files in a directory (no recursion)
+def check_for_files(path,nav=False):
+  ddata = []
+  if nav: #Add navigations to current / previous folder
+    b = os.path.dirname(path)
+    c = count_files(b)
+    ddata.append({
+      "name"  : "[Up]",
+      "path"  : b,
+      "dirs"  : c["dirs"],
+      "files" : c["files"],
+      "ftype" : "files",
+      "class" : "updir",
+      "click" : "travel",
+      "sort"  : 1,
+      })
+  for f in os.listdir(path):
+      data = check_single_folder_for_any_files(path,f)
+      if data is not None:
+        ddata.append(data)
+  return ddata
+
+#Scan one folder for any files
+def check_single_folder_for_any_files(parent,base,*,click=None,classd="",indb=False):
+  p = os.path.join(parent,base)
+  if os.access(p, os.R_OK) and (not is_hidden(p)):
+    if os.path.isdir(p):
+      c = count_files(p)
+      return {
+          "name"  : base,
+          "path"  : p,
+          "dirs"  : c["dirs"],
+          "files" : c["files"],
+          "ftype" : "files",
+          "class" : classd,
+          "click" : "travel" if click is None else click,
+          "sort"  : 4,
+        }
+    else:
+      return {
+        "name"  : base,
+        "path"  : p,
+        "dirs"  : 0,
+        "files" : 0,
+        "ftype" : None,
+        "class" : "file",
+        "click" : "pickFile" if click is None else click,
+        "sort"  : 5,
+      }
+  return None
+
 #Get info about slippi files in a directory (no recursion)
 def check_for_slippi_files(path,nav=False):
   ddata = []
@@ -164,6 +240,7 @@ def check_for_slippi_files(path,nav=False):
       "path"  : b,
       "dirs"  : c["dirs"],
       "files" : c["files"],
+      "ftype" : "replays",
       "class" : "updir",
       "click" : "travel",
       "sort"  : 1,
@@ -175,6 +252,7 @@ def check_for_slippi_files(path,nav=False):
         "path"  : path,
         "dirs"  : c["dirs"],
         "files" : c["files"],
+        "ftype" : "replays",
         "class" : "curdir",
         "click" : "travel",
         "sort"  : 2,
@@ -195,6 +273,7 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb
       "path"  : p,
       "dirs"  : 0,
       "files" : 0,
+      "ftype" : "replays",
       "class" : "broken",
       "click" : "delScanDir",
       "sort"  : 4,
@@ -206,27 +285,12 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb
         "path"  : p,
         "dirs"  : c["dirs"],
         "files" : c["files"],
+        "ftype" : "replays",
         "class" : classd,
         "click" : "travel" if click is None else click,
         "sort"  : 4,
       }
   return None
-
-#Count slippi files / subdirectories at a path
-def count_slippi_files(path):
-  ndirs  = 0
-  nfiles = 0
-  try:
-    if os.access(path, os.R_OK) and os.access(path, os.W_OK):
-      for f in os.listdir(path):
-        s = os.path.join(path,f)
-        if os.path.isdir(s) and os.access(s, os.R_OK) and (not is_hidden(s)):
-            ndirs += 1
-        elif f[-4:] in [".slp",".zlp"]:
-            nfiles += 1
-    return {"dirs" : ndirs, "files" : nfiles}
-  except PermissionError:
-    return {"dirs" : ndirs, "files" : nfiles}
 
 #Compress writing example
 def compressedJsonWrite(data,filename):
@@ -290,10 +354,19 @@ def openDir(path,isfile=False):
       subprocess.Popen([explorer, path])
 
 #Open a file selection dialog and return the path of the selected file
+#DEPRECATED: use built-in file selection mechanisms now
 def pickFile(prompt="Select a File",startDir=""):
-  fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
-  fn = call(["python",fp,prompt,startDir])
-  return fn
+  root = tk.Tk()
+  root.withdraw()
+  fname = tk.filedialog.askopenfilename(title=prompt,initialdir=ntpath.dirname(startDir))
+  root.destroy()
+  return fname
+  # QtWidgets.QFileDialog.getOpenFileName()
+  # return None
+  # fp = os.path.join(current_app.config["INSTALL_FOLDER"],"app","filepicker.py")
+  # print(fp)
+  # return call(["python",fp,prompt,startDir])
+  # return exec(open(fp).read())
 
 #HTML escape a string
 def htmlEscape(s):

@@ -10,7 +10,6 @@ options = [
   '--noupx',
   '--noconfirm',
   '--noconsole',
-  # '--onefile',
   '--windowed',
   '--add-data','{}{}app'.format(os.path.join('slipdotpy','app'),sep),
   '--add-binary','{}{}slippc'.format(os.path.join('slipdotpy','slippc','slippc.exe'),sep),

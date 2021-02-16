@@ -1,0 +1,61 @@
+{% extends "header.html.j2" %}
+
+{% block content %}
+    {% if api_call %}
+      <script>
+        var api_call = "{{api_call}}";
+        function pickFile(p="") {
+          $.ajax({
+              type        : "post",
+              url         : "/api/"+api_call,
+              data        : JSON.stringify({"path" : p}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                window.location.href = "{{ url_for('main.settings_page') }}";
+              }
+          });
+        }
+        function browseDir(d="",s="") {
+          // TODO: not sure if we're safe against quoted directory names
+          // b = $("#browseList");
+          $.ajax({
+              type        : "post",
+              url         : "/api/find/browse",
+              data        : JSON.stringify({"dir" : d,"subdir" : s}),
+              dataType    : "json",
+              contentType : "application/json",
+              cache       : false,
+              processData : false,
+              success: function (rjson) {
+                var b       = document.getElementById("browseList");
+                var first   = '<hr/><span class="subtitle">Choose a File</span><div></div>';
+                b.innerHTML = first+rjson["render"];
+              }
+          });
+        }
+        browseDir("{{start_dir}}")
+      </script>
+      <span id="scanOuterGrid">
+        <span class="title">
+          {% if api_call == "setemupath" %}
+            Select Slippi Dolphin Executable Path
+          {% elif api_call == "setisopath" %}
+            Select Melee 1.02 ISO Path
+          {% else %}
+            Select a File
+          {% endif %}
+        </span>
+        <span id="scanGrid">
+          <span id="scan-buttons">
+          </span>
+        </span>
+        <span id="browseList">
+        </span>
+      </span>
+    {% else %}
+      <h2>Something went wrong D:</h2>
+    {% endif %}
+{% endblock %}

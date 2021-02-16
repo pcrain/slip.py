@@ -189,6 +189,18 @@ def stats_index_page():
   players = sorted([(k,codes[k]) for k in codes],key=lambda x: x[1], reverse=True)
   return render_template("stats-index.html.j2", title="Stats Index", players=players)
 
+#Route for finder page
+@bp.route('/filepicker', methods=['GET'])
+def filepicker_page():
+  api_call  = request.args.get("api_call",None)
+  if api_call == "setemupath":
+    start_dir = ntpath.dirname(Settings.load()["emupath"])
+  elif api_call == "setisopath":
+    start_dir = ntpath.dirname(Settings.load()["isopath"])
+  else:
+    start_dir = ""
+  return render_template("filepicker.html.j2", title="Find a File", api_call=api_call, start_dir=start_dir)
+
 #Route for scan page
 @bp.route('/scan', methods=['GET'])
 def scan_page():

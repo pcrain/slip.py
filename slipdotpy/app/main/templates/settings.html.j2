@@ -7,10 +7,10 @@
       <button id="data-button" onclick="change('/api/opendata',false)">Open Data Folder<br/><span class="set">{{ DATA_FOLDER }}</span></button>
       <button id="install-button" onclick="change('/api/openinstall',false)">Open Install Folder<br/><span class="set">{{ INSTALL_FOLDER }}</span></button>
       <button id="data-button" onclick="change('/api/openquarantine',false)">Open Quarantine Folder<br/><span class="set">{{ QUAR_FOLDER }}</span></button>
-      <button id="emu-button" onclick="change('/api/setemupath')">
+      <button id="emu-button" onclick="apiFilePick('setemupath')">
         Set Playback Slippi Path<br/><span class="set">{{ settings["emupath"] }}</span>
       </button>
-      <button id="iso-button" onclick="change('/api/setisopath')">
+      <button id="iso-button" onclick="apiFilePick('setisopath')">
         Set Melee 1.02 ISO Path<br/><span class="set">{{ settings["isopath"] }}</span>
       </button>
       <button id="autoscan-button" onclick="change('/api/toggleautoscan')">
@@ -23,6 +23,11 @@
     </span>
 
     <script>
+
+      function apiFilePick(api_call) {
+        window.location.href = "{{url_for('main.filepicker_page')}}?api_call="+api_call;
+      }
+
       function change(u,reload=true) {
         $.ajax({
           url : u,

@@ -103,18 +103,18 @@ def api_quarantine_lras():
   return jsonify({"status" : "ok", "num_moved" : num_moved})
 
 #API call for setting the Slippi Playback Dolphin build path
-@bp.route('/setemupath', methods=['GET'])
+@bp.route('/setemupath', methods=['POST'])
 def api_set_emu_path():
-  fn = pickFile("Select Slippi Dolphin Executable",Settings.load()["emupath"])
+  fn = request.get_json().get("path",None)
   if fn:
     Settings.query.filter_by(name="emupath").update({"value" : fn})
     db.session.commit()
   return jsonify({"status" : "ok"})
 
 #API call for setting the Melee 1.02 ISO path
-@bp.route('/setisopath', methods=['GET'])
+@bp.route('/setisopath', methods=['POST'])
 def api_set_iso_path():
-  fn = pickFile("Select Melee 1.02 ISO Path",Settings.load()["isopath"])
+  fn = request.get_json().get("path",None)
   if fn:
     Settings.query.filter_by(name="isopath").update({"value" : fn})
     db.session.commit()
@@ -208,6 +208,28 @@ def api_scan_browse():
     if item["path"] in curscans:
       item["class"] += " scanned"
       item["click"] = "scanExists"
+  j = {
+    "status" : "ok",
+    "back"   : os.path.dirname(p),
+    "parent" : p,
+    "subs"   : listing,
+    "render" : render_template("_folder_list.html.j2",dirs=listing)
+    }
+  return jsonify(j)
+
+#API call for returning pretty list of folders to find
+@bp.route('/find/browse', methods=['POST'])
+def api_find_browse():
+  d       = request.get_json().get("dir",os.path.expanduser("~"))
+  if d == "":
+    d = os.path.expanduser("~")
+  s       = request.get_json().get("subdir","")
+  p       = d if s == "" else os.path.join(d,s)
+  listing = check_for_files(p,nav=(p!="/"))
+  listing = sorted(listing, key = lambda i: (i["sort"],i['name']))
+  for item in listing:
+    if item["class"] != "file":
+      item["click"] = "browseDir"
   j = {
     "status" : "ok",
     "back"   : os.path.dirname(p),
