@@ -45,7 +45,6 @@ def get_css_icon(filename):
       #Check if the default costume is available
       filename = filename[:-5]+"0.png"
       if not os.path.exists(os.path.join(basepath,filename)):
-        print("NO CANFIND")
         return send_from_directory(basepath, '_NONE0.png')
     return send_from_directory(basepath,filename)
 

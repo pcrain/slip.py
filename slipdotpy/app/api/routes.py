@@ -378,10 +378,12 @@ def scan_job(token):
   adds      = []
   updates   = []
 
-  current_app.config['SCAN_IN_PROGRESS'] = True
+  current_app.config['SCAN_IN_PROGRESS']     = True
   current_app.config['SCAN_REQUEST_STOPPED'] = False
+
+  #Using ThreadPoolExecutor because ProcessPoolExecutor causes a billion terminals to spawn on Windows
   with concurrent.futures.ThreadPoolExecutor(max_workers=settings["scanthreads"]) as ex:
-    #Submit all scan jobs to the ProcessPoolExecutor to complete as possible
+    #Submit all scan jobs to the ThreadPoolExecutor to complete as possible
     tasks = {ex.submit(scan_single,i,r,token,conf,checksums) for i,r in enumerate(replays)}
     #As each replay scan finishes...
     for i,t in enumerate(concurrent.futures.as_completed(tasks)):
@@ -499,6 +501,10 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
       #Try to actually analyze the replay; if we can't, call it a day
       try:
         _,err = call([conf['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
+        if not os.path.exists(afile):
+          jret["status"]    = 'Failure'
+          jret["error"]     = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
+          return jret
       except:
         err               = traceback.format_exc()
         jret["status"]    = 'Failure'
@@ -506,10 +512,6 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
         jret["traceback"] = err.split("\n")
         return jret
 
-    if not os.path.exists(afile):
-      jret["status"]    = 'Failure'
-      jret["error"]     = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
-      return jret
 
     #Load replay data from the analysis JSON
     try:

@@ -67,7 +67,7 @@ def call(coms,inp="",ignoreErrors=False,returnErrors=False):
     s.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     p = subprocess.Popen(coms, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=s)
   else:
-    p = subprocess.Popen(coms, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(coms, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate(inp.encode("utf-8"))
   oc = output.decode('utf-8',errors='replace' if ignoreErrors else 'strict')
   return (oc,err.decode('utf-8')) if returnErrors else oc
