@@ -1,8 +1,14 @@
 <span class="hoverWrapper">
   <span class="dirSummary {{dsummary.class}}" title="{{dsummary.class}}" onclick='{{dsummary.click}}({{dsummary.path|tojson}})'>
-    <span class="dsIcon"><img src="{{ url_for('static',filename='icons/folder-white.svg')}}"></img></span>
+    {% if dsummary.class == "file" %}
+      <span class="dsIcon"><img src="{{ icon_from_filename(dsummary.name)}}"></img></span>
+    {% else %}
+      <span class="dsIcon"><img src="{{ url_for('static',filename='icons/mimetypes/folder-white.svg')}}"></img></span>
+    {% endif %}
     <span class="dsTitle">{{dsummary.name}}</span>
-    <span class="dsSubs has{{dsummary.dirs}}">{{dsummary.dirs}} subfolder(s)</span>
-    <span class="dsReplays has{{dsummary.files}}">{{dsummary.files}} {{dsummary.ftype}}(s)</span>
-  </span>
+      {% if dsummary.class != "file" %}
+        <span class="dsSubs has{{dsummary.dirs}}">{{dsummary.dirs}} subfolder(s)</span>
+        <span class="dsReplays has{{dsummary.files}}">{{dsummary.files}} {{dsummary.ftype}}(s)</span>
+      {% endif %}
+    </span>
 </span>

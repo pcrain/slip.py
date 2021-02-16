@@ -1194,7 +1194,12 @@ span#scanOuterGrid span#scanGrid {
 }
 
 span#scanGrid span#browseList {
-  grid-column: span 2;
+  grid-column : span 2;
+}
+
+span#browseList {
+  max-width   : 80%;
+  margin      : auto;
 }
 
 span#settingsGrid {

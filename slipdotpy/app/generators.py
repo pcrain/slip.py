@@ -1,6 +1,8 @@
 #!/usr/bin/python
 #File for configuring dynamic template information
 
+from flask import url_for
+
 def config_generators(app):
   @app.context_processor
   def get_navigation_data():
@@ -200,6 +202,13 @@ def config_generators(app):
       f -= s*60
       c  = int(100*f/60.0)
       return f"{m}:{s:02d}.{c:02d}"
+    def icon_from_filename(f):
+      ext = f.split(".")[-1]
+      if ext in ["exe"]:
+        return url_for('static',filename='icons/mimetypes/wine.svg')
+      if ext in ["iso"]:
+        return url_for('static',filename='icons/mimetypes/media-optical.svg')
+      return url_for('static',filename='icons/mimetypes/text-x-generic.svg')
 
     return dict(
       no_hl              = no_hl,
@@ -207,4 +216,5 @@ def config_generators(app):
       hl_if_lower        = hl_if_lower,
       red_if_nonzero     = red_if_nonzero,
       frame_to_timestamp = frame_to_timestamp,
+      icon_from_filename = icon_from_filename,
       )
