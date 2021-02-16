@@ -194,7 +194,7 @@ def api_scan_browse():
   for item in ScanDir.query.all():
     curscans.add(os.path.realpath(item.fullpath))
   d       = request.get_json().get("dir",os.path.expanduser("~"))
-  if d == "":
+  if d == "" or (not os.path.exists(d)):
     d = os.path.expanduser("~")
   s       = request.get_json().get("subdir","")
   p       = d if s == "" else os.path.join(d,s)
@@ -221,7 +221,8 @@ def api_scan_browse():
 @bp.route('/find/browse', methods=['POST'])
 def api_find_browse():
   d       = request.get_json().get("dir",os.path.expanduser("~"))
-  if d == "":
+  if d == "" or (not os.path.exists(d)):
+    current_app.logger.info(f"""Cannot find directory {d}""")
     d = os.path.expanduser("~")
   s       = request.get_json().get("subdir","")
   p       = d if s == "" else os.path.join(d,s)

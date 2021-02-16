@@ -199,7 +199,7 @@ def filepicker_page():
     start_dir = ntpath.dirname(Settings.load()["isopath"])
   else:
     start_dir = ""
-  return render_template("filepicker.html.j2", title="Find a File", api_call=api_call, start_dir=start_dir)
+  return render_template("filepicker.html.j2", title="Find a File", api_call=api_call, start_dir=json.dumps(start_dir))
 
 #Route for scan page
 @bp.route('/scan', methods=['GET'])
