@@ -16,7 +16,7 @@ from app.generators import * #TODO: should do this more cleanly
 #Standard imports
 from datetime import datetime, timedelta
 from collections import defaultdict
-import os
+import os, math
 
 #Function to call before any requests
 @bp.before_request
@@ -393,14 +393,21 @@ def get_stats(tag,args):
   #Get preferred costumes for each character
   for char in stats["char"]:
     char.append(max(0,char[1:].index(max(char[1:])))) #7th item in the array is the preferred costume
-  #Sort opponent characters by wins / (wins+losses)
-  stats["opp"] = sorted(stats["opp"],key=lambda x: x[1]/(max(1,x[1]+x[2])), reverse=True)
+  #Sort opponent characters by wins / (wins+losses) (2nd element of tuple sorts non-zero losses properly)
+  stats["opp"] = sorted(stats["opp"],key=lambda x: (x[1]/(max(1,x[1]+x[2])),x[2]), reverse=True)
   #Sort stages characters by wins / (wins+losses)
   stats["stg"] = sorted(stats["stg"],key=lambda x: x[1]/(max(1,x[1]+x[2])), reverse=True)
   #Sort top opponents by most-played
   stats["top"]  = sorted([top[k] for k in top],key=lambda x: x[0]+x[1]+x[2], reverse=True)[:mlen]
   #Recent opponent characters are already sorted
   stats["recent"] = stats["recent"][:mlen]
+
+  #Determine where to split columns for character MUs
+  stats["halfway"] = 13
+  for i,c in enumerate(stats["opp"]):
+    if (c[1] + c[2]) == 0:
+      stats["halfway"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
+      break
 
   #Game dates are already sorted, so convert it to proper bar chart format
   gdata = [{

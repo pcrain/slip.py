@@ -1404,14 +1404,24 @@ span#statsMatchups {
   grid-template-areas :
     'charsb charsw'
     'stages stages';
+  /*grid-template-columns: 1fr min-content;*/
+}
+
+span#statsMatchups.oneColumn {
+  grid-template-areas :
+    'charsb'
+    'stages';
+  /*grid-template-columns: 1fr min-content;*/
 }
 
 span#statsMatchups table#byBestChar {
   grid-area: charsb;
+  margin-top: 32px;
 }
 
 span#statsMatchups table#byWorstChar {
   grid-area: charsw;
+  margin-top: 32px;
 }
 
 span#statsMatchups table#byStage {

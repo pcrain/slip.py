@@ -3,7 +3,7 @@
 
 from flask import url_for
 
-chardata = [ #Listen in CSS order, Sheik in bottom left, Default in bottom right
+chardata = [ #Listed in CSS order, Sheik in bottom left, Default in bottom right
   {"id" : 22, "name" : "Dr. Mario",        "intname" : "DOCTOR",  "csspos" : 0,  "colors" : 5,},
   {"id" : 8,  "name" : "Mario",            "intname" : "MARIO",   "csspos" : 1,  "colors" : 5,},
   {"id" : 7,  "name" : "Luigi",            "intname" : "LUIGI",   "csspos" : 2,  "colors" : 4,},
@@ -76,6 +76,14 @@ intstagedata = { s["id"] : s for s in stagedata}
 
 def config_generators(app):
   @app.context_processor
+  def get_character_data():
+    return dict(chardata=chardata,intchardata=intchardata)
+
+  @app.context_processor
+  def get_stage_data():
+    return dict(stagedata=stagedata,intstagedata=intstagedata)
+
+  @app.context_processor
   def get_navigation_data():
     return dict(nav_icons=[
       {"name": "Explore",   "src" : "/replays",  "img" : "header-player.png",   "class" : "home",     "click" : ""},
@@ -84,14 +92,6 @@ def config_generators(app):
       {"name": "Organize",  "src" : "/organize", "img" : "header-organize.png", "class" : "organize", "click" : ""},
       {"name": "Settings",  "src" : "/settings", "img" : "header-mush.png",     "class" : "settings", "click" : ""},
       ])
-
-  @app.context_processor
-  def get_character_data():
-    return dict(chardata=chardata,intchardata=intchardata)
-
-  @app.context_processor
-  def get_stage_data():
-    return dict(stagedata=stagedata,intstagedata=intstagedata)
 
   @app.context_processor
   def get_sort_data():
