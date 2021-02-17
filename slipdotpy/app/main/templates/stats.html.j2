@@ -19,15 +19,22 @@
           }
           window.location.href = here;
         }
-        function changeChar(c) {
+        function changeOrDropUrlParam(param,val) {
           var here = window.location.href;
-          here     = removeParam("char",here);
-          // If we selected a different character, go to their page
-          if (c >= 0 && c != getUrlVars()["char"]) {
-            here = addParam("char="+c,here);
+          here     = removeParam(param,here);
+          if (val != getUrlVars()[param]) {
+            here = addParam(param+"="+val,here);
           }
-          // Otherwise, show all characters
           window.location.href = here;
+        }
+        function changeChar(c) {
+          changeOrDropUrlParam("char",c);
+        }
+        function changeOpponent(c) {
+          changeOrDropUrlParam("vs",c);
+        }
+        function changeStage(s) {
+          changeOrDropUrlParam("stage",s);
         }
         window.onload = function() {
           var uvars = getUrlVars();
@@ -54,7 +61,7 @@
 
       {# Mains, Secondaries, and Other Characters #}
       <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
-      <span class="h" id="hmatchups"><hr/>Win Rate by Matchup<hr/></span>
+      <span class="h" id="hmatchups"><hr/>Win Rates by Matchup and Stage<hr/></span>
       <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
       <span class="h" id="hhistory"><hr/>Games Played by Date<hr/></span>
@@ -89,7 +96,7 @@
       <span id="statsMatchups">
         <table id="byBestChar">
           <tr>
-            <th title="Opponent's Character">Opp.</th>
+            <th title="Opponent's Character">Vs.</th>
             <th>W</th>
             <th>L</th>
             {# <th>D</th> #}
@@ -97,7 +104,8 @@
           </tr>
           {% for mu in stats.opp[:13] %}
             <tr>
-              <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              {% set click="changeOpponent("+(mu[0]|string)+")" %}
+              <td class="clickable" onclick="{{click}}"><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
               <td>{{mu[1]}}</td>
               <td>{{mu[2]}}</td>
               {# <td>{{mu[3]}}</td> #}
@@ -107,7 +115,7 @@
         </table>
         <table id="byWorstChar">
           <tr>
-            <th title="Opponent's Character">Opp.</th>
+            <th title="Opponent's Character">Vs.</th>
             <th>W</th>
             <th>L</th>
             {# <th>D</th> #}
@@ -115,7 +123,8 @@
           </tr>
           {% for mu in stats.opp[13:] %}
             <tr>
-              <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              {% set click="changeOpponent("+(mu[0]|string)+")" %}
+              <td class="clickable" onclick="{{click}}"><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
               <td>{{mu[1]}}</td>
               <td>{{mu[2]}}</td>
               {# <td>{{mu[3]}}</td> #}
@@ -134,7 +143,8 @@
           {% for mu in stats.stg %}
             <tr>
               {% if mu[0] >= 0 %}
-                <td style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
+                {% set click="changeStage("+(mu[0]|string)+")" %}
+                <td class="clickable" onclick="{{click}}" style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
               {% else %}
                 <td>Other Stages</td>
               {% endif %}

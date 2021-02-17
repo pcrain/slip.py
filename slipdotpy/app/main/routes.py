@@ -11,6 +11,7 @@ from app.helpers import *
 from app.main import bp
 from app.main.forms import ReplaySearchForm
 from app.models import User, Replay, ScanDir, Settings
+from app.generators import * #TODO: should do this more cleanly
 
 #Standard imports
 from datetime import datetime, timedelta
@@ -255,10 +256,19 @@ def get_stats(tag,args):
     p1and.append(Replay.p1char==args["char"])
     p2and.append(Replay.p2char==args["char"])
 
-  #Set up a giant and statement, and check if we're filtering by date
+  #Check if we're filtering by opponent
+  if "vs" in args:
+    p1and.append(Replay.p2char==args["vs"])
+    p2and.append(Replay.p1char==args["vs"])
+
+  #Set up a giant and statement for p1 and p2 args
   bigand = [or_(and_(*p1and),and_(*p2and))]
+  #Check if we're filtering by date
   if ndays >= 0:
     bigand.append(Replay.played > earliest)
+  #Check if we're filtering by stage
+  if "stage" in args:
+    bigand.append(Replay.stage == args["stage"])
 
   #Get all relevant rows from the database
   rows = (Replay.query
@@ -293,6 +303,12 @@ def get_stats(tag,args):
     stats["subtitle"] = f"Showing stats for last {actualgames} games"
   else:
     stats["subtitle"] = f"Showing lifetime stats for {actualgames} games"
+  if "char" in args:
+    stats["subtitle"] += f" as <span class='filterChar'>{intchardata[int(args['char'])]['name']}</span>"
+  if "vs" in args:
+    stats["subtitle"] += f" vs <span class='filterVs'>{intchardata[int(args['vs'])]['name']}</span>"
+  if "stage" in args:
+    stats["subtitle"] += f" on <span class='filterStage'>{intstagedata[int(args['stage'])]['name']}</span>"
 
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days

@@ -1590,10 +1590,20 @@ span.statFilterButtons {
   grid-area: tabs;
 }
 
-.link {
+.link, .clickable {
   cursor: pointer;
 }
 
 span.curdir {
+  color: cyan;
+}
+
+span.filterChar {
+  color: lime;
+}
+span.filterVs {
+  color: red;
+}
+span.filterStage {
   color: cyan;
 }
