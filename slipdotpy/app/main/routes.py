@@ -272,6 +272,10 @@ def get_stats(tag,args):
   #Reset number of games based on the number of rows we actually got
   actualgames = len(rows)
 
+  #Compile list of legal stages
+  legal    = [8,31,28,32,2,3,-1]
+  stagemap = {v:i for i,v in enumerate(legal)}
+
   #Set up dict for stats
   stats = {
     "tag"    : tag,                                    #Tag of player we're showing stats for
@@ -279,6 +283,7 @@ def get_stats(tag,args):
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
     "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
+    "stg"    : [[legal[i]]+[0,0,0] for i in range(7)], #Stage,Win,Lose,Draw against each legal stage + others
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
     }
@@ -300,7 +305,8 @@ def get_stats(tag,args):
   smaxdate = datetime.now().strftime('%Y-%m-%d')
   newdays  = 0
   while smindate <= smaxdate:
-    dmap[smindate] = [0,0,0]
+    # dmap[smindate] = [0,0,0]
+    dmap[smindate] = [0,0,0,0,0,0,0,0] #1, 2, 3, 4, -4, -3, -2, -1 stocks
     mindate        = mindate+timedelta(days=1)
     smindate       = mindate.strftime('%Y-%m-%d')
     newdays       += 1
@@ -325,6 +331,7 @@ def get_stats(tag,args):
     pcolor  = r.p1color   if p == 1 else r.p2color   #player costume choice
     pchar   = r.p1char    if p == 1 else r.p2char    #player character choice
     ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
+    stage   = r.stage                                #stage selected
 
     #Get latest dates, display names and tags
     if stats["name"] == tag:
@@ -337,7 +344,7 @@ def get_stats(tag,args):
     elif ostocks > pstocks: res = 1 #lose
     else:                   res = 2 #draw
 
-    #Increment appropriate character, costume, opponent, and result choices, creating new ones as needed
+    #Increment appropriate character, costume, opponent, stage, and result choices, creating new ones as needed
     #  TODO: ignores extended characters and costumes, fix later???
     if pchar < 26 and pcolor < 6:
       stats["char"][pchar][pcolor+1] += 1
@@ -348,10 +355,14 @@ def get_stats(tag,args):
     stats["recent"][-1][res]  += 1
     if not otag in top:
       top[otag] = [0,0,0,otag]
+    stats["stg"][stagemap.get(stage,-1)][res+1]  += 1
     top[otag][res] += 1
 
     #Track dates of matches that fall within the requested date range
-    dmap[gdate][res] += 1
+    if pstocks > ostocks:
+      dmap[gdate][pstocks-1] += 1
+    elif pstocks < ostocks:
+      dmap[gdate][-ostocks] += 1
 
     olast = otag #Set last-played opponent
 
@@ -361,30 +372,46 @@ def get_stats(tag,args):
 
   # print(dmap)
 
-  #Sort own characters by number of times pickes
+  #Sort own characters by number of times picked
   stats["char"] = sorted(stats["char"],key=lambda x: sum(x[1:]), reverse=True)
   #Get preferred costumes for each character
   for char in stats["char"]:
     char.append(max(0,char[1:].index(max(char[1:])))) #7th item in the array is the preferred costume
   #Sort opponent characters by wins / (wins+losses)
   stats["opp"] = sorted(stats["opp"],key=lambda x: x[1]/(max(1,x[1]+x[2])), reverse=True)
+  #Sort stages characters by wins / (wins+losses)
+  stats["stg"] = sorted(stats["stg"],key=lambda x: x[1]/(max(1,x[1]+x[2])), reverse=True)
   #Sort top opponents by most-played
   stats["top"]  = sorted([top[k] for k in top],key=lambda x: x[0]+x[1]+x[2], reverse=True)[:mlen]
   #Recent opponent characters are already sorted
   stats["recent"] = stats["recent"][:mlen]
 
   #Game dates are already sorted, so convert it to proper bar chart format
-  stats["bydate"] = { "data" : [{
+  gdata = [{
       "Date"  : k,          #dates
-      "Wins"  : dmap[k][0], #wins
-      "Losses": dmap[k][1], #losses
-    } for k in dmap],
+      "Wins"  : sum(dmap[k][:4]), #wins
+      "Losses": sum(dmap[k][-4:]), #losses
+      "Stocks": dmap[k],
+      "4-Stock Wins": dmap[k][3],
+      "3-Stock Wins": dmap[k][2],
+      "2-Stock Wins": dmap[k][1],
+      "1-Stock Wins": dmap[k][0],
+      "1-Stock Losses": dmap[k][-1],
+      "2-Stock Losses": dmap[k][-2],
+      "3-Stock Losses": dmap[k][-3],
+      "4-Stock Losses": dmap[k][-4],
+      # "Stocks": {i : dmap[k][i] for i in range(-4,5)}, #stock count distribution
+    } for k in dmap]
+  stats["bydate"] = {
+    "data" : gdata,
     "meta" : {
       "labels"   : "Date",
       "lshow"    : [0,ndays-1],
       "pos"      : "Wins",
       "neg"      : "Losses",
-      "ttkeys"   : ["Date","Wins","Losses"], #keys to show in tooltip
+      "stack"    : "Stocks", #Uncomment for graadient version
+      # "stack"    : None,     #Uncomment for non-gradient version
+      "ttkeys"   : [] if len(gdata) == 0 else list([k for k in gdata[0].keys() if k not in ["Stocks"]]), #keys to show in tooltip
       "rot"      : 0,
     }
   }
@@ -399,6 +426,7 @@ def get_stats(tag,args):
       "lshow"    : list(range(len(stats["top"]))),
       "pos"      : "Wins",
       "neg"      : "Losses",
+      "stack"    : None,
       "ttkeys"   : ["Code","Wins","Losses"], #Jinja does not preserve dict key order
       "rot"      : 90,
     }

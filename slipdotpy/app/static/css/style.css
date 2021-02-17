@@ -1206,6 +1206,7 @@ span#scanGrid span#browseList {
 }
 
 span#browseList {
+  min-width   : 560px;
   max-width   : 80%;
   margin      : auto;
 }
@@ -1399,6 +1400,22 @@ span#statsChars span.playtime {
 
 span#statsMatchups {
   grid-area: matchups;
+  display: inline-grid;
+  grid-template-areas :
+    'charsb charsw'
+    'stages stages';
+}
+
+span#statsMatchups table#byBestChar {
+  grid-area: charsb;
+}
+
+span#statsMatchups table#byWorstChar {
+  grid-area: charsw;
+}
+
+span#statsMatchups table#byStage {
+  grid-area: stages;
 }
 
 span#statsMost {

@@ -87,17 +87,57 @@
 
       {# Win / Loss / Draw rate for each matchup #}
       <span id="statsMatchups">
-        <table>
+        <table id="byBestChar">
           <tr>
-            <th>Opponent Char.</th>
+            <th title="Opponent's Character">Opp.</th>
             <th>W</th>
             <th>L</th>
             {# <th>D</th> #}
             <th>Win%</th>
           </tr>
-          {% for mu in stats.opp %}
+          {% for mu in stats.opp[:13] %}
             <tr>
-              <td>{{ intchardata[mu[0]]['name'] }}</td>
+              <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              <td>{{mu[1]}}</td>
+              <td>{{mu[2]}}</td>
+              {# <td>{{mu[3]}}</td> #}
+              <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
+            </tr>
+          {% endfor %}
+        </table>
+        <table id="byWorstChar">
+          <tr>
+            <th title="Opponent's Character">Opp.</th>
+            <th>W</th>
+            <th>L</th>
+            {# <th>D</th> #}
+            <th>Win%</th>
+          </tr>
+          {% for mu in stats.opp[13:] %}
+            <tr>
+              <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              <td>{{mu[1]}}</td>
+              <td>{{mu[2]}}</td>
+              {# <td>{{mu[3]}}</td> #}
+              <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
+            </tr>
+          {% endfor %}
+        </table>
+        <table id="byStage">
+          <tr>
+            <th>Stage</th>
+            <th>W</th>
+            <th>L</th>
+            {# <th>D</th> #}
+            <th>Win%</th>
+          </tr>
+          {% for mu in stats.stg %}
+            <tr>
+              {% if mu[0] >= 0 %}
+                <td style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
+              {% else %}
+                <td>Other Stages</td>
+              {% endif %}
               <td>{{mu[1]}}</td>
               <td>{{mu[2]}}</td>
               {# <td>{{mu[3]}}</td> #}
@@ -188,7 +228,7 @@
         <div class="barDiv svg-container">
           {% set svg_selector = "div.bardiv" %}
           {% set jsondata     = stats["bydate"] %}
-          {% include '_barchart.html.j2' %}
+          {% include '_barchart-gamesbydate.html.j2' %}
         </div>
       </span>
 

@@ -1,0 +1,236 @@
+{# https://bl.ocks.org/WillTurman/9c4142944f6132855fd318350f552b7b #}
+<script>
+  var jdat     = {{ (jsondata|tojson) }};  //Import JSON data passed through Jinja
+
+  var klab     = jdat["meta"]["labels"];  //Item keys corresponding to X-axis labels
+  var lshow    = jdat["meta"]["lshow"];   //Labels to show on X axis for
+  var kpos     = jdat["meta"]["pos"];     //Item keys corresponding to positive bars
+  var kneg     = jdat["meta"]["neg"];     //Item keys corresponding to negative bars
+  var kstack   = jdat["meta"]["stack"];   //Item keys corresponding to gradient bars
+  var ttkeys   = jdat["meta"]["ttkeys"];  //Keys to show in item tooltip
+  var rot      = jdat["meta"]["rot"];     //Label rotation (in degrees)
+  var data     = jdat["data"];            //Actual data after parsing through meta info
+
+  // alert(JSON.stringify({{data}}));
+  // alert(JSON.stringify(jdat));
+  // alert(JSON.stringify(ttkeys));
+  // alert(JSON.stringify(data));
+
+  var cwidth      = 1920;  //Width of canvas
+  var cheight     = 800;   //Height of canvas
+  var mleft       = 80;     //Lefthand margin
+  var mright      = 80;     //Righthand margin
+  var xfill       = 0.5;   //Amount of free space bars fill up
+  var maxfontsize = 60;    //Scaling factor for maximum font size
+
+  // X axis labels
+  var labels   = data.map(function(item) {return item[klab];});
+  // # of labels
+  var nlabels  = labels.length;
+  // width of canvas minus margins
+  var width    = cwidth - mleft - mright;
+  // space between bars on canvas
+  var xspace   = width/nlabels; //Spacing between tick marks
+  // width of bars on canvas
+  var barwidth = xspace*xfill;
+  //margins around SVG canvas
+  var margin   = {
+    top    : 20,         //Leave enough space for title
+    right  : mright,
+    bottom : xspace*1.5, //Leave enough space for labels
+    left   : mleft
+    };
+
+  //Other pertinent scales and measurements
+  var height     = cheight - margin.top - margin.bottom;
+  var x          = d3.scaleOrdinal().domain(labels).range(d3.range(barwidth, width, xspace));
+  var y          = d3.scaleLinear().range([height, margin.top]);
+  var center     = d3.scaleLinear().range([barwidth/2, width-barwidth/2-2]);
+  if (kstack) {  //Show win / loss by stock count as gradient
+    var color      = d3.scaleOrdinal().range(
+      ["#000000", //Unused
+       "#224422", //1 stock win
+       "#118811", //2 stock win
+       "#00BB00", //3 stock win
+       "#FFFF00", //4 stock win
+       "#442222", //1 stock loss
+       "#881111", //2 stock loss
+       "#BB0000", //3 stock loss
+       "#FF00FF", //4 stock loss
+      ]);
+  } else {       //Just show wins and losses
+    var color      = d3.scaleOrdinal().range(["#CC3333", "#33CC33"]);
+  }
+  var xAxis      = d3.axisBottom(x);
+  var yAxis      = d3.axisLeft(y).ticks(10);
+  var centerLine = d3.axisTop(center).ticks(0);
+
+  data.forEach(function(d) {
+    var y0_pos = 0;
+    var y0_neg = 0;
+
+    if (kstack) {  //Create mappings for stacked bar chart
+      d["winby1"] = d["Stocks"][0];
+      d["winby2"] = d["Stocks"][1];
+      d["winby3"] = d["Stocks"][2];
+      d["winby4"] = d["Stocks"][3];
+      d["loseby4"] = d["Stocks"][4];
+      d["loseby3"] = d["Stocks"][5];
+      d["loseby2"] = d["Stocks"][6];
+      d["loseby1"] = d["Stocks"][7];
+
+      d.components = [
+        {parent: d, sign:  1, key : "winby1",   y1: y0_pos, y0: y0_pos += d["winby1"]}, //Wins
+        {parent: d, sign:  1, key : "winby2",   y1: y0_pos, y0: y0_pos += d["winby2"]}, //Wins
+        {parent: d, sign:  1, key : "winby3",   y1: y0_pos, y0: y0_pos += d["winby3"]}, //Wins
+        {parent: d, sign:  1, key : "winby4",   y1: y0_pos, y0: y0_pos += d["winby4"]}, //Wins
+        {parent: d, sign: -1, key : "loseby1",  y0: y0_neg, y1: y0_neg -= d["loseby1"]}, //Losses
+        {parent: d, sign: -1, key : "loseby2",  y0: y0_neg, y1: y0_neg -= d["loseby2"]}, //Losses
+        {parent: d, sign: -1, key : "loseby3",  y0: y0_neg, y1: y0_neg -= d["loseby3"]}, //Losses
+        {parent: d, sign: -1, key : "loseby4",  y0: y0_neg, y1: y0_neg -= d["loseby4"]}, //Losses
+        ];
+      } else {  //Create mappings for a normal bar chart
+        d.components = [
+          {parent: d, sign:  1, key : "wins",   y1: y0_pos, y0: y0_pos += d[kpos]}, //Wins
+          {parent: d, sign: -1, key : "losses", y0: y0_neg, y1: y0_neg -= d[kneg]}, //Losses
+          ];
+      }
+  })
+
+  //Scale y axis to max of wins / losses in both directions
+  var y_min = d3.min(data, function(d) { return -d[kneg] - 16; });
+  var y_max = d3.max(data, function(d) { return  d[kpos] + 16; });
+
+  x.domain(labels);
+  y.domain([y_min, y_max]);
+  color.domain(["wins,losses"]);
+  // color.domain(["winby1","winby2","winby3","winby4","loseby4","loseby3","loseby2","loseby1"]);
+
+  var svg = d3.select({{svg_selector|tojson}})
+             .append("div")
+             .classed("svg-container", true)
+             .append("svg")
+              .attr("preserveAspectRatio", "xMinYMin meet")
+              .attr("viewBox", "0 0 "+cwidth+" "+cheight)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var ttdiv = d3.select("body").append("div")
+    .attr("class", "svgtooltip")
+    .style("opacity", 0);
+
+  svg.append("g")
+    .attr("class", "x svgaxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    .selectAll("text")
+      .attr("opacity", function(d,i) { return (lshow.includes(i)) ? 1 : 0; })
+      .attr("font-size", d => `${Math.min(xspace/2,40)}px`)
+      .attr("fill", "white")
+      .attr("y", 40*Math.cos(rot*Math.PI/180))
+      .attr("x", 20*Math.sin(rot*Math.PI/180))
+      .attr("dy", ".35em")
+      .attr("transform", "rotate("+rot+")")
+      .style("text-anchor", (rot == 0) ? "center" : "start");
+    ;
+
+  // svg.append("g")
+  //   .attr("class", "y svgaxis")
+  //   .call(yAxis);
+
+  svg.append("g")
+    .attr("class", "centerline")
+    .attr("transform", "translate(0," + y(0) + ")")
+    .call(centerLine);
+
+  // var entry = svg.selectAll(".entry")
+  //   .data(data)
+  //   .enter().append("g")
+  //   .attr("class", "g")
+  //   .attr("transform", function(d) { return "translate(" + x(parseDate(d.date)) + ", 0)"; });
+
+  var entry = svg.selectAll(".entry")
+    .data(data)
+    .enter().append("g")
+    .attr("class", "g")
+    .attr("transform", function(d) { return "translate(" + x(d[klab]) + ", 0)"; });
+
+  // Add labels showing counts above each bar
+  entry.selectAll("text")
+    .data(function(d) { return d.components; })
+    .enter().append("text")
+      .attr("font-size", function(d) { return Math.min(xspace,maxfontsize)/2+"px"; })
+      .attr("fill", "white")
+      .text(function(d,i) {  //Dark magic to only print the first and last elements
+        if (kstack == undefined) {  //IF we're not stocking, label both axes
+          return d.sign*(d.sign == 1 ? d.y0 : d.y1);
+        }
+        stacklen = d.parent[kstack].length;
+        if (i+1 == stacklen/2) {  //Print a label at the topmost bar
+          return d.parent[kpos];
+        } else if (i == stacklen-1) {  //Print a label at the bottommost bar
+          return d.parent[kneg];
+        }
+        // alert(i+","+stacklen);
+        // alert(JSON.stringify(i));
+        // alert(JSON.stringify(d.parent.Wins));
+        return "";
+      })
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "central")
+      .attr("x", 0)
+      .attr("y", function(d) { return -d.sign*Math.min(maxfontsize,xspace)/3+y(d.sign == 1 ? d.y0 : d.y1); })
+    ;
+
+  entry.selectAll("rect")
+    .data(function(d) { return d.components; })
+    .enter().append("rect")
+      .attr("width", barwidth)
+      .attr("x", -barwidth/2 )
+      .attr("y", function(d) { return y(d.y0); })
+      .attr("height", function(d) { return Math.abs(y(d.y0) - y(d.y1)); })
+      .attr("stroke-width", 1)
+      .attr("stroke", "rgba(255,255,255,0.25)")
+      .style("fill", function(d) { return color(d.key); } )
+      .on("mouseover", function(d) {
+        ttdiv.transition()
+          .duration(200)
+          .style("opacity", .9);
+        ttdiv.html(function(){
+          var ss = "<table>";
+          for (const [i, k] of ttkeys.entries()) {
+            ss += "<tr><td>"+k+"</td><td>"   +(d["parent"][k])  +"</td></tr>";
+          }
+          ss += "</table>";
+          return ss;
+          })
+          .style("left", (d3.event.pageX + 10) + "px")
+          .style("top", (d3.event.pageY - 240) + "px");
+        })
+      .on("mouseout", function(d) {
+        ttdiv.transition()
+          .duration(500)
+          .style("opacity", 0);
+        })
+    ;
+
+  // var legend = svg.selectAll(".legend")
+  //   .data(color.domain())
+  //   .enter().append("g")
+  //   .attr("class", "legend");
+  //   //.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // legend.append("rect")
+  //   .attr("x", 675)
+  //   .attr("y", function(d, i) { return i * 25 + 300 })
+  //   .attr("width", 18)
+  //   .attr("height", 18)
+  //   .style("fill", color );
+
+  // legend.append("text")
+  //   .attr("x", 700)
+  //   .attr("y", function(d, i) { return i * 25 + 309; })
+  //   .attr("dy", ".35em")
+  //   .style("text-anchor", "start")
+  //   .text(function(d, i) { return legendlabels[i]; });
+</script>
