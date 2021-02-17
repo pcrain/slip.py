@@ -12,7 +12,7 @@ class Config(object):
     ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
-    SITE_VERSION                   = "0.6.3"
+    SITE_VERSION                   = "0.6.4"
     SITE_INTNAME                   = "slipdotpy"
     SITE_NAME                      = "Slip.py Browser"
     SITE_PORT                      = 5050

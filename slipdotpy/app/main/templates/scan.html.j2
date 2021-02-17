@@ -100,7 +100,7 @@
             processData : false,
             success: function (rjson) {
               var b       = document.getElementById("browseList");
-              var first   = '<hr/><span class="subtitle">Choose a Folder to Add</span><div></div>';
+              var first   = '<hr/><span class="subtitle">Choose a Folder to Add (In: <span class="curdir">'+rjson['parent']+'</span>)</span><div></div>';
               b.innerHTML = first+rjson["render"];
             }
         });
