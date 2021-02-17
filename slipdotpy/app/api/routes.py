@@ -378,7 +378,7 @@ def scan_job(token):
   adds      = []
   updates   = []
 
-  current_app.config['SCAN_IN_PROGRESS']     = True
+  current_app.config['SCAN_IN_PROGRESS']     = token
   current_app.config['SCAN_REQUEST_STOPPED'] = False
 
   #Using ThreadPoolExecutor because ProcessPoolExecutor causes a billion terminals to spawn on Windows

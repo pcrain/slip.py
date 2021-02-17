@@ -2,12 +2,12 @@
   <span class="navbar_top">
     <span id="site_header_icon">
       <a class="nostyle" href="{{ url_for('main.replays') }}">
-        <img src="{{ url_for('static', filename='icons/wolfhead.png') }}" alt="{{ SITE_NAME }}">
+        <img src="{{ url_for('static', filename='icons/wolfhead.svg') }}" alt="{{ SITE_NAME }}">
       </a>
     </span>
     <span id="navbar_title">
       <a class="nostyle" href="{{ url_for('main.replays') }}">
-        {{ SITE_NAME }}
+        <span id="site_name">{{ SITE_NAME }}</span>
       </a>
     </span>
 

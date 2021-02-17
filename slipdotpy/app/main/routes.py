@@ -338,6 +338,7 @@ def get_stats(tag,args):
     else:                   res = 2 #draw
 
     #Increment appropriate character, costume, opponent, and result choices, creating new ones as needed
+    #  TODO: ignores extended characters and costumes, fix later???
     if pchar < 26 and pcolor < 6:
       stats["char"][pchar][pcolor+1] += 1
     if ochar < 26:

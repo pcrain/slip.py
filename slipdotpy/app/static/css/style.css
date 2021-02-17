@@ -210,7 +210,7 @@ header {
 }
 
 header img {
-  height: calc(var(--header-height) * 0.75);
+  height: calc(var(--header-height) * 0.80);
 }
 
 footer {
@@ -279,6 +279,11 @@ span#navbar_links {
   grid-area: ticon;
   filter: drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 1px lightgray) ;
   margin-left: 10px;
+  height: calc(var(--header-height));
+}
+
+span#site_header_icon img {
+  height: calc(var(--header-height));
 }
 
 .navbar_bottom {
@@ -1071,6 +1076,9 @@ a.nostyle.replay-link::after {
   #replayListingGrid button#prev::after, #replayListingGrid button#next::before {
     content: "";
     min-width: 0;
+  }
+  span#site_name {
+    display: none;
   }
 }
 

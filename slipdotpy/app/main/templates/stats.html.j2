@@ -22,9 +22,11 @@
         function changeChar(c) {
           var here = window.location.href;
           here     = removeParam("char",here);
-          if (c >= 0) {
+          // If we selected a different character, go to their page
+          if (c >= 0 && c != getUrlVars()["char"]) {
             here = addParam("char="+c,here);
           }
+          // Otherwise, show all characters
           window.location.href = here;
         }
         window.onload = function() {
@@ -72,11 +74,7 @@
             {% endif %}
             <span class="charGrid {{role}}">
               <span class="portrait">
-                {% if playpercent < 100 %}
-                  {% set click="changeChar("+(c[0]|string)+")" %}
-                {% else %}
-                  {% set click="changeChar(-1)" %}
-                {% endif %}
+                {% set click="changeChar("+(c[0]|string)+")" %}
                 <a onclick="{{click}}"><img title="{{ cname }} ({{playpercent}}%)&#10;(Click to filter results by character)" src="{{ url_for('static',filename='icons/css') }}/{{ cname }}{{ c[7] }}.png" /></a>
               </span>
               <span class="playtime">

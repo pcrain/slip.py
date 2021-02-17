@@ -110,6 +110,49 @@
         toastr.info(d+" is already scanned!")
       }
 
+      function checkProgress(token) {
+        var ubutton  = document.getElementById("scan-button");
+        $.ajax({
+            type        : "post",
+            url         : "/api/scan/progress",
+            data        : JSON.stringify({"token" : token}),
+            dataType    : "json",
+            contentType : "application/json",
+            cache       : false,
+            processData : false,
+            success: function (rjson) {
+              if (rjson["status"] != "Done!") {
+                ubutton.innerText = "Scanning " + rjson["status"] + " (Click to Stop)";// first set the value
+              } else {
+                ubutton.disabled = true;
+                ubutton.innerText = "Scanning " + rjson["status"];// first set the value
+
+              }
+            },
+            complete: function (rjson) {
+              if (!("done" in rjson["responseJSON"])) {
+                setTimeout(function(){checkProgress(token);}, 500);
+              } else {
+                getMessages(true);
+                toastr.success('Scan complete!')
+                $("#log-button").prop("disabled",false);
+                $("#log-button").show();
+                $("#log-button").click(function() {
+                  $.ajax({
+                    type        : "get",
+                    url         : "/api/scanlog/"+rjson["responseJSON"]["details"],
+                    data        : JSON.stringify({"token" : token}),
+                    dataType    : "json",
+                    contentType : "application/json",
+                    cache       : false,
+                    processData : false
+                  });
+                });
+              }
+            }
+        });
+      }
+
       function beginScan() {
         toastr.info('Beginning scan. Scanning will continue in background if page is closed.')
         var index    = 0;
@@ -117,48 +160,6 @@
         var token    = "";
 
         ubutton.onclick = stopScan;
-
-        function checkProgress() {
-          $.ajax({
-              type        : "post",
-              url         : "/api/scan/progress",
-              data        : JSON.stringify({"token" : token}),
-              dataType    : "json",
-              contentType : "application/json",
-              cache       : false,
-              processData : false,
-              success: function (rjson) {
-                if (rjson["status"] != "Done!") {
-                  ubutton.innerText = "Scanning " + rjson["status"] + " (Click to Stop)";// first set the value
-                } else {
-                  ubutton.disabled = true;
-                  ubutton.innerText = "Scanning " + rjson["status"];// first set the value
-
-                }
-              },
-              complete: function (rjson) {
-                if (!("done" in rjson["responseJSON"])) {
-                  setTimeout(checkProgress, 500);
-                } else {
-                  getMessages(true);
-                  toastr.success('Scan complete!')
-                  $("#log-button").prop("disabled",false);
-                  $("#log-button").show();
-                  $("#log-button").click(function() {
-                    $.ajax({
-                      type        : "get",
-                      url         : "/api/scanlog/"+rjson["responseJSON"]["details"],
-                      data        : JSON.stringify({"token" : token}),
-                      dataType    : "json",
-                      contentType : "application/json",
-                      cache       : false,
-                      processData : false
-                    });
-                  });
-                }
-              }
-          });
-        }
 
         $.ajax({
           type        : "post",
@@ -171,7 +172,7 @@
             ubutton.title      = "Scanning " + JSON.stringify(rjson);
             ubutton.innerText  = rjson["status"];
             token              = rjson["token"];
-            setTimeout(checkProgress, 500);
+            setTimeout(function(){checkProgress(token);}, 500);
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
             ubutton.innerText = "Error";
@@ -179,5 +180,9 @@
           }
         });
       }
+
+      {% if SCAN_IN_PROGRESS %}
+        checkProgress("{{SCAN_IN_PROGRESS}}");
+      {% endif %}
     </script>
 {% endblock %}
