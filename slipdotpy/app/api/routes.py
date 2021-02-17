@@ -198,7 +198,10 @@ def api_scan_browse():
     d = os.path.expanduser("~")
   s       = request.get_json().get("subdir","")
   p       = d if s == "" else os.path.join(d,s)
-  listing = check_for_slippi_files(p,nav=(p!="/"))
+  if os.name == "nt":  #No nav for <drive_letter>:\
+    listing = check_for_slippi_files(p,nav=(p[-2:]!=":\\"))
+  else:
+    listing = check_for_slippi_files(p,nav=(p!="/"))
   listing = sorted(listing, key = lambda i: (i["sort"],i['name']))
   for item in listing:
     if item["class"] == "curdir":
@@ -206,8 +209,12 @@ def api_scan_browse():
     else:
       item["click"] = "browseDir"
     if item["path"] in curscans:
-      item["class"] += " scanned"
-      item["click"] = "scanExists"
+        item["class"] += " scanned"
+        item["click"] = "scanExists"
+    if os.path.islink(item["path"]):
+       if os.readlink(item["path"]).rstrip('/') in curscans:
+        item["class"] += " scanned"
+        item["click"] = "scanExists"
   j = {
     "status" : "ok",
     "back"   : os.path.dirname(p),

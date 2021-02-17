@@ -252,28 +252,48 @@ def check_for_slippi_files(path,nav=False):
   if nav: #Add navigations to current / previous folder
     b = os.path.dirname(path)
     c = count_slippi_files(b)
-    ddata.append({
-      "name"  : "[Up]",
-      "path"  : b,
-      "dirs"  : c["dirs"],
-      "files" : c["files"],
-      "ftype" : "replays",
-      "class" : "updir",
-      "click" : "travel",
-      "sort"  : 1,
-      })
-    if nav < 2:
-      c = count_slippi_files(path)
+    if c is not None:
       ddata.append({
-        "name"  : "Add "+path,
-        "path"  : path,
+        "name"  : "[Up]",
+        "path"  : b,
         "dirs"  : c["dirs"],
         "files" : c["files"],
         "ftype" : "replays",
-        "class" : "curdir",
+        "class" : "updir",
         "click" : "travel",
-        "sort"  : 2,
+        "sort"  : 1,
         })
+    if nav < 2:
+      c = count_slippi_files(path)
+      if c is not None:
+        ddata.append({
+          "name"  : "Add "+path,
+          "path"  : path,
+          "dirs"  : c["dirs"],
+          "files" : c["files"],
+          "ftype" : "replays",
+          "class" : "curdir",
+          "click" : "travel",
+          "sort"  : 1,
+          })
+  if os.name == 'nt':
+    for drive in get_drives():
+      b = os.path.dirname(drive)
+      c = count_files(b)
+      if c is None:
+        continue
+      ddata.append({
+        "name"  : drive,
+        "path"  : drive,
+        "dirs"  : c["dirs"],
+        "files" : c["files"],
+        "ftype" : "files",
+        "class" : "drive",
+        "click" : "travel",
+        "sort"  : 1,
+        })
+  if len(ddata) > 0:
+    ddata[-1]["sort"] = 2 #Make sure we break rows between nav folders and actual files
   for f in os.listdir(path):
       data = check_single_folder_for_slippi_files(path,f)
       if data is not None:
@@ -297,6 +317,8 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb
       }
   if os.path.isdir(p) and os.access(p, os.R_OK) and (not is_hidden(p)):
     c = count_slippi_files(p)
+    if c is None:
+      return None
     return {
         "name"  : base,
         "path"  : p,
