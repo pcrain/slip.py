@@ -4,9 +4,6 @@ from datetime import datetime, timedelta
 import os, json, sys, subprocess, shlex, hashlib, stat, ntpath, gzip, time
 import tkinter as tk
 from tkinter import filedialog
-from multiprocessing import Process, Queue
-
-from PyQt5 import QtCore, QtWidgets
 
 # Easy colors (print)
 class col:
@@ -172,7 +169,7 @@ def count_files(path,fiterfunc=None):
             nfiles += 1
     return {"dirs" : ndirs, "files" : nfiles}
   except PermissionError:
-    return {"dirs" : ndirs, "files" : nfiles}
+    return None
 
 #Count slippi files / subdirectories at a path
 def count_slippi_files(path):
@@ -192,8 +189,26 @@ def check_for_files(path,nav=False):
       "ftype" : "files",
       "class" : "updir",
       "click" : "travel",
-      "sort"  : 1,
+      "sort"  : 0,
       })
+  if os.name == 'nt':
+    for drive in get_drives():
+      b = os.path.dirname(drive)
+      c = count_files(b)
+      if c is None:
+        continue
+      ddata.append({
+        "name"  : drive,
+        "path"  : drive,
+        "dirs"  : c["dirs"],
+        "files" : c["files"],
+        "ftype" : "files",
+        "class" : "drive",
+        "click" : "travel",
+        "sort"  : 1,
+        })
+  if len(ddata) > 0:
+    ddata[-1]["sort"] = 2 #Make sure we break rows between nav folders and actual files
   for f in os.listdir(path):
       data = check_single_folder_for_any_files(path,f)
       if data is not None:
@@ -206,6 +221,8 @@ def check_single_folder_for_any_files(parent,base,*,click=None,classd="",indb=Fa
   if os.access(p, os.R_OK) and (not is_hidden(p)):
     if os.path.isdir(p):
       c = count_files(p)
+      if c is None:
+        return None
       return {
           "name"  : base,
           "path"  : p,
@@ -400,3 +417,17 @@ def frame_to_timestamp(f):
   f -= s*60
   c  = int(100*f/60.0)
   return f"{m}:{s:02d}.{c:02d}"
+
+if os.name == 'nt':
+  from ctypes import windll
+  #Function for getting drive letters on Window
+  # https://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827397
+  def get_drives():
+      drives = []
+      bitmask = windll.kernel32.GetLogicalDrives()
+      for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+          if bitmask & 1:
+              drives.append(f"""{letter}:\\""")
+          bitmask >>= 1
+
+      return drives

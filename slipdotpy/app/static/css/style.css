@@ -1576,3 +1576,7 @@ span.statFilterButtons {
 .link {
   cursor: pointer;
 }
+
+span.curdir {
+  color: cyan;
+}

@@ -2,6 +2,8 @@
   <span class="dirSummary {{dsummary.class}}" title="{{dsummary.class}}" onclick='{{dsummary.click}}({{dsummary.path|tojson}})'>
     {% if dsummary.class == "file" %}
       <span class="dsIcon"><img src="{{ icon_from_filename(dsummary.name)}}"></img></span>
+    {% elif dsummary.class == "drive" %}
+      <span class="dsIcon"><img src="{{ url_for('static',filename='icons/mimetypes/drive-harddisk.svg')}}"></img></span>
     {% else %}
       <span class="dsIcon"><img src="{{ url_for('static',filename='icons/mimetypes/folder-white.svg')}}"></img></span>
     {% endif %}

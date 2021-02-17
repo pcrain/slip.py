@@ -226,7 +226,10 @@ def api_find_browse():
     d = os.path.expanduser("~")
   s       = request.get_json().get("subdir","")
   p       = d if s == "" else os.path.join(d,s)
-  listing = check_for_files(p,nav=(p!="/"))
+  if os.name == "nt":  #No nav for <drive_letter>:\
+    listing = check_for_files(p,nav=(p[-2:]!=":\\"))
+  else:
+    listing = check_for_files(p,nav=(p!="/"))
   listing = sorted(listing, key = lambda i: (i["sort"],i['name']))
   for item in listing:
     if item["class"] != "file":

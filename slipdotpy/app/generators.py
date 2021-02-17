@@ -203,6 +203,8 @@ def config_generators(app):
       c  = int(100*f/60.0)
       return f"{m}:{s:02d}.{c:02d}"
     def icon_from_filename(f):
+      if len(f) == 3 and f[1:] == ":\\":
+        return url_for('static',filename='icons/mimetypes/drive-harddisk.svg')
       ext = f.split(".")[-1]
       if ext in ["exe"]:
         return url_for('static',filename='icons/mimetypes/wine.svg')
