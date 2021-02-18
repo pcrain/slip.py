@@ -133,12 +133,15 @@ def get_all_slippi_files(topdir,files,checked):
   if rpath in checked:
     return
   checked.add(rpath)
-  for f in os.listdir(topdir):
-    path = os.path.join(topdir,f)
-    if os.path.isfile(path) and path[-4:] in [".slp",".zlp"]:
-      files.append(path)
-    elif os.path.isdir(path):
-      get_all_slippi_files(path,files,checked)
+  try:
+    for f in os.listdir(topdir):
+      path = os.path.join(topdir,f)
+      if os.path.isfile(path) and path[-4:] in [".slp",".zlp"]:
+        files.append(path)
+      elif os.path.isdir(path):
+        get_all_slippi_files(path,files,checked)
+  except PermissionError:
+    pass #Nothing we can do about directories we don't have access to
 
 #Write a line to a log file
 def logline(l,text,new=False):
@@ -213,7 +216,7 @@ def check_for_files(path,nav=False):
       data = check_single_folder_for_any_files(path,f)
       if data is not None:
         ddata.append(data)
-  return ddata
+  return sorted(ddata,key=lambda x: (x["sort"],x["name"]))
 
 #Scan one folder for any files
 def check_single_folder_for_any_files(parent,base,*,click=None,classd="",indb=False):
@@ -298,7 +301,7 @@ def check_for_slippi_files(path,nav=False):
       data = check_single_folder_for_slippi_files(path,f)
       if data is not None:
         ddata.append(data)
-  return ddata
+  return sorted(ddata,key=lambda x: (x["sort"],x["name"]))
 
 #Scan one folder for Slippi files
 def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb=False):

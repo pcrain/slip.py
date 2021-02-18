@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask import render_template, current_app as ca
+from flask import jsonify, render_template, current_app as ca
 from app import db
 from app.helpers import htmlEscape, openJson
 from app.errors import bp

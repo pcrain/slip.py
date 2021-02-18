@@ -86,7 +86,7 @@ def replays():
     else:
         replay_res = Replay.search(request.args)
 
-    #Determine whether we need to update our page-navigation nav
+    #Determine whether we need to update our page-navigation nav-dict
     baserequest = '&'.join([f"{k}={v}" for k,v in request.args.items() if k not in ["page","nextpage","prevpage"]])
     if baserequest == current_app.config["REPLAY_NAV_QUERY"]:
       pass; # print("USING CACHED NAV")
@@ -107,7 +107,9 @@ def replays():
     ddata = []
     if ddir == "":
       for item in scandirs:
-        ddata.append(check_single_folder_for_slippi_files(item.path,item.display,indb=True))
+        subdir = check_single_folder_for_slippi_files(item.path,item.display,indb=True)
+        if subdir is not None:
+          ddata.append(subdir)
     else:
         ddata = check_for_slippi_files(ddir,nav=2)
 
@@ -217,7 +219,15 @@ def scan_page():
     lbase = item.path
     f     = item.display
     full  = item.fullpath
+    broke = False
     if not os.path.exists(full): #Broken symlink
+      broke = True
+    else:
+      try:
+        os.listdir(os.path.join(lbase,f))
+      except PermissionError: #Access is forbidden
+        broke = True
+    if broke:
       ldirs.append({
         "name"  : f,
         "stats" : {
@@ -225,6 +235,7 @@ def scan_page():
             "path"  : os.path.join(lbase,f),
             "dirs"  : 0,
             "files" : 0,
+            "ftype" : "files",
             "class" : "broken",
             "click" : "delScanDir",
             "sort"  : 4,
