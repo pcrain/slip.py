@@ -1263,12 +1263,12 @@ span#statsGrid {
     grid-template-columns : repeat(4, minmax(0, 1fr));
     grid-template-rows    : repeat(5, min-content) minmax(300px,1fr);
     grid-template-areas   :
-      "title    title     tabs       tabs"
-      "subtitle subtitle  tabs       tabs"
-      "hchars   hmatchups hmostgames hnewgames "
-      "chars    matchups  mostgames  newgames  "
-      "chars    matchups  hhistory   hhistory  "
-      "chars    matchups  history    history  "
+      "title    title     tabs       tabs       tabs"
+      "subtitle subtitle  tabs       tabs       tabs"
+      "hchars   hmatchups hstages    hmostgames hnewgames"
+      "chars    matchups  stages     mostgames  newgames"
+      "chars    matchups  hhistory   hhistory   hhistory"
+      "chars    matchups  history    history    history"
       ;
   }
 }
@@ -1276,18 +1276,18 @@ span#statsGrid {
 @media screen and (min-width: 800px) and (max-width: 1200px) {
   span#statsGrid {
     /*grid-gap              : 32px;*/
-    grid-template-columns : repeat(2, minmax(0, 1fr));
-    grid-template-rows    : repeat(8, min-content) minmax(300px,1fr);
+    grid-template-columns : repeat(6, minmax(0, 1fr));
+    grid-template-rows    : repeat(9, min-content) minmax(300px,1fr);
     grid-template-areas   :
-      "title title"
-      "subtitle subtitle"
-      "tabs tabs"
-      "hchars hmatchups"
-      "chars matchups"
-      "hmostgames hnewgames"
-      "mostgames newgames"
-      "hhistory hhistory"
-      "history history"
+      "title title title title title title"
+      "subtitle subtitle subtitle subtitle subtitle subtitle"
+      "tabs tabs tabs tabs tabs tabs"
+      "hchars hchars hchars hmatchups hmatchups hmatchups"
+      "chars chars chars matchups matchups matchups"
+      "hstages hstages hmostgames hmostgames hnewgames hnewgames"
+      "stages stages mostgames mostgames newgames newgames"
+      "hhistory hhistory hhistory hhistory hhistory hhistory"
+      "history history history history history history"
       ;
   }
 }
@@ -1305,6 +1305,8 @@ span#statsGrid {
       "chars"
       "hmatchups"
       "matchups"
+      "hstages"
+      "stages"
       "hmostgames"
       "mostgames"
       "hnewgames"
@@ -1315,6 +1317,11 @@ span#statsGrid {
   }
 }
 
+span#statsStages {
+  grid-area: stages;
+  margin-top: 0;
+}
+
 span#statsGrid table {
   margin: auto;
   text-align: center;
@@ -1322,7 +1329,12 @@ span#statsGrid table {
 
 span#statsGrid td {
   border: 1px solid rgba(255,255,255,0.3);
-  padding: 0 6px;
+  padding: 0 4px;
+  height: 26px;
+}
+
+span#statsMatchups img {
+  /*height: 20px;*/
 }
 
 span#statsGrid span.h, span#statsGraphs span.h {
@@ -1332,12 +1344,14 @@ span#statsGrid span.h, span#statsGraphs span.h {
 
 span#hchars     { grid-area: hchars; }
 span#hmatchups  { grid-area: hmatchups; }
+span#hstages    { grid-area: hstages; }
 span#hnewgames  { grid-area: hnewgames; }
 span#hmostgames { grid-area: hmostgames; }
 span#hhistory   { grid-area: hhistory; }
 
 span#statsHistory {
   grid-area             : history;
+  height: 320px;
 }
 
 span#statsChars {
@@ -1402,15 +1416,13 @@ span#statsMatchups {
   grid-area: matchups;
   display: inline-grid;
   grid-template-areas :
-    'charsb charsw'
-    'stages stages';
+    'charsb charsw';
   /*grid-template-columns: 1fr min-content;*/
 }
 
 span#statsMatchups.oneColumn {
   grid-template-areas :
-    'charsb'
-    'stages';
+    'charsb';
   /*grid-template-columns: 1fr min-content;*/
 }
 
@@ -1424,10 +1436,6 @@ span#statsMatchups table#byWorstChar {
   margin-top: 0;
 }
 
-span#statsMatchups table#byStage {
-  grid-area: stages;
-  margin-top: 0;
-}
 
 span#statsMost {
   grid-area: mostgames;
