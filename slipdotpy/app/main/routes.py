@@ -410,10 +410,11 @@ def get_stats(tag,args):
   stats["recent"] = stats["recent"][:mlen]
 
   #Determine where to split columns for character MUs
-  stats["halfway"] = 13
+  stats["splitpoint"] = 13
   for i,c in enumerate(stats["opp"]):
     if (c[1] + c[2]) == 0:
-      stats["halfway"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
+      if i > 13:
+        stats["splitpoint"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
       break
 
   #Game dates are already sorted, so convert it to proper bar chart format

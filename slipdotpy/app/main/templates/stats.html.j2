@@ -123,7 +123,7 @@
             {# <th>D</th> #}
             <th>Win%</th>
           </tr>
-          {% for mu in stats.opp[:stats.halfway] %}
+          {% for mu in stats.opp[:stats.splitpoint] %}
             {% if mu[1]+mu[2] > 0 %}
               {% set click="changeOpponent("+(mu[0]|string)+")" %}
               <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
@@ -145,7 +145,7 @@
               {# <th>D</th> #}
               <th>Win%</th>
             </tr>
-            {% for mu in stats.opp[stats.halfway:] %}
+            {% for mu in stats.opp[stats.splitpoint:] %}
               {% if mu[1]+mu[2] > 0 %}
                 {% set click="changeOpponent("+(mu[0]|string)+")" %}
                 <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
