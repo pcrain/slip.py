@@ -178,6 +178,23 @@ function addParam(param,url) {
   return stripUrlParams(url + "&" + param);
 }
 
+// Ensure there is a ? in the url
+function ensureQuery(url) {
+  var urlparts= url.split('?');
+  if (urlparts.length>=2) {
+    return url;
+  }
+  var urlparts= url.split('&');
+  if (urlparts.length==1) {
+    return url;
+  }
+  var url = urlparts[0]+"?submit=submit";
+  for(var i = 1; i < urlparts.length; i++) {
+    url += "&"+urlparts[i];
+  }
+  return url;
+}
+
 // Open a log file
 function viewLogFile(e) {
   $.ajax({

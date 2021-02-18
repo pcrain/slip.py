@@ -177,9 +177,17 @@
         return "";
       })
       .attr("text-anchor", "middle")
-      .attr("alignment-baseline", "central")
+      // .attr("alignment-baseline", "central")
       .attr("x", 0)
-      .attr("y", function(d) { return -d.sign*Math.min(maxfontsize,xspace)/3+y(d.sign == 1 ? d.y0 : d.y1); })
+      .attr("y", function(d) {
+        var tval  = 0;
+        tval += -d.sign*Math.min(maxfontsize,xspace)/3;
+        if (d.sign != 1) {
+          tval += Math.min(xspace)/4;
+        }
+        tval += y(d.sign == 1 ? d.y0 : d.y1);
+        return tval;
+      })
     ;
 
   entry.selectAll("rect")

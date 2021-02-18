@@ -3,7 +3,10 @@
 {% block content %}
     <span id="statsGrid">
       <span class="title">
-        Player Stats for {{stats.name}} ({{stats.tag}})
+        Player Stats for
+        <span id="statsPlayerHeader" title="Click to reset all filters" onclick="dropAllFilters()">
+          {{stats.name}} ({{stats.tag}})
+        </span>
       </span>
       <span class="subtitle">
         {{stats.subtitle}}
@@ -17,7 +20,15 @@
           if (q != "") {
             here = addParam(q,here);
           }
-          window.location.href = here;
+          window.location.href = ensureQuery(here);
+        }
+        function dropAllFilters() {
+          var here = window.location.href;
+          here     = removeParam("char",here);
+          here     = removeParam("vs",here);
+          here     = removeParam("stage",here);
+          here     = removeParam("against",here);
+          window.location.href = ensureQuery(here);
         }
         function changeOrDropUrlParam(param,val) {
           var here = window.location.href;
@@ -25,7 +36,7 @@
           if ((val != undefined) && (val != getUrlVars()[param])) {
             here = addParam(param+"="+val,here);
           }
-          window.location.href = here;
+          window.location.href = ensureQuery(here);
         }
         function changeChar(c) {
           changeOrDropUrlParam("char",c);
@@ -187,7 +198,7 @@
             {# <th>D</th> #}
           </tr>
           {% for o in stats.top %}
-            <tr>
+            <tr class="clickable" onclick="changeAgainst('{{o[3]}}')">
               {% if o[0] > o[1] %}
                 {% if o[1] == 0 %}
                   {% set outcome = "p" %}
@@ -204,7 +215,7 @@
                 {% set outcome = "d" %}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
-              <td><a onclick="changeAgainst('{{o[3]}}')"href="#{{o[3]}}">{{ o[3] }}</a></td>
+              <td><a href="#{{o[3]}}">{{ o[3] }}</a></td>
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td> #}
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
@@ -226,7 +237,7 @@
             {# <th>D</th> #}
           </tr>
           {% for o in stats.recent %}
-            <tr>
+            <tr class="clickable" onclick="changeAgainst('{{o[3]}}')">
               {% if o[0] > o[1] %}
                 {% if o[1] == 0 %}
                   {% set outcome = "p" %}

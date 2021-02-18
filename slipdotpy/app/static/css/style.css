@@ -1647,3 +1647,13 @@ span.filter.filterAgainst {
   background-color: yellow;
   background-color: rgba(255,255,0,0.5);
 }
+
+span#statsPlayerHeader {
+  color           : rgb(200,200,255);
+  font-weight     : bold;
+  cursor          : pointer;
+}
+
+tr.clickable:hover {
+  background-color: rgba(0,192,255,0.3);
+}
