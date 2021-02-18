@@ -410,10 +410,14 @@ def get_stats(tag,args):
   stats["recent"] = stats["recent"][:mlen]
 
   #Determine where to split columns for character MUs
-  stats["splitpoint"] = 13
+  stats["splitpoint"]  = 9
+  stats["splitpoint2"] = 18
   for i,c in enumerate(stats["opp"]):
     if (c[1] + c[2]) == 0:
-      if i > 13:
+      if i > 18:
+        stats["splitpoint"] = math.ceil(i/3)  #Determine the halfway point for the characters we've played
+        stats["splitpoint2"] = math.ceil(2*i/3)  #Determine the halfway point for the characters we've played
+      elif i > 9:
         stats["splitpoint"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
       break
 

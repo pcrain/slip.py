@@ -94,6 +94,8 @@
               {% set role = "main" %}
             {% elif loop.index <= 3 %}
               {% set role = "second" %}
+            {% elif loop.index <= 7 %}
+              {% set role = "third" %}
             {% else %}
               {% set role = "other" %}
             {% endif %}
@@ -111,10 +113,12 @@
       </span>
 
       {# Win / Loss / Draw rate for each matchup #}
-      {% if stats.opp[13][1] + stats.opp[13][2] == 0 %}
-        {% set onecol = "oneColumn" %}
+      {% if stats.opp[9][1] + stats.opp[9][2] == 0 %}
+        {% set numcols = "oneColumn" %}
+      {% elif stats.opp[18][1] + stats.opp[18][2] == 0 %}
+        {% set numcols = "twoColumn" %}
       {% endif %}
-      <span id="statsMatchups" class="{{onecol}}">
+      <span id="statsMatchups" class="{{numcols}}">
         <table id="byBestChar">
           <tr>
             <th title="Opponent's Character">Vs.</th>
@@ -136,7 +140,30 @@
             {% endif %}
           {% endfor %}
         </table>
-        {% if stats.opp[13][2] + stats.opp[13][2] > 0 %}
+        {% if stats.opp[9][2] + stats.opp[9][2] > 0 %}
+          <table id="byMidChar">
+            <tr>
+              <th title="Opponent's Character">Vs.</th>
+              <th>W</th>
+              <th>L</th>
+              {# <th>D</th> #}
+              <th>Win%</th>
+            </tr>
+            {% for mu in stats.opp[stats.splitpoint:stats.splitpoint2] %}
+              {% if mu[1]+mu[2] > 0 %}
+                {% set click="changeOpponent("+(mu[0]|string)+")" %}
+                <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
+                  <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
+                  <td>{{mu[1]}}</td>
+                  <td>{{mu[2]}}</td>
+                  {# <td>{{mu[3]}}</td> #}
+                  <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </table>
+        {% endif %}
+        {% if stats.opp[18][2] + stats.opp[18][2] > 0 %}
           <table id="byWorstChar">
             <tr>
               <th title="Opponent's Character">Vs.</th>
@@ -145,7 +172,7 @@
               {# <th>D</th> #}
               <th>Win%</th>
             </tr>
-            {% for mu in stats.opp[stats.splitpoint:] %}
+            {% for mu in stats.opp[stats.splitpoint2:] %}
               {% if mu[1]+mu[2] > 0 %}
                 {% set click="changeOpponent("+(mu[0]|string)+")" %}
                 <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
