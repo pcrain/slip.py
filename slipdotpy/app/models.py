@@ -1,10 +1,11 @@
 #!/usr/bin/python
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime          import datetime
-from app               import db, login
-from app.config        import Config
-from flask_login       import UserMixin, AnonymousUserMixin
-from sqlalchemy        import or_, and_, event
+from werkzeug.security        import generate_password_hash, check_password_hash
+from datetime                 import datetime
+from app                      import db, login, cache
+from app.config               import Config
+from flask_login              import UserMixin, AnonymousUserMixin
+from sqlalchemy               import or_, and_, event
+from flask_sqlalchemy_caching import FromCache
 import sys, os
 
 class Anonymous(AnonymousUserMixin):
@@ -16,6 +17,7 @@ class Anonymous(AnonymousUserMixin):
     pubs = Replay.query.filter_by(is_public=1)
     pubs = pubs.order_by(Replay.played.desc())
     pubs = pubs.group_by(Replay.checksum)
+    pubs = pubs.options(FromCache(cache))
     return pubs
     # return pubs.order_by(Replay.uploaded.desc())
 
@@ -64,6 +66,12 @@ class Settings(db.Model):
 
     def load():
       d = Settings.asDict()
+      if not "appversion" in d:
+        if not "autoscan" in d: #Hack to check if we are on a version of the app before version numbers exist
+          db.session.add(Settings(name="appversion", type_="str",value=Config.SITE_VERSION))
+          db.session.commit()
+        else:
+          print("OLD VERSION")
       if not "isopath" in d:
           db.session.add(Settings(name="isopath",    type_="str" ,value=""))
       if not "emupath" in d:
@@ -212,6 +220,8 @@ class Replay(db.Model):
             q = q.order_by(Replay.played.desc())
 
         q = q.group_by(Replay.checksum)
+
+        q = q.options(FromCache(cache))
 
         return q
 

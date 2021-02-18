@@ -12,7 +12,7 @@ class Config(object):
     ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
-    SITE_VERSION                   = "0.6.5"
+    SITE_VERSION                   = "0.7.0"
     SITE_INTNAME                   = "slipdotpy"
     SITE_NAME                      = "Slip.py Browser"
     SITE_PORT                      = 5050
@@ -49,4 +49,5 @@ class Config(object):
     SCAN_REQUEST_STOPPED           = False #Whether we've requested to stop an in progress scan
     BG_MESSAGES                    = []    #List of messages regarding background tasks
     REPLAY_NAV                     = {}    #Dictionary for tracking previous / next replay based on last search
+    REPLAY_NAV_QUERY               = None  #Query that we're tracking for the REPLAY_NAV above
     LAST_SEARCH                    = ""    #GET parameters for the last search we ran

@@ -19,6 +19,8 @@ setup(
         "Flask-Executor",
         "Flask-Login",
         "Flask-SQLAlchemy",
+        "Flask-Caching",
+        "Flask-SQLAlchemy-Caching",
         "Flask-WTF",
         "PyFladesk"
     ],

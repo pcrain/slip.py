@@ -37,8 +37,14 @@ function getUrlVars() {
 }
 
 //Refresh the page after adding a parameter
-function travel(path) {
-  location.href = URL_add_parameter(location.href,"path",path);
+function travel(path,resetPages=true) {
+  href = URL_add_parameter(location.href,"path",path);
+  if (resetPages) {
+    href = removeParam("page",href);
+    href = removeParam("prevpage",href);
+    href = removeParam("nextpage",href);
+  }
+  location.href = href;
 }
 
 //Refresh the page after adding a parameter

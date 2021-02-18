@@ -73,7 +73,6 @@ def replays():
 
     #Stash our last search for use with backspace button later
     current_app.config["LAST_SEARCH"] = request.args
-    print(current_app.config["LAST_SEARCH"])
 
     #If we're at a top-level scanned directory, back out to index
     for item in scandirs:
@@ -81,27 +80,34 @@ def replays():
         ddir = ""
         break
 
+    #Get IDs for all replays corresponding to the current filter
     if (q is None) and (ddir == ""):
-        replays = current_user.all_replays()
+        replay_res = current_user.all_replays()
     else:
-        replays = Replay.search(request.args)
+        replay_res = Replay.search(request.args)
 
-    # Get IDs for all replays corresponding to the current filter
-    checksum_list = replays.with_entities(Replay.checksum).all()
-    for i,c in enumerate(checksum_list):
-      current_app.config['REPLAY_NAV'][c[0]] = {}
-      if i > 0:
-        current_app.config['REPLAY_NAV'][c[0]]["prev"] = checksum_list[i-1][0]
-      if i < (len(checksum_list) - 1):
-        current_app.config['REPLAY_NAV'][c[0]]["next"] = checksum_list[i+1][0]
+    #Determine whether we need to update our page-navigation nav
+    baserequest = '&'.join([f"{k}={v}" for k,v in request.args.items() if k not in ["page","nextpage","prevpage"]])
+    if baserequest == current_app.config["REPLAY_NAV_QUERY"]:
+      pass; # print("USING CACHED NAV")
+    else: #New search query, so navigation nav needs to be repopulated
+      current_app.config["REPLAY_NAV_QUERY"] = baserequest
+      checksum_list = replay_res.with_entities(Replay.checksum).all()
+      current_app.config['REPLAY_NAV'] = {}
+      for i,c in enumerate(checksum_list):
+        current_app.config['REPLAY_NAV'][c[0]] = {}
+        if i > 0:
+          current_app.config['REPLAY_NAV'][c[0]]["prev"] = checksum_list[i-1][0]
+        if i < (len(checksum_list) - 1):
+          current_app.config['REPLAY_NAV'][c[0]]["next"] = checksum_list[i+1][0]
 
-    rdata = replays.paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+    rdata = replay_res.paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
-    # Get directory data
+    #Get directory data
     ddata = []
     if ddir == "":
-        for item in scandirs:
-            ddata.append(check_single_folder_for_slippi_files(item.path,item.display,indb=True))
+      for item in scandirs:
+        ddata.append(check_single_folder_for_slippi_files(item.path,item.display,indb=True))
     else:
         ddata = check_for_slippi_files(ddir,nav=2)
 
@@ -118,7 +124,7 @@ def replays():
     first                               = current_app.config['JUST_LAUNCHED']
     current_app.config['JUST_LAUNCHED'] = False
     s                                   = Settings.load()
-    return render_template("index.html.j2",
+    render                              = render_template("index.html.j2",
       autoscan = first and s["autoscan"],
       title    = "Public Replays",
       form     = ReplaySearchForm(),
@@ -126,6 +132,7 @@ def replays():
       dirs     = ddata,
       next_url = next_url,
       prev_url = prev_url)
+    return render
 
 #Route for re-executing the last search
 @bp.route('/last_search', methods=['GET'])

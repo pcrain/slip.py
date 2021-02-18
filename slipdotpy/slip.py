@@ -2,7 +2,7 @@
 #Run slip.py in Desktop mode
 
 #Import standard modules
-import os, sys, socket, time
+import os, sys, socket, time, sqlite3
 
 PY_VER = sys.version[:3].replace(".","")
 if int(PY_VER) < 36:
@@ -21,6 +21,12 @@ if os.name == 'nt':
 
 #Import app config
 from app.config import Config
+from app.migrator import Migrator
+
+#Migrate databases as necessary
+print("TODO: finish migrations")
+# Migrator(Config).run()
+# sys.exit(1)
 
 #If we're running thie directly, verify our requested port is open
 if __name__ == "__main__":

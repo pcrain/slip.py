@@ -4,13 +4,17 @@ from app.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_executor import Executor
+from flask_sqlalchemy_caching import CachingQuery
+from flask_caching import Cache
+
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 
-db               = SQLAlchemy()
+db               = SQLAlchemy(query_class=CachingQuery)
 login            = LoginManager()
 executor         = Executor()
+cache            = Cache(config={'CACHE_TYPE': 'simple'})
 login.login_view = 'auth.login'
 
 def init_environment(app):
@@ -28,6 +32,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     login.init_app(app)
     executor.init_app(app)
+    cache.init_app(app)
 
     init_environment(app)
 
