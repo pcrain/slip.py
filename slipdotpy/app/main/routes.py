@@ -309,13 +309,13 @@ def get_stats(tag,args):
   else:
     stats["subtitle"] = f"Showing lifetime stats for {actualgames} games"
   if "char" in args:
-    stats["subtitle"] += f" as <span title='Click to remove filter' onclick='changeChar(undefined)' class='filter filterChar'>{intchardata[int(args['char'])]['name']}</span>"
+    stats["subtitle"] += f" as <span title='Click to remove player character filter' onclick='changeChar(undefined)' class='filter filterChar'>{intchardata[int(args['char'])]['name']}</span>"
   if "vs" in args:
-    stats["subtitle"] += f" vs. <span title='Click to remove filter' onclick='changeOpponent(undefined)' class='filter filterVs'>{intchardata[int(args['vs'])]['name']}</span>"
+    stats["subtitle"] += f" vs. <span title='Click to remove opponent character filter' onclick='changeOpponent(undefined)' class='filter filterVs'>{intchardata[int(args['vs'])]['name']}</span>"
   if "stage" in args:
-    stats["subtitle"] += f" on <span title='Click to remove filter' onclick='changeStage(undefined)' class='filter filterStage'>{intstagedata[int(args['stage'])]['name']}</span>"
+    stats["subtitle"] += f" on <span title='Click to remove stage filter' onclick='changeStage(undefined)' class='filter filterStage'>{intstagedata[int(args['stage'])]['name']}</span>"
   if "against" in args:
-    stats["subtitle"] += f" against <span title='Click to remove filter' onclick='changeAgainst(undefined)' class='filter filterAgainst'>{args['against'].replace('_','#')}</span>"
+    stats["subtitle"] += f" against <span title='Click to remove opponent connect code filter' onclick='changeAgainst(undefined)' class='filter filterAgainst'>{args['against'].replace('_','#')}</span>"
 
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days

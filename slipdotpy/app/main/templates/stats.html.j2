@@ -125,8 +125,8 @@
           {% for mu in stats.opp[:stats.halfway] %}
             {% if mu[1]+mu[2] > 0 %}
               {% set click="changeOpponent("+(mu[0]|string)+")" %}
-              <tr class="clickable" onclick="{{click}}">
-                <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
+                <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
                 <td>{{mu[1]}}</td>
                 <td>{{mu[2]}}</td>
                 {# <td>{{mu[3]}}</td> #}
@@ -147,8 +147,8 @@
             {% for mu in stats.opp[stats.halfway:] %}
               {% if mu[1]+mu[2] > 0 %}
                 {% set click="changeOpponent("+(mu[0]|string)+")" %}
-                <tr class="clickable" onclick="{{click}}">
-                  <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+                <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
+                  <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
                   <td>{{mu[1]}}</td>
                   <td>{{mu[2]}}</td>
                   {# <td>{{mu[3]}}</td> #}
@@ -171,7 +171,7 @@
               {% if mu[0] >= 0 %}
                 {% set click="changeStage("+(mu[0]|string)+")" %}
               {% endif %}
-              <tr class="clickable" onclick="{{click}}">
+              <tr title="Click to filter by games on {{intstagedata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
                 {% if mu[0] >= 0 %}
                   <td style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
                 {% else %}
@@ -198,7 +198,7 @@
             {# <th>D</th> #}
           </tr>
           {% for o in stats.top %}
-            <tr class="clickable" onclick="changeAgainst('{{o[3]}}')">
+            <tr title="Click to filter by games against {{o[3]}}" class="clickable" onclick="changeAgainst('{{o[3]}}')">
               {% if o[0] > o[1] %}
                 {% if o[1] == 0 %}
                   {% set outcome = "p" %}
@@ -215,7 +215,7 @@
                 {% set outcome = "d" %}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
-              <td><a href="#{{o[3]}}">{{ o[3] }}</a></td>
+              <td class="conncode" onclick="changeAgainst('{{o[3]}}')">{{ o[3] }}</td>
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td> #}
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
@@ -237,7 +237,7 @@
             {# <th>D</th> #}
           </tr>
           {% for o in stats.recent %}
-            <tr class="clickable" onclick="changeAgainst('{{o[3]}}')">
+            <tr title="Click to filter by games against {{o[3]}}" class="clickable" onclick="changeAgainst('{{o[3]}}')">
               {% if o[0] > o[1] %}
                 {% if o[1] == 0 %}
                   {% set outcome = "p" %}
@@ -254,7 +254,7 @@
                 {% set outcome = "d" %}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
-              <td><a onclick="changeAgainst('{{o[3]}}')"href="#{{o[3]}}">{{ o[3] }}</a></td>
+              <td class="conncode" onclick="changeAgainst('{{o[3]}}')">{{ o[3] }}</td>
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td> #}
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>

@@ -1474,6 +1474,7 @@ span#statsIndexGrid table {
   grid-area: ttable;
   /*width: max-content;*/
   margin: auto;
+  border-spacing: 10px 4px;
 }
 
 span#settingsGrid span.set {
@@ -1656,4 +1657,35 @@ span#statsPlayerHeader {
 
 tr.clickable:hover {
   background-color: rgba(0,192,255,0.3);
+}
+
+td.conncode, span#statsGrid td.conncode {
+  padding-left     : 4px;
+  padding-right    : 4px;
+  font-family      : monospace;
+  font-size        : 16px;
+  background-color : rgba(255,255,255,0.15);
+  border           : 1px solid rgba(255,255,255,0.3);
+  border-radius    : 4px;
+  margin           : 4px;
+  text-align       : right !important;
+  font-style       : italic;
+  text-shadow:
+    -1px -1px 1px rgba(0,0,0,0.8),
+     1px -1px 1px rgba(0,0,0,0.8),
+    -1px  1px 1px rgba(0,0,0,0.8),
+     1px  1px 1px rgba(0,0,0,0.8),
+    -1px -1px 3px rgba(0,0,0,0.8),
+     1px -1px 3px rgba(0,0,0,0.8),
+    -1px  1px 3px rgba(0,0,0,0.8),
+     1px  1px 3px rgba(0,0,0,0.8);
+}
+
+td.conncode a {
+  color            : white;
+  text-decoration  : none;
+}
+
+tr:hover td.conncode, td.conncode a:hover {
+  color : cyan;
 }
