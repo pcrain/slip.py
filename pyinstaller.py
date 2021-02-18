@@ -12,6 +12,7 @@ options = [
   '--noconsole',
   '--windowed',
   '--add-data','{}{}app'.format(os.path.join('slipdotpy','app'),sep),
+  '--add-data','{}{}playback-dolphin'.format(os.path.join('slipdotpy','playback-dolphin'),sep),
   '--add-binary','{}{}slippc'.format(os.path.join('slipdotpy','slippc','slippc.exe'),sep),
   '--icon',os.path.join(os.getcwd(),'slipdotpy','app','static','icons','wolfhead.ico'),
   '--name','slipdotpy',

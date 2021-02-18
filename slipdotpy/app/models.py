@@ -67,6 +67,9 @@ class Settings(db.Model):
       if not "isopath" in d:
           db.session.add(Settings(name="isopath",    type_="str" ,value=""))
       if not "emupath" in d:
+        if os.name == "nt": #Set default Playback dolphin path to bundled Dolphin
+          db.session.add(Settings(name="emupath",    type_="str" ,value=os.path.join(Config.INSTALL_FOLDER,"playback-dolphin","Dolphin.exe")))
+        else:
           db.session.add(Settings(name="emupath",    type_="str" ,value=""))
       if not "scanthreads" in d:
           db.session.add(Settings(name="scanthreads",type_="int" ,value=str(max(1,Config.MAX_SCAN_THREADS//2))))
