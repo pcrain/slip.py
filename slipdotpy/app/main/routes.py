@@ -256,10 +256,15 @@ def get_stats(tag,args):
     p1and.append(Replay.p1char==args["char"])
     p2and.append(Replay.p2char==args["char"])
 
-  #Check if we're filtering by opponent
+  #Check if we're filtering by opponent character
   if "vs" in args:
     p1and.append(Replay.p2char==args["vs"])
     p2and.append(Replay.p1char==args["vs"])
+
+  #Check if we're filtering by opponent code
+  if "against" in args:
+    p1and.append(Replay.p2codetag==args["against"].replace("_","#"))
+    p2and.append(Replay.p1codetag==args["against"].replace("_","#"))
 
   #Set up a giant and statement for p1 and p2 args
   bigand = [or_(and_(*p1and),and_(*p2and))]
@@ -304,11 +309,13 @@ def get_stats(tag,args):
   else:
     stats["subtitle"] = f"Showing lifetime stats for {actualgames} games"
   if "char" in args:
-    stats["subtitle"] += f" as <span class='filterChar'>{intchardata[int(args['char'])]['name']}</span>"
+    stats["subtitle"] += f" as <span title='Click to remove filter' onclick='changeChar(undefined)' class='filter filterChar'>{intchardata[int(args['char'])]['name']}</span>"
   if "vs" in args:
-    stats["subtitle"] += f" vs <span class='filterVs'>{intchardata[int(args['vs'])]['name']}</span>"
+    stats["subtitle"] += f" vs. <span title='Click to remove filter' onclick='changeOpponent(undefined)' class='filter filterVs'>{intchardata[int(args['vs'])]['name']}</span>"
   if "stage" in args:
-    stats["subtitle"] += f" on <span class='filterStage'>{intstagedata[int(args['stage'])]['name']}</span>"
+    stats["subtitle"] += f" on <span title='Click to remove filter' onclick='changeStage(undefined)' class='filter filterStage'>{intstagedata[int(args['stage'])]['name']}</span>"
+  if "against" in args:
+    stats["subtitle"] += f" against <span title='Click to remove filter' onclick='changeAgainst(undefined)' class='filter filterAgainst'>{args['against'].replace('_','#')}</span>"
 
   #Populate bar chart up to today, but only down to the earliest match played in a timeframe
   #  e.g., we are searching 28 days back, but our earliest game is 25 days ago, just show 25 days

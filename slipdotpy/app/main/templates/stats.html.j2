@@ -22,7 +22,7 @@
         function changeOrDropUrlParam(param,val) {
           var here = window.location.href;
           here     = removeParam(param,here);
-          if (val != getUrlVars()[param]) {
+          if ((val != undefined) && (val != getUrlVars()[param])) {
             here = addParam(param+"="+val,here);
           }
           window.location.href = here;
@@ -35,6 +35,12 @@
         }
         function changeStage(s) {
           changeOrDropUrlParam("stage",s);
+        }
+        function changeAgainst(s) {
+          if (s != undefined) {
+            s = s.replace("#","_");
+          }
+          changeOrDropUrlParam("against",s);
         }
         window.onload = function() {
           var uvars = getUrlVars();
@@ -107,9 +113,9 @@
           </tr>
           {% for mu in stats.opp[:stats.halfway] %}
             {% if mu[1]+mu[2] > 0 %}
-              <tr>
-                {% set click="changeOpponent("+(mu[0]|string)+")" %}
-                <td class="clickable" onclick="{{click}}"><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+              {% set click="changeOpponent("+(mu[0]|string)+")" %}
+              <tr class="clickable" onclick="{{click}}">
+                <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
                 <td>{{mu[1]}}</td>
                 <td>{{mu[2]}}</td>
                 {# <td>{{mu[3]}}</td> #}
@@ -129,9 +135,9 @@
             </tr>
             {% for mu in stats.opp[stats.halfway:] %}
               {% if mu[1]+mu[2] > 0 %}
-                <tr>
-                  {% set click="changeOpponent("+(mu[0]|string)+")" %}
-                  <td class="clickable" onclick="{{click}}"><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
+                {% set click="changeOpponent("+(mu[0]|string)+")" %}
+                <tr class="clickable" onclick="{{click}}">
+                  <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png" title="{{ intchardata[mu[0]]['name'] }}"/></td>
                   <td>{{mu[1]}}</td>
                   <td>{{mu[2]}}</td>
                   {# <td>{{mu[3]}}</td> #}
@@ -151,10 +157,12 @@
           </tr>
           {% for mu in stats.stg %}
             {% if mu[1]+mu[2] > 0 %}
-              <tr>
+              {% if mu[0] >= 0 %}
+                {% set click="changeStage("+(mu[0]|string)+")" %}
+              {% endif %}
+              <tr class="clickable" onclick="{{click}}">
                 {% if mu[0] >= 0 %}
-                  {% set click="changeStage("+(mu[0]|string)+")" %}
-                  <td class="clickable" onclick="{{click}}" style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
+                  <td style="background-position: -40px -70px; background-image:url({{url_for('static',filename='icons/stage')}}/{{ intstagedata[mu[0]]['intname'] }}.png)">{{ intstagedata[mu[0]]['name'] }}</td>
                 {% else %}
                   <td>Other Stages</td>
                 {% endif %}
@@ -196,7 +204,8 @@
                 {% set outcome = "d" %}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
-              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td>
+              <td><a onclick="changeAgainst('{{o[3]}}')"href="#{{o[3]}}">{{ o[3] }}</a></td>
+              {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td> #}
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>
@@ -234,7 +243,8 @@
                 {% set outcome = "d" %}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
-              <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td>
+              <td><a onclick="changeAgainst('{{o[3]}}')"href="#{{o[3]}}">{{ o[3] }}</a></td>
+              {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}?submit=">{{ o[3] }}</a></td> #}
               <td>{{ o[4] }}</td>
               <td class="w{{outcome}}">{{ o[0] }}</td>
               <td class="l{{outcome}}">{{ o[1] }}</td>

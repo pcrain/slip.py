@@ -1416,16 +1416,17 @@ span#statsMatchups.oneColumn {
 
 span#statsMatchups table#byBestChar {
   grid-area: charsb;
-  margin-top: 32px;
+  margin-top: 0;
 }
 
 span#statsMatchups table#byWorstChar {
   grid-area: charsw;
-  margin-top: 32px;
+  margin-top: 0;
 }
 
 span#statsMatchups table#byStage {
   grid-area: stages;
+  margin-top: 0;
 }
 
 span#statsMost {
@@ -1608,12 +1609,41 @@ span.curdir {
   color: cyan;
 }
 
-span.filterChar {
-  color: lime;
+span.filter {
+  cursor           : pointer;
+  background-color : white;
+  padding          : 0px 4px;
+  border           : 1px solid black;
+  border-radius    : 10px;
 }
-span.filterVs {
-  color: red;
+
+span.filter::before {
+  color            : black;
+  text-shadow      : none;
+  /*border           : 1px solid black;*/
+  border-radius    : 10px;
+  content          : "✕";
+  /*content          : "—";*/
+  padding-right    : 2px;
+  margin-right     : 2px;
+  margin-left      : -4px;
+  text-align       : center;
+  background-color : rgba(0,0,0,0.2);
 }
-span.filterStage {
-  color: cyan;
+
+span.filter.filterChar {
+  background-color: lime;
+  background-color: rgba(0,255,0,0.5);
+}
+span.filter.filterVs {
+  background-color: red;
+  background-color: rgba(255,0,0,0.5);
+}
+span.filter.filterStage {
+  background-color: cyan;
+  background-color: rgba(192,192,255,0.5);
+}
+span.filter.filterAgainst {
+  background-color: yellow;
+  background-color: rgba(255,255,0,0.5);
 }
