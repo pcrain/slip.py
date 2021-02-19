@@ -41,6 +41,9 @@
       var d = "#dd-sort [data-sid='"+q["sort"]+"']";
       setSort($(d)[0]);
     }
+    if ("query" in q) {
+      $("#s-query").val(q["query"].replace("+"," "));
+    }
   }
   function checkSubmit(e) {
      if(e && e.keyCode == 13) {
