@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #Flask imports
-from flask import render_template, jsonify, flash, redirect, url_for, request, current_app, send_from_directory
+from flask import render_template, jsonify, flash, redirect, url_for, request, current_app, send_from_directory, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import or_, and_
 
@@ -16,7 +16,7 @@ from app.generators import * #TODO: should do this more cleanly
 #Standard imports
 from datetime import datetime, timedelta
 from collections import defaultdict
-import os, math, shutil, ntpath
+import os, math, shutil, ntpath, time, json
 
 #Function to call before any requests
 @bp.before_request
@@ -147,7 +147,8 @@ def last_search():
 #Route for an individual replay's analysis page
 @bp.route('/replays/<r>')
 def replay_analysis_page(r):
-    rdata  = Replay.query.filter_by(checksum=r).first()
+    rdata      = Replay.query.filter_by(checksum=r).first()
+    replay_loc = os.path.join(rdata.filedir,rdata.filename)
 
     #(COMPATIBILITY) Move replay from old to new location
     compat_path  = get_analysis_compat_path(r,current_app.config)
@@ -160,17 +161,21 @@ def replay_analysis_page(r):
     #(COMPATIBILITY) Compress output as needed
     zip_path = raw_path+".gz"
     if not os.path.exists(zip_path):
-      if not os.path.exists(raw_path):
-        #Try to generate a new analysis on the fly
-        # slippc_analysis(local_file,afile,current_app.config)
-        pass #TODO: handle this
-      else:
+      try:
+        if not os.path.exists(raw_path):
+          #Try to generate a new analysis on the fly
+          slippc_analysis(replay_loc,raw_path,current_app.config)
         compressedJsonWrite(jsonRead(raw_path),zip_path)
+      except:
+        return abort(418) #File doesn't exist and we've waited long enough
     if os.path.exists(raw_path):
       os.remove(raw_path)
 
-    exists = os.path.exists(os.path.join(rdata.filedir,rdata.filename))
-    replay = load_analysis(zip_path)
+    exists = os.path.exists(replay_loc)
+    try:
+      replay = load_analysis(zip_path)
+    except:
+      return abort(418) #File doesn't exist and we've waited long enough
     replay["__original_filename"] = rdata.filename
     replay["__filedir"]           = rdata.filedir
     replay["__checksum"]          = r

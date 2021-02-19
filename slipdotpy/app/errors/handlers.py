@@ -10,6 +10,11 @@ import os, traceback
 def not_found_error(error):
     return render_template('404.html.j2'), 404
 
+#Route for 418 (teapot) page (used for loading replay stats with missing analysis JSONS)
+@bp.app_errorhandler(418)
+def teapot_error(error):
+    return render_template('418.html.j2'), 404
+
 #Route for 500 (internal server error) page
 @bp.app_errorhandler(500)
 def internal_error(error):
