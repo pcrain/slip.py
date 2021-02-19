@@ -9,7 +9,6 @@ class Config(object):
     SIMULTANEOUS_UPLOADS           = 100
     MAX_SCAN_THREADS               = multiprocessing.cpu_count()
     DEF_STATS                      = "?submit=&ndays=28" #Default stats page query
-    ANALYZE_MISSING                = True #If True, recreate JSONs when entries aren't found in database
 
     #Global template variables
     SITE_VERSION                   = "0.7.0"

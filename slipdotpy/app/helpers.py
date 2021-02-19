@@ -73,31 +73,44 @@ def call(coms,inp="",ignoreErrors=False,returnErrors=False):
 def shcall(comstring,inp="",ignoreErrors=False,returnErrors=False):
   return call(shlex.split(comstring),inp,ignoreErrors,returnErrors)
 
-#Load replay data from an analysis JSON
-def load_replay(rf):
+def slippc_analysis(ifile,afile,conf):
+  return call([conf['ANALYZER'],"-i",ifile,"-a",afile],returnErrors=True)
+
+#Load an analysis file from a raw or GZ compressed JSON
+def load_analysis(rf):
+  if rf[-3:] == ".gz":
+    r = compressedJsonRead(rf)
+  else:
     with open(rf,'r') as jin:
-        r                  = json.loads(jin.read())
-        r["__file"]        = rf.split("/")[-1].split(".")[0]
-        r["__act_length"]  = r["game_length"]-84
-        r["__game_length"] = get_game_length(r["game_length"]-123)
-        r["__game_secs"]   = frame_to_timestamp(r["game_length"])
-        r["p"]             = r["players"]
-        for p in r["p"]:
-            for k,v in p["interaction_frames"].items():
-                p["__int"+k] = v
-            for k,v in p["interaction_damage"].items():
-                p["__dmg"+k] = v
-            p["__air_pct"] = 100 * p["air_frames"] / (r["game_length"])
-            p["__l_cancels_hit_pct"] = 0
-            if p["l_cancels_hit"] > 0:
-                p["__l_cancels_hit_pct"] = 100 * p["l_cancels_hit"] / (p["l_cancels_hit"]+p["l_cancels_missed"])
-            p["__tech_hit_pct"] = 100
-            p["__techs_hit"] = p["techs"]+p["walltechs"]+p["walltechjumps"]
-            if p["missed_techs"] > 0:
-                p["__tech_hit_pct"] = 100 * (p["__techs_hit"]) / (p["__techs_hit"]+p["missed_techs"])
-            p["num_moves_landed"] = p["moves_landed"]["_total"]
-            p["__display_tag"] = get_display_tag(p)
-    return r
+      r = json.loads(jin.read())
+  r["__file"] = (ntpath.basename(rf)
+    .replace(".slp","")
+    .replace(".zlp","")
+    .replace(".xz",""))
+  return load_analysis_base(r)
+
+#Load replay data from an analysis JSON
+def load_analysis_base(r):
+  r["__act_length"]  = r["game_length"]-84
+  r["__game_length"] = get_game_length(r["game_length"]-123)
+  r["__game_secs"]   = frame_to_timestamp(r["game_length"])
+  r["p"]             = r["players"]
+  for p in r["p"]:
+      for k,v in p["interaction_frames"].items():
+          p["__int"+k] = v
+      for k,v in p["interaction_damage"].items():
+          p["__dmg"+k] = v
+      p["__air_pct"] = 100 * p["air_frames"] / (r["game_length"])
+      p["__l_cancels_hit_pct"] = 0
+      if p["l_cancels_hit"] > 0:
+          p["__l_cancels_hit_pct"] = 100 * p["l_cancels_hit"] / (p["l_cancels_hit"]+p["l_cancels_missed"])
+      p["__tech_hit_pct"] = 100
+      p["__techs_hit"] = p["techs"]+p["walltechs"]+p["walltechjumps"]
+      if p["missed_techs"] > 0:
+          p["__tech_hit_pct"] = 100 * (p["__techs_hit"]) / (p["__techs_hit"]+p["missed_techs"])
+      p["num_moves_landed"] = p["moves_landed"]["_total"]
+      p["__display_tag"] = get_display_tag(p)
+  return r
 
 #Determine a nice dispaly tag based on Display Name, Slippi Code, CSS Code, or Port
 def get_display_tag(p):
@@ -334,15 +347,27 @@ def check_single_folder_for_slippi_files(parent,base,*,click=None,classd="",indb
       }
   return None
 
-#Compress writing example
+#Load, compress, and save a JSON file
+def compressJson(ifile,ofile):
+  with open(ifile, 'r') as fin:
+    with gzip.GzipFile(ofile, 'w') as fout:
+      fout.write(fin.read().encode('utf-8'))
+  return True
+
+#Compress JSON writing
 def compressedJsonWrite(data,filename):
   with gzip.GzipFile(filename, 'w') as fout:
     fout.write(json.dumps(data).encode('utf-8'))
 
-#Compress reading example
+#Compress JSON reading
 def compressedJsonRead(filename):
   with gzip.GzipFile(filename, 'r') as fin:
     return json.loads(fin.read().decode('utf-8'))
+
+#Regular JSON reading
+def jsonRead(filename):
+  with open(filename, 'r') as fin:
+    return json.loads(fin.read())
 
 #Open JSON in OS's default JSON viewer
 def openJson(path,mimetype="application/json"):
@@ -442,6 +467,14 @@ def frame_to_timestamp(f):
   f -= s*60
   c  = int(100*f/60.0)
   return f"{m}:{s:02d}.{c:02d}"
+
+def get_analysis_path(r,conf):
+  dirname = os.path.join(conf['REPLAY_FOLDER'], r[0:2], r[2:4])
+  os.makedirs(dirname,exist_ok=True)
+  return os.path.join(dirname, r+".slp.json")
+
+def get_analysis_compat_path(r,conf):
+  return os.path.join(conf['REPLAY_FOLDER'], r+".slp.json")
 
 if os.name == 'nt':
   from ctypes import windll

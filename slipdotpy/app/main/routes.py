@@ -16,7 +16,7 @@ from app.generators import * #TODO: should do this more cleanly
 #Standard imports
 from datetime import datetime, timedelta
 from collections import defaultdict
-import os, math
+import os, math, shutil, ntpath
 
 #Function to call before any requests
 @bp.before_request
@@ -148,9 +148,29 @@ def last_search():
 @bp.route('/replays/<r>')
 def replay_analysis_page(r):
     rdata  = Replay.query.filter_by(checksum=r).first()
-    rpath  = os.path.join(current_app.config['REPLAY_FOLDER'], r+".slp.json")
+
+    #(COMPATIBILITY) Move replay from old to new location
+    compat_path  = get_analysis_compat_path(r,current_app.config)
+    raw_path     = get_analysis_path(r,current_app.config)
+    #Move from compatibility folder to new folder as needed
+    if os.path.exists(compat_path):
+      os.makedirs(ntpath.dirname(raw_path),exist_ok=True)
+      shutil.move(compat_path,raw_path)
+
+    #(COMPATIBILITY) Compress output as needed
+    zip_path = raw_path+".gz"
+    if not os.path.exists(zip_path):
+      if not os.path.exists(raw_path):
+        #Try to generate a new analysis on the fly
+        # slippc_analysis(local_file,afile,current_app.config)
+        pass #TODO: handle this
+      else:
+        compressedJsonWrite(jsonRead(raw_path),zip_path)
+    if os.path.exists(raw_path):
+      os.remove(raw_path)
+
     exists = os.path.exists(os.path.join(rdata.filedir,rdata.filename))
-    replay = load_replay(rpath)
+    replay = load_analysis(zip_path)
     replay["__original_filename"] = rdata.filename
     replay["__filedir"]           = rdata.filedir
     replay["__checksum"]          = r

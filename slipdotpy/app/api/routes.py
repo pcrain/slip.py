@@ -297,9 +297,13 @@ def api_get_scan_log(s):
 #API call for opening a raw analysis JSON
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
-  openJson(
-    os.path.join(
-      current_app.config['REPLAY_FOLDER'],r+".slp.json"))
+  jpath = os.path.join(current_app.config['REPLAY_FOLDER'],r[0:2],r[2:4],r+".slp.json")
+  if not os.path.exists(jpath):
+    if not os.path.exists(jpath+".gz"):
+      return jsonify({"status" : "fail", "error" : f"{jpath} and {jpath}.gz not found"})
+    with open(jpath,'w') as fout:
+      json.dump(compressedJsonRead(jpath+".gz"), fout, indent=1, sort_keys=False)
+  openJson(jpath)
   return jsonify({"status" : "ok"})
 
 #API calls for playing replays
@@ -504,13 +508,14 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
       pass #If we didn't run into any missing files, this is a new file!
 
     #Determine the file name for the analysis JSON
-    afile = os.path.join(conf['REPLAY_FOLDER'], m+".slp.json")
+    afile = get_analysis_path(m,conf=conf)
+    zfile = afile+".gz"
 
     #If an analysis of this replay already exists, don't bother analyzing it
-    if conf["ANALYZE_MISSING"] or (not os.path.exists(afile)):
+    if not (os.path.exists(afile) or os.path.exists(zfile)):
       #Try to actually analyze the replay; if we can't, call it a day
       try:
-        _,err = call([conf['ANALYZER'],"-i",local_file,"-a",afile],returnErrors=True)
+        _,err = slippc_analysis(local_file,afile,conf)
         if not os.path.exists(afile):
           jret["status"]    = 'Failure'
           jret["error"]     = 'Failed to parse replay; got the following error: <br/><code>'+err+'</code>'
@@ -522,10 +527,14 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
         jret["traceback"] = err.split("\n")
         return jret
 
+    if not os.path.exists(zfile):
+      compressJson(afile,zfile)
+    if os.path.exists(afile):
+      os.remove(afile)
 
     #Load replay data from the analysis JSON
     try:
-      rdata             = load_replay(afile)
+      rdata             = load_analysis(zfile)
     except:
       err               = traceback.format_exc()
       jret["status"]    = 'Failure'
