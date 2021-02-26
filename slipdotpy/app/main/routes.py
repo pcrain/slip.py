@@ -345,6 +345,9 @@ def get_stats(tag,args):
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
     }
+  fourstocks = [0 for i in range(26)]                  #Four-stock counter for use with stats
+
+  #Set up header banner
   if args.get("ndays",False):
     stats["subtitle"] = f"Showing stats for {actualgames} games in the last {ndays} days"
   elif args.get("ngames",False):
@@ -435,7 +438,11 @@ def get_stats(tag,args):
     if ochar < 26:
       stats["opp"][ochar][4]  += stockdiff
       stats["opp"][ochar][5]  += ppunish
-      stats["opp"][ochar][6]  += pdefense
+      if pdefense > 0:
+        stats["opp"][ochar][6]  += pdefense
+      else:
+        # stats["opp"][ochar][6]  += pdefense
+        fourstocks[ochar] += 1
       stats["opp"][ochar][7]  += pneutral
       stats["opp"][ochar][8]  += paccuracy
       stats["opp"][ochar][9]  += pcontrol
@@ -448,6 +455,18 @@ def get_stats(tag,args):
       dmap[gdate][-ostocks] += 1
 
     olast = otag #Set last-played opponent
+
+  #Take the mean of all of our stats in each matchup
+  for ochar in range(26):
+    ogames = sum(stats["opp"][ochar][1:4])
+    for stat in range(4,11):
+      if ogames > 0:
+        if stat == 6: #For survivabilty stat, we ignore 4-stock games
+          games_that_count = (ogames-fourstocks[ochar])
+        else:
+          games_that_count = (ogames)
+        if games_that_count > 0:
+          stats["opp"][ochar][stat] /= games_that_count
 
   #Reconcile Slippi codes with display tags
   for o in top.values():    o.append(tagmap[o[-1]])
@@ -478,13 +497,6 @@ def get_stats(tag,args):
       elif i > 9:
         stats["splitpoint"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
       break
-
-  #Take the mean of all of our stats in each matchup
-  for ochar in range(26):
-    ogames = sum(stats["opp"][ochar][1:4])
-    for stat in range(4,11):
-      if ogames > 0:
-        stats["opp"][ochar][stat] /= ogames
 
   #Game dates are already sorted, so convert it to proper bar chart format
   gdata = [{

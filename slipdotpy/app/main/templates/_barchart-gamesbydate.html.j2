@@ -1,6 +1,7 @@
 {# https://bl.ocks.org/WillTurman/9c4142944f6132855fd318350f552b7b #}
 <script>
   var jdat     = {{ (jsondata|tojson) }};  //Import JSON data passed through Jinja
+  // alert(JSON.stringify(jdat))
 
   var klab     = jdat["meta"]["labels"];  //Item keys corresponding to X-axis labels
   var lshow    = jdat["meta"]["lshow"];   //Labels to show on X axis for
@@ -18,8 +19,9 @@
 
   var cwidth      = 1920;  //Width of canvas
   var cheight     = 600;   //Height of canvas
-  var mleft       = 80;     //Lefthand margin
-  var mright      = 80;     //Righthand margin
+  var mvert       = 0.8;   //Vertical margin above / below bars
+  var mleft       = 80;    //Lefthand margin
+  var mright      = 80;    //Righthand margin
   var xfill       = 0.5;   //Amount of free space bars fill up
   var maxfontsize = 60;    //Scaling factor for maximum font size
 
@@ -37,14 +39,16 @@
   var margin   = {
     top    : 20,         //Leave enough space for title
     right  : mright,
-    bottom : xspace*1.5, //Leave enough space for labels
+    // bottom : xspace*1.5, //Causes problems if you only have wins against a character, and they're all on the same day, there are problems
+    bottom : 20, //Leave enough space for labels
     left   : mleft
     };
 
   //Other pertinent scales and measurements
   var height     = cheight - margin.top - margin.bottom;
   var x          = d3.scaleOrdinal().domain(labels).range(d3.range(barwidth, width, xspace));
-  var y          = d3.scaleLinear().range([height, margin.top]);
+  // var y          = d3.scaleLinear().range([height, margin.top]);
+  var y          = d3.scaleLinear().range([height-margin.bottom, margin.top]);
   var center     = d3.scaleLinear().range([barwidth/2, width-barwidth/2-2]);
   if (kstack) {  //Show win / loss by stock count as gradient
     var color      = d3.scaleOrdinal().range(
@@ -66,8 +70,8 @@
   var centerLine = d3.axisTop(center).ticks(0);
 
   data.forEach(function(d) {
-    var y0_pos = 0;
-    var y0_neg = 0;
+    var y0_pos = +0;
+    var y0_neg = -0;
 
     if (kstack) {  //Create mappings for stacked bar chart
       d["winby1"] = d["Stocks"][0];
@@ -98,11 +102,34 @@
   })
 
   //Scale y axis to max of wins / losses in both directions
-  var y_min = d3.min(data, function(d) { return -d[kneg] - 16; });
-  var y_max = d3.max(data, function(d) { return  d[kpos] + 16; });
+  var y_min = d3.min(data, function(d) {
+    return -d[kneg];
+  });
+  var y_max = d3.max(data, function(d) {
+    return  d[kpos];
+  });
+  // if (y_min > -200) {
+  //   y_min = -200;
+  // }
+  // if (y_max < 200) {
+  //   y_max = 200;
+  // }
+  var zero_min = y_min == 0;
+  var zero_max = y_max == 0;
+  var zeroed = zero_min || zero_max;
+  // if (y_min == 0) {
+  //   y_min = -y_max;
+  // } else if (y_max == 0) {
+  //   y_max = -y_min;
+  // }
+  y_min /= mvert;
+  y_max /= mvert;
+  // alert(y_min);
+  // alert(y_max);
 
   x.domain(labels);
   y.domain([y_min, y_max]);
+  // alert(y(0));
   color.domain(["wins,losses"]);
   // color.domain(["winby1","winby2","winby3","winby4","loseby4","loseby3","loseby2","loseby1"]);
 
@@ -119,6 +146,7 @@
     .attr("class", "svgtooltip")
     .style("opacity", 0);
 
+  //Tick marks and dates
   svg.append("g")
     .attr("class", "x svgaxis")
     .attr("transform", "translate(0," + height + ")")
@@ -138,6 +166,7 @@
   //   .attr("class", "y svgaxis")
   //   .call(yAxis);
 
+  // Center line
   svg.append("g")
     .attr("class", "centerline")
     .attr("transform", "translate(0," + y(0) + ")")
@@ -195,8 +224,18 @@
     .enter().append("rect")
       .attr("width", barwidth)
       .attr("x", -barwidth/2 )
-      .attr("y", function(d) { return y(d.y0); })
-      .attr("height", function(d) { return Math.abs(y(d.y0) - y(d.y1)); })
+      .attr("y", function(d) {
+        // if (zero_min) return 100;
+        var p = y(d.y0);
+        // alert(p);
+        return p;
+      })
+      .attr("height", function(d) {
+        // if (zero_min) return 100;
+        var h = Math.abs(y(d.y0) - y(d.y1));
+        // alert(h);
+        return h;
+      })
       .attr("stroke-width", 1)
       .attr("stroke", "rgba(255,255,255,0.25)")
       .style("fill", function(d) { return color(d.key); } )
