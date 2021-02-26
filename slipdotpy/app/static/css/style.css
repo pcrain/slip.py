@@ -1748,3 +1748,11 @@ td.conncode a {
 tr:hover td.conncode, td.conncode a:hover {
   color : cyan;
 }
+
+th.sorted {
+  color: cyan;
+}
+
+th.sorted.rev {
+  color: red;
+}

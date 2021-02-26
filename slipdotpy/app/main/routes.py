@@ -432,13 +432,14 @@ def get_stats(tag,args):
     top[otag][res] += 1
 
     #Increment appropriate stats
-    stats["opp"][ochar][4]  += stockdiff
-    stats["opp"][ochar][5]  += ppunish
-    stats["opp"][ochar][6]  += pdefense
-    stats["opp"][ochar][7]  += pneutral
-    stats["opp"][ochar][8]  += paccuracy
-    stats["opp"][ochar][9]  += pcontrol
-    stats["opp"][ochar][10] += pspeed
+    if ochar < 26:
+      stats["opp"][ochar][4]  += stockdiff
+      stats["opp"][ochar][5]  += ppunish
+      stats["opp"][ochar][6]  += pdefense
+      stats["opp"][ochar][7]  += pneutral
+      stats["opp"][ochar][8]  += paccuracy
+      stats["opp"][ochar][9]  += pcontrol
+      stats["opp"][ochar][10] += pspeed
 
     #Track dates of matches that fall within the requested date range
     if pstocks > ostocks:
