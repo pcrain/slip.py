@@ -108,8 +108,8 @@ def load_analysis_base(r):
       p["__techs_hit"] = p["techs"]+p["walltechs"]+p["walltechjumps"]
       if p["missed_techs"] > 0:
           p["__tech_hit_pct"] = 100 * (p["__techs_hit"]) / (p["__techs_hit"]+p["missed_techs"])
-      p["num_moves_landed"] = p["moves_landed"]["_total"]
       p["__display_tag"] = get_display_tag(p)
+      p["move_accuracy"] *= 100
   return r
 
 #Determine a nice dispaly tag based on Display Name, Slippi Code, CSS Code, or Port

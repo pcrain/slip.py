@@ -154,6 +154,12 @@ def api_delete_missing_replays():
 def api_delete_all_replays():
   Replay.query.delete()
   db.session.commit()
+  #Reset global state and caching variables
+  current_app.config['SCAN_IN_PROGRESS']     = False
+  current_app.config['SCAN_REQUEST_STOPPED'] = False
+  current_app.config["LAST_SEARCH"]          = ""
+  current_app.config["REPLAY_NAV"]           = {}
+  current_app.config["REPLAY_NAV_QUERY"]     = None
   return jsonify({"status" : "ok"})
 
 #[Deprecated] API call for deleting all slip.py user data
@@ -447,8 +453,13 @@ def scan_job(token):
   current_app.config["BG_MESSAGES"].append(
     "Background Scan Completed! Reload page to see changes."
     )
-  current_app.config['SCAN_IN_PROGRESS'] = False
+
+  #Reset global state and caching variables
+  current_app.config['SCAN_IN_PROGRESS']     = False
   current_app.config['SCAN_REQUEST_STOPPED'] = False
+  current_app.config["LAST_SEARCH"]          = ""
+  current_app.config["REPLAY_NAV"]           = {}
+  current_app.config["REPLAY_NAV_QUERY"]     = None
 
   #Clean up
   logline(tmpfile,f"Scan completed")
@@ -544,30 +555,52 @@ def analyze_replay(local_file,jret,*,nokeep=False,conf={},checksums={}):
 
     #Add the replay to the database
     replay = Replay(
-        checksum  = m,
-        filename  = jret["filename_secure"],
-        filedir   = jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
-        filesize  = os.stat(local_file).st_size,
-        user_id   = -1,
-        is_public = True,
-        frames    = rdata["game_length"],
-        uploaded  = jret["time"],
-        played    = try_parse_time(rdata["game_time"][:19]),
-        p1char    = rdata["players"][0]["char_id"],
-        p1color   = rdata["players"][0]["color"],
-        p1stocks  = rdata["players"][0]["end_stocks"],
-        p1metatag = rdata["players"][0]["tag_player"],
-        p1csstag  = rdata["players"][0]["tag_css"],
-        p1codetag = rdata["players"][0]["tag_code"],
-        p1display = get_display_tag(rdata["players"][0]),
-        p2char    = rdata["players"][1]["char_id"],
-        p2color   = rdata["players"][1]["color"],
-        p2stocks  = rdata["players"][1]["end_stocks"],
-        p2metatag = rdata["players"][1]["tag_player"],
-        p2csstag  = rdata["players"][1]["tag_css"],
-        p2codetag = rdata["players"][1]["tag_code"],
-        p2display = get_display_tag(rdata["players"][1]),
-        stage     = rdata["stage_id"],
+        checksum   = m,
+        filename   = jret["filename_secure"],
+        filedir    = jret.get("filedir","").replace(conf['DATA_FOLDER'],""),
+        filesize   = os.stat(local_file).st_size,
+        user_id    = -1,
+        is_public  = True,
+        frames     = rdata["game_length"],
+        uploaded   = jret["time"],
+        played     = try_parse_time(rdata["game_time"][:19]),
+        p1char     = rdata["players"][0]["char_id"],
+        p1color    = rdata["players"][0]["color"],
+        p1stocks   = rdata["players"][0]["end_stocks"],
+        p1metatag  = rdata["players"][0]["tag_player"],
+        p1csstag   = rdata["players"][0]["tag_css"],
+        p1codetag  = rdata["players"][0]["tag_code"],
+        p1display  = get_display_tag(rdata["players"][0]),
+        p2char     = rdata["players"][1]["char_id"],
+        p2color    = rdata["players"][1]["color"],
+        p2stocks   = rdata["players"][1]["end_stocks"],
+        p2metatag  = rdata["players"][1]["tag_player"],
+        p2csstag   = rdata["players"][1]["tag_css"],
+        p2codetag  = rdata["players"][1]["tag_code"],
+        p2display  = get_display_tag(rdata["players"][1]),
+        stage      = rdata["stage_id"],
+        winner     = rdata["winner_port"],
+        timer      = rdata["start_minutes"],
+        # p1bstocks  = 4, #TODO: need to actually get these later
+        # p2bstocks  = 4, #  assume 4 for now
+        p1_stats   = False,
+        p2_stats   = False,
+        # game_flags = 0, #TODO: actually determine if tourney legal later
+        p1punish   = rdata["players"][0]["mean_kill_openings"],
+        p1defense  = rdata["players"][0]["mean_death_percent"],
+        p1neutral  = rdata["players"][0]["neutral_wins_per_min"],
+        p1speed    = rdata["players"][0]["actions_per_min"],
+        p1control  = rdata["players"][0]["actionability"],
+        p1accuracy = rdata["players"][0]["move_accuracy"],
+        p2punish   = rdata["players"][1]["mean_kill_openings"],
+        p2defense  = rdata["players"][1]["mean_death_percent"],
+        p2neutral  = rdata["players"][1]["neutral_wins_per_min"],
+        p2speed    = rdata["players"][1]["actions_per_min"],
+        p2control  = rdata["players"][1]["actionability"],
+        p2accuracy = rdata["players"][1]["move_accuracy"],
+        ver_slippi = rdata["slippi_version"],
+        ver_stats  = rdata["analyzer_version"],
+        ver_viz    = conf["SITE_VERSION"],
         )
 
     #Return metadata JSON to caller

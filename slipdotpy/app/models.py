@@ -5,7 +5,7 @@ from app                      import db, login, cache
 from app.config               import Config
 from flask_login              import UserMixin, AnonymousUserMixin
 from sqlalchemy               import or_, and_, event
-from flask_sqlalchemy_caching import FromCache
+# from flask_sqlalchemy_caching import FromCache
 import sys, os
 
 class Anonymous(AnonymousUserMixin):
@@ -17,7 +17,7 @@ class Anonymous(AnonymousUserMixin):
     pubs = Replay.query.filter_by(is_public=1)
     pubs = pubs.order_by(Replay.played.desc())
     pubs = pubs.group_by(Replay.checksum)
-    pubs = pubs.options(FromCache(cache))
+    # pubs = pubs.options(FromCache(cache))
     return pubs
     # return pubs.order_by(Replay.uploaded.desc())
 
@@ -107,32 +107,56 @@ def insert_initial_values(*args, **kwargs):
 
 
 class Replay(db.Model):
-    id        = db.Column(db.Integer, primary_key=True)
-    checksum  = db.Column(db.String(32))
-    filename  = db.Column(db.String())
-    filedir   = db.Column(db.String())
-    filesize  = db.Column(db.Integer)
-    user_id   = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
-    played    = db.Column(db.String(19), index=True)
-    uploaded  = db.Column(db.String(19), index=True)
-    is_public = db.Column(db.Boolean, default=True)
+    id         = db.Column(db.Integer, primary_key=True)
+    checksum   = db.Column(db.String(32))
+    filename   = db.Column(db.String())
+    filedir    = db.Column(db.String())
+    filesize   = db.Column(db.Integer)
+    user_id    = db.Column(db.Integer, db.ForeignKey('user.id'), default=-1)
+    played     = db.Column(db.String(19), index=True)
+    uploaded   = db.Column(db.String(19), index=True)
+    is_public  = db.Column(db.Boolean, default=True)
 
-    frames    = db.Column(db.Integer)
-    p1char    = db.Column(db.Integer)
-    p1color   = db.Column(db.Integer)
-    p1stocks  = db.Column(db.Integer)
-    p1metatag = db.Column(db.String(128))
-    p1csstag  = db.Column(db.String(8))
-    p1codetag = db.Column(db.String(8))
-    p1display = db.Column(db.String(128))
-    p2char    = db.Column(db.Integer)
-    p2color   = db.Column(db.Integer)
-    p2stocks  = db.Column(db.Integer)
-    p2metatag = db.Column(db.String(128))
-    p2csstag  = db.Column(db.String(8))
-    p2codetag = db.Column(db.String(8))
-    p2display = db.Column(db.String(128))
-    stage     = db.Column(db.Integer)
+    frames     = db.Column(db.Integer)
+    p1char     = db.Column(db.Integer)
+    p1color    = db.Column(db.Integer)
+    p1stocks   = db.Column(db.Integer)
+    p1metatag  = db.Column(db.String(128))
+    p1csstag   = db.Column(db.String(8))
+    p1codetag  = db.Column(db.String(8))
+    p1display  = db.Column(db.String(128))
+    p2char     = db.Column(db.Integer)
+    p2color    = db.Column(db.Integer)
+    p2stocks   = db.Column(db.Integer)
+    p2metatag  = db.Column(db.String(128))
+    p2csstag   = db.Column(db.String(8))
+    p2codetag  = db.Column(db.String(8))
+    p2display  = db.Column(db.String(128))
+    stage      = db.Column(db.Integer)
+
+    #0.7.0 additions
+    winner     = db.Column(db.Integer,  default=-1)
+    timer      = db.Column(db.Integer,  default=480)
+    p1bstocks  = db.Column(db.Integer,  default=4)
+    p2bstocks  = db.Column(db.Integer,  default=4)
+    p1_stats   = db.Column(db.Boolean,  default=False) #Future tracking for if stats are cached
+    p2_stats   = db.Column(db.Boolean,  default=False) #Future tracking for if stats are cached
+    game_flags = db.Column(db.Integer,  default=0) #Future tourney legal / item flags
+    p1punish   = db.Column(db.Float,    default=-1)
+    p1defense  = db.Column(db.Float,    default=-1)
+    p1neutral  = db.Column(db.Float,    default=-1)
+    p1speed    = db.Column(db.Float,    default=-1)
+    p1control  = db.Column(db.Float,    default=-1)
+    p1accuracy = db.Column(db.Float,    default=-1)
+    p2punish   = db.Column(db.Float,    default=-1)
+    p2defense  = db.Column(db.Float,    default=-1)
+    p2neutral  = db.Column(db.Float,    default=-1)
+    p2speed    = db.Column(db.Float,    default=-1)
+    p2control  = db.Column(db.Float,    default=-1)
+    p2accuracy = db.Column(db.Float,    default=-1)
+    ver_slippi = db.Column(db.String(8),default="") #slippi version
+    ver_stats  = db.Column(db.String(8),default="") #slippc analyzer version
+    ver_viz    = db.Column(db.String(8),default=Config.SITE_VERSION) #slip.py browser version
 
     def search(args):
         query     = args.get("query","")
@@ -221,7 +245,7 @@ class Replay(db.Model):
 
         q = q.group_by(Replay.checksum)
 
-        q = q.options(FromCache(cache))
+        # q = q.options(FromCache(cache))
 
         return q
 

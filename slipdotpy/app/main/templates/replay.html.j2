@@ -194,8 +194,8 @@
 
         <div class="heading">Neutral</div>
           {{    _stathi("Neutral Wins"       , "neutral_wins"                )}}
-          {{    _stathi("Counterattacks"     , "counters"                    )}}
           {{    _stathi("Pokes"              , "pokes"                       )}}
+          {{    _stathi("Counterattacks"     , "counters"                    )}}
           {{    _stathi("Reverse Edgeguards" , "reverse_edgeguards"          )}}
           {{    _stathi("Dashdances"         , "dashdances"                  )}}
           {{    _stathi("Short Hops"         , "short_hops"                  )}}
@@ -207,7 +207,9 @@
           {{    _stathi("Damage / Opening" , "mean_opening_percent"          )}}
           {{    _statlo("Openings / Kill"  , "mean_kill_openings"            )}}
           {{    _statlo("Damage / Kill"    , "mean_kill_percent"             )}}
-          {{    _stathi("Moves Landed"     , "num_moves_landed"              )}}
+          {{    _stathi("Moves Landed"     , "total_moves_landed"            )}}
+          {{    _stathi("Moves Used"       , "total_moves_used"              )}}
+          {{    _stathi("Move Accuracy"    , "move_accuracy",     "%.1f", "%")}}
           {{    _stathi("Shield Stabs"     , "shield_stabs"                  )}}
           {{    _stathi("Shields Broken"   , "shield_breaks"                 )}}
           {{    _stathi("Grabs Landed"     , "grabs"                         )}}
@@ -230,6 +232,7 @@
         <div class="heading">Technique</div>
           {{ _stathipct("L Cancels Hit"            ,"l_cancels_hit","__l_cancels_hit_pct" )}}
           {{ _stathipct("Techs Hit"                ,"__techs_hit",  "__tech_hit_pct"      )}}
+          {{    _statlo("Mean Actionability"       ,"actionability",           "%.1f",  "")}}
           {{    _stathi("Wavedashes"               ,"wavedashes"                          )}}
           {{    _stathi("Wavelands"                ,"wavelands"                           )}}
           {{    _stathi("Shield Drops"             ,"shield_drops"                        )}}
