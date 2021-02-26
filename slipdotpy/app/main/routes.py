@@ -340,7 +340,7 @@ def get_stats(tag,args):
     "name"   : tag,                                    #Display name for player we're showing stats for
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
-    "opp"    : [[i]+[0,0,0] for i in range(26)],       #Char,Win,Lose,Draw against each character
+    "opp"    : [[i]+[0,0,0]+[0,0,0,0,0,0,0] for i in range(26)], #Char,Win,Lose,Draw + avg. Stocks,Punish,Defense,Neutral,Accuracy,Control,APM against each character
     "stg"    : [[legal[i]]+[0,0,0] for i in range(7)], #Stage,Win,Lose,Draw against each legal stage + others
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
@@ -386,18 +386,25 @@ def get_stats(tag,args):
   #Compute stats for each returned result
   for rnum,r in enumerate(rows):
     #Determine player's and opponent's stats for the game
-    gdate   = localStamp(r.played)[:10]              #date the game was played
-    p       = 1 if r.p1codetag == tag else 2         #player's port number
-    pname   = r.p1metatag if p == 1 else r.p2metatag #player's display name
-    oname   = r.p2metatag if p == 1 else r.p1metatag #opponent's display tag
-    o       = 3-p                                    #opponent's port number
-    otag    = r.p2codetag if p == 1 else r.p1codetag #opponent's code tag
-    pstocks = r.p1stocks  if p == 1 else r.p2stocks  #player stock count
-    ostocks = r.p2stocks  if p == 1 else r.p1stocks  #opponent stock count
-    pcolor  = r.p1color   if p == 1 else r.p2color   #player costume choice
-    pchar   = r.p1char    if p == 1 else r.p2char    #player character choice
-    ochar   = r.p2char    if p == 1 else r.p1char    #opponent character choice
-    stage   = r.stage                                #stage selected
+    gdate     = localStamp(r.played)[:10]                #date the game was played
+    p         = 1 if r.p1codetag == tag else 2           #player's port number
+    pname     = r.p1metatag  if p == 1 else r.p2metatag  #player's display name
+    oname     = r.p2metatag  if p == 1 else r.p1metatag  #opponent's display tag
+    o         = 3-p                                      #opponent's port number
+    otag      = r.p2codetag  if p == 1 else r.p1codetag  #opponent's code tag
+    pstocks   = r.p1stocks   if p == 1 else r.p2stocks   #player stock count
+    ostocks   = r.p2stocks   if p == 1 else r.p1stocks   #opponent stock count
+    pcolor    = r.p1color    if p == 1 else r.p2color    #player costume choice
+    pchar     = r.p1char     if p == 1 else r.p2char     #player character choice
+    ochar     = r.p2char     if p == 1 else r.p1char     #opponent character choice
+    stage     = r.stage
+    stockdiff = (r.p1stocks-r.p2stocks)*(1 if p == 1 else -1) #stock difference between players
+    ppunish   = r.p1punish   if p == 1 else r.p2punish   #player character punish
+    pdefense  = r.p1defense  if p == 1 else r.p2defense  #player character defense
+    pneutral  = r.p1neutral  if p == 1 else r.p2neutral  #player character neutral
+    paccuracy = r.p1accuracy if p == 1 else r.p2accuracy #player character accuracy
+    pcontrol  = r.p1control  if p == 1 else r.p2control  #player character control
+    pspeed    = r.p1speed    if p == 1 else r.p2speed    #player character speed
 
     #Get latest dates, display names and tags
     if stats["name"] == tag:
@@ -424,6 +431,15 @@ def get_stats(tag,args):
     stats["stg"][stagemap.get(stage,-1)][res+1]  += 1
     top[otag][res] += 1
 
+    #Increment appropriate stats
+    stats["opp"][ochar][4]  += stockdiff
+    stats["opp"][ochar][5]  += ppunish
+    stats["opp"][ochar][6]  += pdefense
+    stats["opp"][ochar][7]  += pneutral
+    stats["opp"][ochar][8]  += paccuracy
+    stats["opp"][ochar][9]  += pcontrol
+    stats["opp"][ochar][10] += pspeed
+
     #Track dates of matches that fall within the requested date range
     if pstocks > ostocks:
       dmap[gdate][pstocks-1] += 1
@@ -435,8 +451,6 @@ def get_stats(tag,args):
   #Reconcile Slippi codes with display tags
   for o in top.values():    o.append(tagmap[o[-1]])
   for o in stats["recent"]: o.append(tagmap[o[-1]])
-
-  # print(dmap)
 
   #Sort own characters by number of times picked
   stats["char"] = sorted(stats["char"],key=lambda x: sum(x[1:]), reverse=True)
@@ -463,6 +477,13 @@ def get_stats(tag,args):
       elif i > 9:
         stats["splitpoint"] = math.ceil(i/2)  #Determine the halfway point for the characters we've played
       break
+
+  #Take the mean of all of our stats in each matchup
+  for ochar in range(26):
+    ogames = sum(stats["opp"][ochar][1:4])
+    for stat in range(4,11):
+      if ogames > 0:
+        stats["opp"][ochar][stat] /= ogames
 
   #Game dates are already sorted, so convert it to proper bar chart format
   gdata = [{

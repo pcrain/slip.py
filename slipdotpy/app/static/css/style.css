@@ -1271,6 +1271,17 @@ span#statsGrid {
       "matchups  matchups  stages     mostgames  newgames"
       ;
   }
+
+  span#statsGrid.extendedChars {
+    grid-template-areas   :
+      "title     title     tabs       tabs       tabs"
+      "subtitle  subtitle  tabs       tabs       tabs"
+      "hextchars hextchars hhistory   hhistory   hhistory"
+      "extchars  extchars  history    history    history"
+      "extchars  extchars  hstages    hmostgames hnewgames"
+      "extchars  extchars  stages     mostgames  newgames"
+      ;
+  }
 }
 
 @media screen and (min-width: 800px) and (max-width: 1200px) {
@@ -1317,6 +1328,26 @@ span#statsGrid {
       "history"
       ;
   }
+}
+
+span#statsGrid.extendedChars span#hchars,
+span#statsGrid.extendedChars span#statsChars,
+span#statsGrid.extendedChars span#hmatchups,
+span#statsGrid.extendedChars span#statsMatchups,
+span#hextchars,
+span#statsExtChars {
+  display: none;
+  grid-area: none;
+}
+
+span#statsGrid.extendedChars span#hextchars {
+  display: initial;
+  grid-area: hextchars;
+}
+
+span#statsGrid.extendedChars span#statsExtChars {
+  display: initial;
+  grid-area: extchars;
 }
 
 span#statsStages {

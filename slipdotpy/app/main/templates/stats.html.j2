@@ -1,7 +1,8 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
-    <span id="statsGrid">
+    {# <span id="statsGrid"> #}
+    <span id="statsGrid" class="extendedChars">
       <span class="title">
         Player Stats for
         <span id="statsPlayerHeader" title="Click to reset all filters" onclick="dropAllFilters()">
@@ -78,12 +79,14 @@
 
       {# Mains, Secondaries, and Other Characters #}
       <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
+      <span class="h" id="hextchars"><hr/>Extended Matchup stats<hr/></span>
       <span class="h" id="hmatchups"><hr/>Win Rates by Matchup<hr/></span>
       <span class="h" id="hstages"><hr/>Win Rates by Stage<hr/></span>
       <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
       <span class="h" id="hhistory"><hr/>Games Played by Date<hr/></span>
 
+      {# Player character stats #}
       <span id="statsChars">
         {% for c in stats.char %}
           {% set playcount = (c[1:7]|sum) %}
@@ -186,6 +189,43 @@
             {% endfor %}
           </table>
         {% endif %}
+      </span>
+
+      {# Extended stats for each matchup #}
+      <span id="statsExtChars">
+        <table id="byExtChar">
+          <tr>
+            <th title="Opponent's Character">Vs.</th>
+            <th>W</th>
+            <th>L</th>
+            <th>Win%</th>
+            <th>Stk.</th>
+            <th>Pun.</th>
+            <th>Def.</th>
+            <th>Neut.</th>
+            <th>Acc.</th>
+            <th>Ctrl.</th>
+            <th>APM</th>
+          </tr>
+          {% for mu in stats.opp %}
+            {% if mu[1]+mu[2] > 0 %}
+              {% set click="changeOpponent("+(mu[0]|string)+")" %}
+              <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
+                <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
+                <td>{{mu[1]}}</td>
+                <td>{{mu[2]}}</td>
+                <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}%</td>
+                <td>{{"%.1f"|format(mu[4])}}</td>
+                <td>{{"%.1f"|format(mu[5])}}</td>
+                <td>{{"%.1f"|format(mu[6])}}</td>
+                <td>{{"%.1f"|format(mu[7])}}</td>
+                <td>{{"%.1f"|format(mu[8])}}</td>
+                <td>{{"%.1f"|format(mu[9])}}</td>
+                <td>{{"%.1f"|format(mu[10])}}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
       </span>
 
       <span id="statsStages">
