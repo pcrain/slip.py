@@ -1878,7 +1878,7 @@ span.inline-header {
 
 .tooltip {
   background       : rgba(0,0,0,0.85);
-  border           : 4px solid rgba(192,224,255,0.35);
+  border           : 4px solid rgba(192,224,255,1);
   pointer-events   : none;
   opacity          : 0;
   display          : inline-block;
@@ -1897,7 +1897,7 @@ span.inline-header {
     -1px  1px 0 #000,
      1px  1px 0 #000;
 
-   animation: border-flash 1.5s infinite ease-in-out forwards;
+   /*animation: border-flash 1.5s infinite ease-in-out forwards;*/
 
 /*OLD dancing border code https://www.w3schools.com/css/css3_animations.asp */
 /*  background: linear-gradient(90deg, purple 50%, transparent 50%), linear-gradient(90deg, purple 50%, transparent 50%), linear-gradient(0deg, purple 50%, transparent 50%), linear-gradient(0deg, purple 50%, transparent 50%), rgba(0,0,0,0.85);
@@ -1914,7 +1914,7 @@ span.inline-header {
   /*animation: border-dance 2s infinite ease-in-out alternate;*/
   /*animation-fill-mode: both;*/
   /*transition: opacity 0.25s ease, background-position 1s ease;*/
-  transition: opacity 0.25s ease;
+  transition: border 0.5s ease, opacity 0.2s ease;
 }
 
 @keyframes border-flash {
@@ -1939,6 +1939,7 @@ span.inline-header {
 }
 
 .tooltip.active {
+  border           : 4px solid rgba(192,224,255,0.35);
   opacity: 1;
   /*margin-top: 5px;*/
   background-position: 212px 0px, 0px 116px, 0px 0px, 216px 116px;
