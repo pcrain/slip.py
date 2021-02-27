@@ -67,7 +67,7 @@
     {# <span id="statsGrid"> #}
     <span id="statsGrid">
       <span class="title">
-        Player Stats for
+        Stats for
         <span id="statsPlayerHeader" title="Click to reset all filters" onclick="dropAllFilters()">
           {{stats.name}} ({{stats.tag}})
         </span>
@@ -336,18 +336,18 @@
             <tr title="Click to filter by games against {{o[3]}}" class="clickable" onclick="changeAgainst('{{o[3]}}')">
               {% if o[0] > o[1] %}
                 {% if o[1] == 0 %}
-                  {% set outcome = "p" %}
+                  {% set outcome = "p" %} {# perfect #}
                 {% else %}
-                  {% set outcome = "w" %}
+                  {% set outcome = "w" %} {# winning #}
                 {% endif %}
               {% elif o[1] > o[0] %}
                 {% if o[0] == 0 %}
-                  {% set outcome = "f" %}
+                  {% set outcome = "f" %} {# F #}
                 {% else %}
-                  {% set outcome = "l" %}
+                  {% set outcome = "l" %} {# losing #}
                 {% endif %}
               {% else %}
-                {% set outcome = "d" %}
+                {% set outcome = "d" %}  {# draw #}
               {% endif %}
               {# <td><a href="/stats/{{ o[3]|replace('#', '_', 1) }}{{DEF_STATS}}">{{ o[3] }}</a></td> #}
               <td class="conncode" onclick="changeAgainst('{{o[3]}}')">{{ o[3] }}</td>

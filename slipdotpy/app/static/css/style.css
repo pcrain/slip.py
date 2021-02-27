@@ -1896,11 +1896,52 @@ span.inline-header {
      1px -1px 0 #000,
     -1px  1px 0 #000,
      1px  1px 0 #000;
+
+   animation: border-flash 1.5s infinite ease-in-out forwards;
+
+/*OLD dancing border code https://www.w3schools.com/css/css3_animations.asp */
+/*  background: linear-gradient(90deg, purple 50%, transparent 50%), linear-gradient(90deg, purple 50%, transparent 50%), linear-gradient(0deg, purple 50%, transparent 50%), linear-gradient(0deg, purple 50%, transparent 50%), rgba(0,0,0,0.85);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;*/
+/*  background:
+    linear-gradient(90deg, transparent 50%, transparent 50%),
+    linear-gradient(90deg, rgba(192,224,255,0.35) 50%, transparent 50%),
+    rgba(0,0,0,0.85);
+  background-repeat: repeat-x, repeat-x;
+  background-size: 15px 4px, 15px 4px;
+  padding: 10px;*/
+  /*animation: border-dance 8s infinite linear;*/
+  /*animation: border-dance 2s infinite ease-in-out alternate;*/
+  /*animation-fill-mode: both;*/
+  /*transition: opacity 0.25s ease, background-position 1s ease;*/
+  transition: opacity 0.25s ease;
 }
+
+@keyframes border-flash {
+  0% {
+    border-bottom: 4px solid rgba(192,224,255,0.35);
+  }
+  20% {
+    border-bottom: 4px solid rgba(255,255,255,0.55);
+  }
+  100% {
+    border-bottom: 4px solid rgba(192,224,255,0.35);
+  }
+}
+
+@keyframes border-dance {
+  0% {
+    background-position: 0 0, 100% 100%, 0 100%, 100% 0;
+  }
+  100% {
+    background-position: 100% 0, 0 100%, 0 0, 100% 100%;
+  }
+}
+
 .tooltip.active {
   opacity: 1;
   /*margin-top: 5px;*/
-  transition: opacity 0.25s ease;
+  background-position: 212px 0px, 0px 116px, 0px 0px, 216px 116px;
 }
 .tooltip.out {
   opacity: 0;
