@@ -4,17 +4,23 @@
 }
 
 :root {
+  --body-color                 : rgba(48,40,48,1.00);
+  --general-bg-color-dim       : rgba(24,20,24,0.35);
+
   --form-fg                    : rgba(255,255,255,1);
-  --form-bg                    : rgba(24,20,24,1.00);
   --form-fg-disabled           : rgba(255,255,255,0.5);
-  --form-bg-disabled           : rgba(24,20,24,0.5);
   --form-fg-error              : rgba(255,255,255,1);
+  --form-bg                    : rgba(24,20,24,1.00);
+  --form-bg-disabled           : rgba(24,20,24,0.5);
   --form-bg-error              : rgba(255,0,0,0.5);
   --form-bg-danger             : rgba(255,0,0,0.5);
-  --form-bg-active             : rgba(0,255,0,0.5);
   --form-border                : rgba(128,128,128,1);
-  --form-border-hl             : rgba(128,128,255,1);
-  --form-border-focus          : rgba(128,220,160,1);
+  --form-border-focus          : rgba(128,220,160,1);  /*steelblue*/
+
+  --general-hl-color-dim       : rgba(70,130,180,0.35);
+  --general-hl-color           : rgba(70,130,180,0.55);
+  --general-hl-color-bright    : rgba(70,130,180,0.85);
+  --general-hl-color-max       : rgba(70,130,180,1.00);
 
   --css-dropdown-width         : 300px;
   --stage-dropdown-width       : 380px;
@@ -22,16 +28,14 @@
   --header-height              : 48px;
   --form-button-height         : 32px;
 
-  --combomove-border           : rgba(112,112,112,1.0);
-
-  --color-EDGEGUARDING         : hsla(120,100%,75%,0.45);
-  --color-PRESSURING           : hsla(60,100%,75%,0.45);
-  --color-PUNISHING            : hsla(30,100%,75%,0.45);
-  --color-TECHCHASING          : hsla(300,100%,75%,0.45);
-  --color-SHARKING             : hsla(240,100%,75%,0.45);
-  --color-DEATH                : hsla(0,0%,100%,0.45);
-  --color-POKING               : hsla(0,0%,50%,0.45);
-  --color-DEFENSE              : hsla(0,100%,75%,0.45);
+  --color-EDGEGUARDING         : hsla(120,100%, 75%,0.45);
+  --color-PRESSURING           : hsla(60, 100%, 75%,0.45);
+  --color-PUNISHING            : hsla(30, 100%, 75%,0.45);
+  --color-TECHCHASING          : hsla(300,100%, 75%,0.45);
+  --color-SHARKING             : hsla(240,100%, 75%,0.45);
+  --color-DEATH                : hsla(0,    0%,100%,0.45);
+  --color-POKING               : hsla(0,    0%, 50%,0.45);
+  --color-DEFENSE              : hsla(0,  100%, 75%,0.45);
 }
 
 /* Get rid of dotted line on focus */
@@ -41,25 +45,27 @@ input::-moz-focus-inner, button::-moz-focus-inner {
 
 body {
   color            : white;
-  background-color : rgba(48,40,48,1.00);
+  background-color : var(--body-color);
   font-family      : 'Proza';
   margin           : 0;
   overflow-y       : hidden;  /* To deal with tooltip weirdness */
 }
 
 a {
-  color: rgba(120,120,255,1.0);
-  outline: 0;
+  /*color: rgba(120,120,255,1.0);*/
+  color   : var(--general-hl-color-max);
+  outline : 0;
 }
 
 a:visited {
-  color: rgba(160,0,160,1.0);
+  /*color: rgba(160,0,160,1.0);*/
+  color: var(--general-hl-color-max);
 }
 
 code {
-  display: block;
-  text-align: left;
-  white-space: pre-wrap;
+  display     : block;
+  text-align  : left;
+  white-space : pre-wrap;
 }
 
 form {
@@ -67,18 +73,18 @@ form {
 }
 
 input, button, .fake-button {
-  height: var(--form-button-height);
-  color: var(--form-fg);
-  background-color: var(--form-bg);
-  text-align: center;
-  border-top:     1px solid transparent;
-  border-bottom:  1px solid transparent;
-  border-right  : 4px solid var(--form-border);
-  border-left   : 4px solid var(--form-border);
-  border-radius : 4px;
-  margin: 4px 0;
-  cursor: pointer;
-  font-weight: bold;
+  height           : var(--form-button-height);
+  color            : var(--form-fg);
+  background-color : var(--form-bg);
+  text-align       : center;
+  border-top       : 1px solid transparent;
+  border-bottom    : 1px solid transparent;
+  border-right     : 4px solid var(--form-border);
+  border-left      : 4px solid var(--form-border);
+  border-radius    : 4px;
+  margin           : 4px 0;
+  cursor           : pointer;
+  font-weight      : bold;
 }
 
 button.inline {
@@ -88,19 +94,20 @@ button.inline {
 }
 
 button.standout {
-  background-color : var(--form-bg-active);
-  padding-left: 4px;
-  padding-right: 4px;
-  text-shadow:
-    -1px -1px 0 #000,
-     1px -1px 0 #000,
-    -1px  1px 0 #000,
-     1px  1px 0 #000;
+  background-color   : var(--general-hl-color-bright);
+  /*background-color : var(--form-bg-active);*/
+  padding-left       : 4px;
+  padding-right      : 4px;
+  text-shadow        :
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;
 }
 
 button.standout::before {
-  content: "➤";
-  margin-right: 0px;
+  content      : "➤";
+  margin-right : 0px;
 }
 
 button.missing, button.missing:disabled {
@@ -121,18 +128,18 @@ button.hasinfo::after {
 }
 
 input:disabled, button:disabled {
-  color: var(--form-fg-disabled);
-  background-color: var(--form-bg-disabled);
+  color            : var(--form-fg-disabled);
+  background-color : var(--form-bg-disabled);
 }
 
 input:hover:enabled, button:hover:enabled {
-  border-color: var(--form-border-hl);
+  border-color: var(--general-hl-color-bright);
 }
 
 input:enabled:focus, button:enabled:focus, input:hover:enabled:focus, button:hover:enabled:focus {
-  border-top:    1px dashed var(--form-border-focus);
-  border-bottom: 1px dashed var(--form-border-focus);
-  border-color: var(--form-border-focus);
+  border-top    : 1px solid var(--form-border-focus);
+  border-bottom : 1px solid var(--form-border-focus);
+  border-color  : var(--form-border-focus);
 }
 
 button:disabled {
@@ -143,7 +150,7 @@ button.has-dropdown::after {
   content : "\25BC";
   display : inline-block;
   width   : 20px;
-  color   : lightslategray;
+  color   : var(--general-hl-color-dim);
 }
 
 button.has-dropdown.noarrow::after {
@@ -151,29 +158,29 @@ button.has-dropdown.noarrow::after {
 }
 
 input[type="submit"], .fake-submit {
-  font-weight: bold;
-  color: var(--form-bg);
-  background-color: var(--form-fg);
+  font-weight      : bold;
+  color            : var(--form-bg);
+  background-color : var(--form-fg);
   /*border-right  : 4px solid var(--form-border);*/
   /*border-left   : 4px solid var(--form-border);*/
 }
 
 input[type="submit"]:disabled, .fake-submit:disabled {
-  color: var(--form-bg-disabled);
-  background-color: var(--form-fg-disabled);
-  cursor: default;
+  color            : var(--form-bg-disabled);
+  background-color : var(--form-fg-disabled);
+  cursor           : default;
 }
 
 input[type="text"]::placeholder {
   /*color: rgba(255,255,255,0.75);*/
-  font-weight: bold;
-  opacity: 1;
+  font-weight : bold;
+  opacity     : 1;
 }
 
 input[type="text"].placeholderLabel::placeholder {
-  text-align: center;
-  font-size: 20px;
-  color: white;
+  text-align : center;
+  font-size  : 20px;
+  color      : white;
 }
 
 input[type="text"]:focus {
@@ -206,10 +213,10 @@ button img {
   /* Causes rendering issues */
   /*display: inline-block; */
   /* Works better than inline-block, but untested */
-  display: inline;
-  margin: 0;
-  outline:none; /* Disable border when focused */
-  width: 100%;
+  display : inline;
+  margin  : 0;
+  outline : none; /* Disable border when focused */
+  width   : 100%;
 }
 
 header {
@@ -282,27 +289,27 @@ span#navbar_title {
 }
 
 span#navbar_links {
-  grid-area: links;
-  justify-self: right;
-  align-self: center;
+  grid-area    : links;
+  justify-self : right;
+  align-self   : center;
 }
 
 #navbar_title {
-  grid-area: title;
-  justify-self: left;
+  grid-area    : title;
+  justify-self : left;
 
-  color          : white;
-  font-size      : calc(var(--header-height) / 2);
-  font-family    : 'Proza';
-  font-weight    : bold;
+  color        : white;
+  font-size    : calc(var(--header-height) / 2);
+  font-family  : 'Proza';
+  font-weight  : bold;
 }
 
 #site_header_icon {
-  justify-self: left;
-  grid-area: ticon;
-  filter: drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 1px lightgray) ;
-  margin-left: 10px;
-  height: calc(var(--header-height));
+  justify-self : left;
+  grid-area    : ticon;
+  filter       : drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 1px lightgray) ;
+  margin-left  : 10px;
+  height       : calc(var(--header-height));
 }
 
 span#site_header_icon img {
@@ -318,9 +325,9 @@ span#site_header_icon img {
 }
 
 a.nav_top_link {
-  display: inline-grid;
-  grid-template-areas: "icon label";
-  margin: 0 10px;
+  display             : inline-grid;
+  grid-template-areas : "icon label";
+  margin              : 0 10px;
 }
 
 a.nav_top_link img   {
@@ -348,8 +355,8 @@ a {
 }
 
 span.flex-row {
-  display: flex;
-  justify-content: center;
+  display         : flex;
+  justify-content : center;
 }
 
 img.dead {
@@ -358,26 +365,26 @@ img.dead {
 
 td.stage {
   /*display:block;*/
-  width:200px;
-  height:25px;
   /*object-fit: cover;*/
-  background-position: -25px -60px;
-  text-shadow:
-    -1px -1px 0 #000,
-     1px -1px 0 #000,
-    -1px  1px 0 #000,
-     1px  1px 0 #000;
+  width               : 200px;
+  height              : 25px;
+  background-position : -25px -60px;
+  text-shadow         :
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;
 }
 
 span.stacked-bar-graph span {
-    display: inline-block;
-    height:100%;
-    box-sizing: border-box;
-    float: left;
-    color: #fff;
-    font-weight: bold;
-    font-family: arial, sans-serif;
-    padding: 10px 0;
+    display     : inline-block;
+    height      : 100%;
+    box-sizing  : border-box;
+    float       : left;
+    color       : #fff;
+    font-weight : bold;
+    font-family : arial, sans-serif;
+    padding     : 10px 0;
 }
 
 tr.padrow {
@@ -427,14 +434,14 @@ span#intBreakdown {
 }
 
 div#replayDataOuterGrid {
-  grid-template-columns: 1fr 400px 1fr;
-  display: inline-grid;
-  grid-template-areas:
+  margin                : 0 8px;
+  grid-template-columns : 1fr 400px 1fr;
+  display               : inline-grid;
+  grid-template-areas   :
     "leftbuttons mini       rightbuttons"
     "breakdown   breakdown  breakdown"
     "p1grid      innergrid  p2grid"
     ;
-  margin: 0 8px;
 }
 
 div #replayDataOuterGrid div#leftbuttonGrid {
@@ -452,12 +459,12 @@ div #replayDataOuterGrid div#rightbuttonGrid {
 }
 
 div#replayDataOuterGrid div.heading {
-  font-weight: bold;
-  background-color: rgba(0,0,0,0.25);
-  border: 1px solid steelblue;
-  border-radius: 25px;
-  margin: 5px 0;
-  padding: 0 8px;
+  font-weight      : bold;
+  background-color : var(--general-bg-color-dim);
+  border           : 1px solid var(--general-hl-color-max);
+  border-radius    : 25px;
+  margin           : 5px 0;
+  padding          : 0 8px;
 }
 
 div#replayDataOuterGrid span.replaySummary {
@@ -466,49 +473,49 @@ div#replayDataOuterGrid span.replaySummary {
 }
 
 div.comboGrid {
-  display: grid;
+  display        : grid;
+  grid-auto-rows : min-content;
   /*grid-column-gap: 0;*/
   /*grid-row-gap: 0;*/
-  grid-auto-rows: min-content;
 }
 
 div.p1item, div.p2item {
-  padding: 0 4px;
-  align-self: center;
+  padding    : 0 4px;
+  align-self : center;
 }
 
 div#replayPlayer1Grid div.comboGrid {
-  grid-area: movelist1;
-  grid-template-columns: 48px 1fr;
+  grid-area             : movelist1;
+  grid-template-columns : 48px 1fr;
 }
 
 div#replayPlayer2Grid div.comboGrid {
-  grid-area: movelist2;
-  grid-template-columns: 1fr 48px;
+  grid-area             : movelist2;
+  grid-template-columns : 1fr 48px;
 }
 
 div#replayPlayer1Grid, div#replayPlayer2Grid {
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: 32px auto;
-  width: 100%;
+  display               : grid;
+  grid-template-columns : auto;
+  grid-template-rows    : 32px auto;
+  width                 : 100%;
 }
 div#replayPlayer1Grid {
-  grid-area: p1grid;
-  grid-template-areas:
+  justify-self        : right;
+  grid-area           : p1grid;
+  grid-template-areas :
     "moves1"
     "movelist1"
     ;
-  justify-self: right;
 }
 
 div#replayPlayer2Grid {
-  grid-area: p2grid;
-  grid-template-areas:
+  justify-self        : left;
+  grid-area           : p2grid;
+  grid-template-areas :
     "moves2"
     "movelist2"
     ;
-  justify-self: left;
 }
 
 div#replayDataGrid {
@@ -526,30 +533,30 @@ div#replayDataGrid .stat    { grid-column: 2; }
 div#replayDataGrid .p2item  { grid-column: 3; }
 
 .hl-green { background-color: rgba(128,255,128,0.25); }
-.hl-red { background-color: rgba(255,128,128,0.25); }
+.hl-red   { background-color: rgba(255,128,128,0.25); }
 
 span.comboWrapper {
   /*display: inline-block;*/
   /*background-color: yellow;*/
-  padding: 6px 16px;
-  align-self: center;
-  justify-self: center;
+  padding      : 6px 16px;
+  align-self   : center;
+  justify-self : center;
 }
 
 span.comboResult {
-  align-self: center;
-  justify-self: center;
-  text-shadow:
+  align-self       : center;
+  justify-self     : center;
+  border           : 1px solid black;
+  border-radius    : 6px;
+  background-color : rgba(255,255,255,0.2);
+  padding          : 1px 2px;
+  margin           : 1px;
+  width            : 100%;
+  text-shadow      :
     -1px -1px 1px rgba(0,0,0,0.8),
      1px -1px 1px rgba(0,0,0,0.8),
     -1px  1px 1px rgba(0,0,0,0.8),
      1px  1px 1px rgba(0,0,0,0.8);
-   border: 1px solid black;
-   border-radius: 6px;
-   background-color: rgba(255,255,255,0.2);
-   padding: 1px 2px;
-   margin: 1px;
-   width: 100%;
 }
 
 span.comboResult span.timer {
@@ -557,27 +564,27 @@ span.comboResult span.timer {
 }
 
 span.combomoveWrapper {
-  display: inline-block;
-  transform: skewX(-10deg);
+  display   : inline-block;
+  transform : skewX(-10deg);
+  border    : 1px solid var(--general-hl-color-dim);
+  padding   : 2px 8px;
+  margin    : -1px -2px 0 -2px;
   /*border: 1px solid black;*/
-  border: 1px solid var(--combomove-border);
   /*border-radius: 4px;*/
-  padding: 2px 8px;
-  margin: -1px -2px 0 -2px;
 }
 
 span.combomove {
-  transform: skewX(10deg);
-  display: inline-block;
-  white-space: nowrap;
-  /*margin: 1px 0;*/
-  /*clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);*/
-  /*line-height: 32px;*/
-  text-shadow:
+  transform   : skewX(10deg);
+  display     : inline-block;
+  white-space : nowrap;
+  text-shadow :
     -1px -1px 1px rgba(0,0,0,0.8),
      1px -1px 1px rgba(0,0,0,0.8),
     -1px  1px 1px rgba(0,0,0,0.8),
      1px  1px 1px rgba(0,0,0,0.8);
+  /*margin: 1px 0;*/
+  /*clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);*/
+  /*line-height: 32px;*/
 }
 
 div.empty {
@@ -585,8 +592,8 @@ div.empty {
 }
 
 span.combomove img {
-  white-space:nowrap;
-  vertical-align: text-bottom;
+  white-space    :nowrap;
+  vertical-align : text-bottom;
 }
 
 img.killicon {
@@ -594,21 +601,21 @@ img.killicon {
 }
 
 span.bigcombo {
-  color: yellow;
-  font-weight: bold;
+  color       : yellow;
+  font-weight : bold;
 }
 
 span.hugecombo {
-  color: red;
-  font-weight: bold;
+  color       : red;
+  font-weight : bold;
 }
 
 span.replaySummary {
-  border: 4px solid rgba(0,0,0,0.5);
-  border-radius: 8px;
-  margin: 10px;
-  display: inline-grid;
-  grid-template-areas:
+  border              : 4px solid rgba(0,0,0,0.5);
+  border-radius       : 8px;
+  margin              : 10px;
+  display             : inline-grid;
+  grid-template-areas :
     "p1tag    stagegrid p2tag"
     "p1stats  stagegrid p2stats"
     "p1stats  .         p2stats"
@@ -616,7 +623,7 @@ span.replaySummary {
 }
 
 span.replaySummary:hover {
-  border: 4px solid var(--form-border-hl);
+  border: 4px solid var(--general-hl-color-bright);
 }
 
 span.hoverWrapper {
@@ -631,47 +638,30 @@ span.hoverWrapper:hover span.replayStageGrid {
 }
 
 span.replayStageGrid {
-  /*transition: 0.1s ease;*/
-  width:  250px;
-  height: 150px;
-  /*background-color: gray;*/
-  /*background-blend-mode: multiply;*/
-  grid-area: stagegrid;
-  display: inline-grid;
-/*  grid-template-areas:
-    "filename filename filename filename filename filename filename"
-    "p1char   p1tag    p1tag    p1tag    p1tag    p1tag    p2char"
-    "p1char   p2tag    p2tag    p2tag    p2tag    p2tag    p2char"
-    "p1win    .        timer    timer    timer    .        p2win"
-    "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
-    ;*/
-  /*grid-template-areas:
-    "filename filename filename filename filename filename filename"
-    "p1char   p1win    .        .        .        p2win    p2char"
-    "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
-    "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
-    "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
-    ;*/
-  grid-template-areas:
+  width                 : 250px;
+  height                : 150px;
+  grid-area             : stagegrid;
+  display               : inline-grid;
+  grid-template-columns : 50px 1fr 1fr 1fr 1fr 1fr 50px;
+  font-size             : 14px;
+  grid-template-areas   :
     "filename filename filename filename filename filename filename"
     "p1char   .        .        .        .        .        p2char"
     /*"p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"*/
     "p1tag    p1tag    p1tag    .        p2tag    p2tag    p2tag"
     "p1stocks p1stocks p1stocks vs       p2stocks p2stocks p2stocks"
     ;
-  grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr 50px;
-  font-size: 14px;
 }
 
 a.nostyle:link {
-    text-decoration: inherit;
-    color: inherit;
+    text-decoration : inherit;
+    color           : inherit;
     /*cursor: auto;*/
 }
 
 a.nostyle:visited {
-    text-decoration: inherit;
-    color: inherit;
+    text-decoration : inherit;
+    color           : inherit;
     /*cursor: auto;*/
 }
 
@@ -710,8 +700,6 @@ span.rs-stocks1, span.rs-stocks2, span.rs-vs {
 }
 
 span.rs-stocks1 img.dead, span.rs-stocks2 img.dead {
-  /*opacity: 1.0;*/
-  /*filter: none;*/
   -webkit-filter: grayscale(100%);
   -moz-filter:    grayscale(100%);
   -ms-filter:     grayscale(100%);
@@ -719,14 +707,11 @@ span.rs-stocks1 img.dead, span.rs-stocks2 img.dead {
 }
 
 span.rs-tag1, span.rs-tag2 {
-  /*background-color: black;*/
-  align-self: center;
-  padding: 4px 2px;
-  white-space: nowrap;
-
-  /*width: 250px;*/
-  overflow: hidden;
-  text-overflow: ellipsis;
+  align-self    : center;
+  padding       : 4px 2px;
+  white-space   : nowrap;
+  overflow      : hidden;
+  text-overflow : ellipsis;
 }
 
 img.rs-win1, img.rs-win2 {
@@ -766,18 +751,18 @@ span.rs-char2 { grid-area: p2char; justify-self: end; -webkit-transform: scaleX(
   padding: 4px !important;
 }
 .dd-option-image, .dd-selected-image {
-  height: 24px;
-  float: none !important;
-  margin-right: 0 !important;
+  height       : 24px;
+  float        : none !important;
+  margin-right : 0 !important;
 }
 .dd-selected-text {
-  line-height: inherit !important;
-  vertical-align: bottom;
+  line-height    : inherit !important;
+  vertical-align : bottom;
 }
 
 #charDropDown1, #charDropDown2, #stageDropDown {
-  display: inline-block;
-  vertical-align: bottom;
+  display        : inline-block;
+  vertical-align : bottom;
 }
 
 span.dd-pointer-down {
@@ -789,15 +774,15 @@ span.dd-pointer-down {
 }
 
 .hideUntilParentClicked.unhiding {
-  display: initial;
-  opacity: 0;
-  overflow: hidden;
-  transition: opacity 0.7s ease;
+  display    : initial;
+  opacity    : 0;
+  overflow   : hidden;
+  transition : opacity 0.7s ease;
 }
 
 .hideUntilParentClicked.unhiding.noLongerHidden {
-  opacity: 1;
-  overflow: initial;
+  opacity  : 1;
+  overflow : initial;
 }
 
 #replaySearchBar {
@@ -805,15 +790,15 @@ span.dd-pointer-down {
 }
 
 #replayListingGrid {
-  display: grid;
-  grid-template-areas:
+  display               : grid;
+  grid-template-columns : 1fr auto 1fr;
+  grid-column-gap       : 15px;
+  align-items           : baseline;
+  grid-template-areas   :
     "previous search  next"
     "dirs     dirs    dirs"
     "replays  replays replays"
     ;
-  grid-template-columns: 1fr auto 1fr;
-  grid-column-gap: 15px;
-  align-items: baseline;
 }
 
 #replayListingGrid button#prev:disabled, #replayListingGrid a#prev-a {
@@ -835,25 +820,21 @@ span.dd-pointer-down {
 }
 
 form#searchForm {
-  display: inline-grid;
-  grid-template-areas:
+  grid-template-rows  : repeat(1,var(--form-button-height));
+  display             : inline-grid;
+  grid-template-areas :
     "search search search search search"
     "stage  p1     p1c    p1s    sort"
     "stage  p2     p2c    p2s    submit"
     "lenmin lenmin lenmax lenmax submit"
     ;
-  /*grid-template-columns: 20% 20% 20% 20% 20%;*/
-  /*grid-template-columns: repeat(5,1fr);*/
-  grid-template-rows:    repeat(1,var(--form-button-height));
 }
 
 form#searchForm.clicked {
-  grid-column-gap: 8px;
-  grid-row-gap: 8px;
-  grid-template-rows:    repeat(4,var(--form-button-height));
-  /*align-items: center;*/
-  width: 544px;
-  /*height: 400px;*/
+  grid-column-gap    : 8px;
+  grid-row-gap       : 8px;
+  grid-template-rows : repeat(4,var(--form-button-height));
+  width              : 544px;
 }
 
 form#searchForm #s-query      { grid-area: search; }
@@ -871,7 +852,6 @@ form#searchForm #dd-lengthmax { grid-area: lenmax; }
 
 form#searchForm > span {
   height: 100%;
-  /*padding: 8px;*/
 }
 
 form#searchForm > span.unhiding {
@@ -885,8 +865,6 @@ form#searchForm span input {
 form#searchForm button, form#searchForm input {
   width:  100%;
   height: 100%;
-  /*height: calc(100% - 8px);*/
-  /*margin: auto 0;*/
 }
 
 /* Magic dropdown CSS */
@@ -906,22 +884,21 @@ form#searchForm button, form#searchForm input {
   justify-items    : center;
 }
 .has-dropdown:focus+.dropdown {
-  opacity: 1;              /* Restore visibility */
-  pointer-events: initial; /* Restore pointer events */
+  opacity        : 1;       /* Restore visibility */
+  pointer-events : initial; /* Restore pointer events */
 }
 .dropdown:hover {
   /* MAGIC! We have pointer events while our has-dropdown sibling is focused,
      but we can retain them after unfocusing the has-dropdown siblings with this magic pseudoselector.
      Minor problem: pointer events are retained after we click on something until we move the mouse*/
-  opacity: 1;
-  pointer-events: initial;
+  opacity        : 1;
+  pointer-events : initial;
 }
 
 .css-dropdown{
   /*Center under parent*/
   left                  : calc(50% - var(--css-dropdown-width)/2);
   width                 : var(--css-dropdown-width);
-
   height                : 100px;
   grid-template-columns : repeat(9, 1fr);
 }
@@ -939,8 +916,8 @@ form#searchForm button, form#searchForm input {
 }
 
 .color-dropdown img {
-  cursor: pointer;
-  padding: 4px;
+  cursor  : pointer;
+  padding : 4px;
 }
 
 .stock-dropdown {
@@ -954,10 +931,10 @@ form#searchForm button, form#searchForm input {
 }
 
 .stock-dropdown span {
-  cursor  : pointer;
-  padding : 4px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  cursor        : pointer;
+  padding       : 4px;
+  border        : 1px solid transparent;
+  border-radius : 4px;
 }
 
 .stock-dropdown span:hover {
@@ -991,7 +968,6 @@ form#searchForm button, form#searchForm input {
   /*Center under parent*/
   left                  : calc(50% - var(--css-dropdown-width)/2);
   width                 : var(--css-dropdown-width);
-
   grid-template-columns : repeat(1, 1fr);
 }
 
@@ -1011,7 +987,6 @@ form#searchForm button, form#searchForm input {
   /*Center under parent*/
   left                  : calc(50% - var(--css-dropdown-width)/2);
   width                 : var(--css-dropdown-width);
-
   grid-template-columns : repeat(1, 1fr);
 }
 
@@ -1028,13 +1003,13 @@ form#searchForm button, form#searchForm input {
 }
 
 span#uploadOuterGrid {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: rgba(0,0,0,0.25);
-  border: 4px solid rgba(0,0,0,0.25);
-  border-radius: 10px;
-  display: inline-grid;
-  grid-template-areas:
+  margin-top          : 10px;
+  padding             : 10px;
+  background-color    : rgba(0,0,0,0.25);
+  border              : 4px solid rgba(0,0,0,0.25);
+  border-radius       : 10px;
+  display             : inline-grid;
+  grid-template-areas :
     "title"
     "subtitle"
     "innergrid"
@@ -1042,42 +1017,42 @@ span#uploadOuterGrid {
 }
 
 span#uploadGrid {
-  grid-area: innergrid;
-  display: inline-grid;
-  grid-template-columns: repeat(2, auto);
+  grid-area             : innergrid;
+  display               : inline-grid;
+  grid-template-columns : repeat(2, auto);
   align-items           : center;
   justify-items         : center;
-  column-gap: 24px;
+  column-gap            : 24px;
 }
 
 .upload-btn-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  cursor: pointer;
+  position : relative;
+  overflow : hidden;
+  display  : inline-block;
+  cursor   : pointer;
 }
 
 .upload-btn-wrapper input[type=file] {
-  position  : absolute;
-  left      : 0;
-  top       : 0;
-  opacity   : 0;
-  cursor: pointer;
+  position : absolute;
+  left     : 0;
+  top      : 0;
+  opacity  : 0;
+  cursor   : pointer;
 }
 
 a.nostyle.replay-link {
-  font-weight: bold;
-  color: lime;
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 4px;
-  padding: 2px;
+  font-weight   : bold;
+  color         : lime;
+  border        : 1px solid rgba(255,255,255,0.5);
+  border-radius : 4px;
+  padding       : 2px;
 }
 
 a.nostyle.replay-link::after {
-  content: "\2b00";
-  border-left: 1px solid rgba(255,255,255,0.25);
-  padding: 0 4px;
-  margin-left: 4px;
+  content     : "\2b00";
+  border-left : 1px solid rgba(255,255,255,0.25);
+  padding     : 0 4px;
+  margin-left : 4px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
@@ -1107,7 +1082,7 @@ a.nostyle.replay-link::after {
 
 span.dirSummary {
   /*color: inherit;*/
-  cursor:   pointer;
+  cursor              : pointer;
   background-color    : rgba(0,0,0,0.5);
   border              : 2px solid rgba(255,255,255,0.3);
   border-radius       : 8px;
@@ -1116,7 +1091,7 @@ span.dirSummary {
   text-align          : left;
   align-items         : center;
   font-size           : 12px;
-  display             :   inline-grid;
+  display             : inline-grid;
   grid-template-areas :
     "i t"
     "i s"
@@ -1142,23 +1117,23 @@ span.dirSummary.scanned {
 }
 
 span.dirSummary:hover {
-  border: 2px solid var(--form-border-hl);
+  border: 2px solid var(--general-hl-color-bright);
 }
 
 span.dirSummary span.dsIcon {
-  grid-area: i;
-  padding-right: 4px;
+  grid-area     : i;
+  padding-right : 4px;
 }
 
 span.dirSummary span.dsTitle {
-  grid-area: t;
-  font-weight: bold;
-  font-size: 14px;
+  grid-area   : t;
+  font-weight : bold;
+  font-size   : 14px;
 }
 
 span.dirSummary span.dsSubs {
-  color: rgba(192,192,255,1);
-  grid-area: s;
+  color     : rgba(192,192,255,1);
+  grid-area : s;
 }
 
 span.dirSummary span.dsSubs.has0 {
@@ -1166,8 +1141,8 @@ span.dirSummary span.dsSubs.has0 {
 }
 
 span.dirSummary span.dsReplays {
-  color: rgba(192,255,192,1);
-  grid-area: r;
+  color     : rgba(192,255,192,1);
+  grid-area : r;
 }
 
 span.dirSummary span.dsReplays.has0 {
@@ -1175,13 +1150,13 @@ span.dirSummary span.dsReplays.has0 {
 }
 
 span.scanAddEntry, span.scanConfirmEntry, span.scanBackEntry {
-  display    : inline-block;
-  border     : 2px solid rgba(0,0,0,0.5);
+  display       : inline-block;
+  border        : 2px solid rgba(0,0,0,0.5);
   border-radius : 8px;
-  background : rgba(0,255,0,0.5);
-  margin     : 4px;
-  padding    : 4px;
-  cursor     : pointer;
+  background    : rgba(0,255,0,0.5);
+  margin        : 4px;
+  padding       : 4px;
+  cursor        : pointer;
 }
 
 span.scanConfirmEntry {
@@ -1195,13 +1170,13 @@ span.scanBackEntry {
 }
 
 span#scanOuterGrid {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: rgba(0,0,0,0.25);
-  border: 4px solid rgba(0,0,0,0.25);
-  border-radius: 10px;
-  display: inline-grid;
-  grid-template-areas:
+  margin-top          : 10px;
+  padding             : 10px;
+  background-color    : rgba(0,0,0,0.25);
+  border              : 4px solid rgba(0,0,0,0.25);
+  border-radius       : 10px;
+  display             : inline-grid;
+  grid-template-areas :
     "title"
     "subtitle"
     "scanlist"
@@ -1210,18 +1185,17 @@ span#scanOuterGrid {
 }
 
 span#scanOuterGrid span#cur-scans {
-  grid-area: scanlist;
-  margin-bottom: 4px;
+  grid-area     : scanlist;
+  margin-bottom : 4px;
 }
 
 span#scanOuterGrid span#scanGrid {
-  grid-area: innergrid;
-  display: inline-grid;
-  /*grid-template-columns: repeat(1, auto);*/
-  align-items           : center;
-  justify-items         : center;
-  column-gap: 24px;
-  margin: auto;
+  grid-area     : innergrid;
+  display       : inline-grid;
+  align-items   : center;
+  justify-items : center;
+  column-gap    : 24px;
+  margin        : auto;
 }
 
 span#scanGrid span#browseList {
@@ -1235,13 +1209,13 @@ span#browseList {
 }
 
 span#settingsGrid {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: rgba(0,0,0,0.25);
-  border: 4px solid rgba(0,0,0,0.25);
-  border-radius: 10px;
-  display: inline-grid;
-  grid-template-areas:
+  margin-top          : 10px;
+  padding             : 10px;
+  background-color    : rgba(0,0,0,0.25);
+  border              : 4px solid rgba(0,0,0,0.25);
+  border-radius       : 10px;
+  display             : inline-grid;
+  grid-template-areas :
     "title"
     "subtitle"
     "innergrid"
@@ -1268,17 +1242,17 @@ span.subtitle {
 .active-button {
   font-weight      : bold;
   color            : var(--form-fg);
-  background-color : var(--form-bg-active);
+  background-color : var(--general-hl-color);
 }
 
 span#statsGrid {
-  width                 : 95%;
-  margin-top            : 10px;
-  padding               : 10px;
-  background-color      : rgba(0,0,0,0.25);
-  border                : 4px solid rgba(0,0,0,0.25);
-  border-radius         : 10px;
-  display               : inline-grid;
+  width            : 95%;
+  margin-top       : 10px;
+  padding          : 10px;
+  background-color : rgba(0,0,0,0.25);
+  border           : 4px solid rgba(0,0,0,0.25);
+  border-radius    : 10px;
+  display          : inline-grid;
 }
 
 @media screen and (min-width: 1400px) {
@@ -1395,40 +1369,35 @@ span#statsGrid.extendedChars span#hmatchups,
 span#statsGrid.extendedChars span#statsMatchups,
 span#hextchars,
 span#statsExtChars {
-  display: none;
-  grid-area: none;
+  display   : none;
+  grid-area : none;
 }
 
 span#statsGrid.extendedChars span#hextchars {
-  display: initial;
-  grid-area: hextchars;
+  display   : initial;
+  grid-area : hextchars;
 }
 
 span#statsGrid.extendedChars span#statsExtChars {
-  display: initial;
-  grid-area: extchars;
+  display   : initial;
+  grid-area : extchars;
 }
 
 span#statsStages {
-  grid-area: stages;
-  margin-top: 0;
+  grid-area  : stages;
+  margin-top : 0;
 }
 
 span#statsGrid table {
-  margin: auto;
-  text-align: center;
+  margin     : auto;
+  text-align : center;
 }
 
 span#statsGrid td {
-  border: 1px solid rgba(255,255,255,0.3);
-  padding: 0 4px;
-  height: 26px;
+  border  : 1px solid rgba(255,255,255,0.3);
+  padding : 0 4px;
+  height  : 26px;
 }
-
-span#statsMatchups img {
-  /*height: 20px;*/
-}
-
 
 span#statsGrid span.h, span#statsGraphs span.h {
   font-weight : bold;
@@ -1447,8 +1416,8 @@ span#hmostgames { grid-area: hmostgames; }
 span#hhistory   { grid-area: hhistory; }
 
 span#statsHistory {
-  grid-area             : history;
-  height: 320px;
+  grid-area : history;
+  height    : 320px;
 }
 
 span#statsChars {
@@ -1477,12 +1446,12 @@ span#statsChars span.portrait {
 }
 
 span#statsChars span.portrait:hover {
-  border           : 1px solid rgba(255,255,255,0.8);
+  border           : 1px solid var(--general-hl-color-bright);
 }
 
 span.portrait img {
-  width: 100%;
-  cursor: pointer;
+  width  : 100%;
+  cursor : pointer;
 }
 
 span#statsChars span.charGrid.main {
@@ -1513,12 +1482,12 @@ span#statsChars span.charGrid.other {
 
 span#statsChars span.playtime {
   grid-area : playtime;
-  font-size: 12px;
+  font-size : 12px;
 }
 
 span#statsMatchups {
-  grid-area: matchups;
-  display: inline-grid;
+  grid-area           : matchups;
+  display             : inline-grid;
   grid-template-areas :
     'charsb charsm charsw';
   /*grid-template-columns: 1fr min-content;*/
@@ -1537,29 +1506,27 @@ span#statsMatchups.oneColumn {
 }
 
 span#statsMatchups table#byBestChar {
-  grid-area: charsb;
-  margin-top: 0;
+  grid-area  : charsb;
+  margin-top : 0;
 }
 
 span#statsMatchups table#byMidChar {
-  grid-area: charsm;
-  margin-top: 0;
+  grid-area  : charsm;
+  margin-top : 0;
 }
 
 span#statsMatchups table#byWorstChar {
-  grid-area: charsw;
-  margin-top: 0;
+  grid-area  : charsw;
+  margin-top : 0;
 }
 
 
 span#statsMost {
   grid-area: mostgames;
-  /*height: min-content;*/
 }
 
 span#statsNew {
   grid-area: newgames;
-  /*height: min-content;*/
 }
 
 span#statsGrid {
@@ -1594,10 +1561,9 @@ span#statsIndexGrid {
 }
 
 span#statsIndexGrid table {
-  grid-area: ttable;
-  /*width: max-content;*/
-  margin: auto;
-  border-spacing: 10px 4px;
+  grid-area      : ttable;
+  margin         : auto;
+  border-spacing : 10px 4px;
 }
 
 span#settingsGrid span.set {
@@ -1614,10 +1580,10 @@ span.errorblock code {
 }
 
 span.stockcount {
-  font-weight: bold;
-  font-size: 20px;
-  vertical-align: top;
-  text-shadow:
+  font-weight    : bold;
+  font-size      : 20px;
+  vertical-align : top;
+  text-shadow    :
     -1px -1px 1px rgba(0,0,0,0.8),
      1px -1px 1px rgba(0,0,0,0.8),
     -1px  1px 1px rgba(0,0,0,0.8),
@@ -1651,8 +1617,8 @@ span#helpGrid table {
 }
 
 span#helpGrid table td {
-  border: 1px solid rgba(255,255,255,0.3);
-  padding: 0 6px;
+  border  : 1px solid rgba(255,255,255,0.3);
+  padding : 0 6px;
 }
 
 span#statsGraphs {
@@ -1663,7 +1629,6 @@ span#statsGraphs {
   border                : 4px solid rgba(0,0,0,0.25);
   border-radius         : 10px;
   display               : inline-grid;
-
   grid-template-columns : repeat(1, minmax(0, 1fr));
   grid-template-areas   :
     "title"
@@ -1677,9 +1642,9 @@ span#hgamegraph { grid-area: hgamegraph; }
 span#gamegraph  { grid-area: gamegraph; }
 
 .svgaxis path, .svgaxis line {
-  fill: none;
-  stroke: #FFF;
-  shape-rendering: crispEdges;
+  fill            : none;
+  stroke          : #FFF;
+  shape-rendering : crispEdges;
 }
 
 .svg-container {
@@ -1692,8 +1657,8 @@ span#gamegraph  { grid-area: gamegraph; }
 }
 
 .svg-container svg {
-  max-width: 100%;
-  height: 100%;
+  max-width : 100%;
+  height    : 100%;
 }
 
 div.svgtooltip {
@@ -1706,8 +1671,7 @@ div.svgtooltip {
   border         : 2px solid black;
   border-radius  : 8px;
   pointer-events : none;
-
-  text-shadow:
+  text-shadow    :
     -1px -1px 1px rgba(0,0,0,0.8),
      1px -1px 1px rgba(0,0,0,0.8),
     -1px  1px 1px rgba(0,0,0,0.8),
@@ -1721,7 +1685,6 @@ div.svgtooltip {
 div.svgtooltip td { padding: 0 4px; }
 
 span.statFilterButtons {
-  /*width: 100%;*/
   grid-area: tabs;
 }
 
@@ -1744,10 +1707,8 @@ span.filter {
 span.filter::before {
   color            : black;
   text-shadow      : none;
-  /*border           : 1px solid black;*/
   border-radius    : 10px;
   content          : "✕";
-  /*content          : "—";*/
   padding-right    : 2px;
   margin-right     : 2px;
   margin-left      : -4px;
@@ -1773,13 +1734,18 @@ span.filter.filterAgainst {
 }
 
 span#statsPlayerHeader {
-  color           : rgb(200,200,255);
-  font-weight     : bold;
-  cursor          : pointer;
+  color       : white;
+  font-weight : bold;
+  cursor      : pointer;
+  text-shadow :
+    -1px -1px 0 var(--general-hl-color),
+     1px -1px 0 var(--general-hl-color),
+    -1px  1px 0 var(--general-hl-color),
+     1px  1px 0 var(--general-hl-color);
 }
 
 tr.clickable:hover {
-  background-color: rgba(0,192,255,0.3);
+  background-color:  var(--general-hl-color-dim);
 }
 
 td.conncode, span#statsGrid td.conncode {
@@ -1878,7 +1844,7 @@ span.inline-header {
 
 .tooltip {
   background       : rgba(0,0,0,0.85);
-  border           : 4px solid rgba(192,224,255,1);
+  border           : 4px solid var(--general-hl-color-max);
   pointer-events   : none;
   opacity          : 0;
   display          : inline-block;
@@ -1939,12 +1905,10 @@ span.inline-header {
 }
 
 .tooltip.active {
-  border           : 4px solid rgba(192,224,255,0.35);
-  opacity: 1;
-  /*margin-top: 5px;*/
-  background-position: 212px 0px, 0px 116px, 0px 0px, 216px 116px;
+  border              : 4px solid var(--general-hl-color-dim);
+  opacity             : 1;
+  background-position : 212px 0px, 0px 116px, 0px 0px, 216px 116px;
 }
 .tooltip.out {
   opacity: 0;
-  /*margin-top: -20px;*/
 }
