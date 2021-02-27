@@ -469,12 +469,12 @@ def frame_to_timestamp(f):
   return f"{m}:{s:02d}.{c:02d}"
 
 def get_analysis_path(r,conf):
-  dirname = os.path.join(conf['REPLAY_FOLDER'], r[0:2], r[2:4])
+  dirname = os.path.join(conf['ANALYSIS_FOLDER'], r[0:2], r[2:4])
   os.makedirs(dirname,exist_ok=True)
   return os.path.join(dirname, r+".slp.json")
 
 def get_analysis_compat_path(r,conf):
-  return os.path.join(conf['REPLAY_FOLDER'], r+".slp.json")
+  return os.path.join(conf['ANALYSIS_FOLDER'], r+".slp.json")
 
 if os.name == 'nt':
   from ctypes import windll

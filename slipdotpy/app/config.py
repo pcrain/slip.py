@@ -29,7 +29,7 @@ class Config(object):
       DATA_FOLDER                  = os.path.join(os.path.expanduser("~"),".local","share",SITE_INTNAME)
       ANALYZER                     = "slippc"
     UPLOAD_FOLDER                  = os.path.join(DATA_FOLDER,"uploads")
-    REPLAY_FOLDER                  = os.path.join(DATA_FOLDER,"replays")
+    ANALYSIS_FOLDER                = os.path.join(DATA_FOLDER,"replays")
     QUAR_FOLDER                    = os.path.join(DATA_FOLDER,"quarantine")
     LOG_FOLDER                     = os.path.join(DATA_FOLDER,"logs")
     LOG_FILE                       = SITE_INTNAME+'.log'

@@ -212,7 +212,7 @@
         var tval  = 0;
         tval += -d.sign*Math.min(maxfontsize,xspace)/3;
         if (d.sign != 1) {
-          tval += Math.min(xspace)/4;
+          tval += 16;  //TODO: magic number
         }
         tval += y(d.sign == 1 ? d.y0 : d.y1);
         return tval;

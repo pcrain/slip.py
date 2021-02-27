@@ -154,6 +154,9 @@ def api_delete_missing_replays():
 def api_delete_all_replays():
   Replay.query.delete()
   db.session.commit()
+  #Clear out all replay JSONs as well
+  if os.path.exists(current_app.config["ANALYSIS_FOLDER"]):
+    shutil.rmtree(current_app.config["ANALYSIS_FOLDER"])
   #Reset global state and caching variables
   current_app.config['SCAN_IN_PROGRESS']     = False
   current_app.config['SCAN_REQUEST_STOPPED'] = False
@@ -303,7 +306,7 @@ def api_get_scan_log(s):
 #API call for opening a raw analysis JSON
 @bp.route('/raw/<r>', methods=['GET'])
 def api_get_raw_analysis(r):
-  jpath = os.path.join(current_app.config['REPLAY_FOLDER'],r[0:2],r[2:4],r+".slp.json")
+  jpath = os.path.join(current_app.config['ANALYSIS_FOLDER'],r[0:2],r[2:4],r+".slp.json")
   if not os.path.exists(jpath):
     if not os.path.exists(jpath+".gz"):
       return jsonify({"status" : "fail", "error" : f"{jpath} and {jpath}.gz not found"})

@@ -1303,6 +1303,22 @@ span#statsGrid {
       "history   history   history    history    history   history"
       ;
   }
+
+  span#statsGrid.extendedChars {
+    grid-template-areas   :
+      "title     title     title      title      title     title"
+      "subtitle  subtitle  subtitle   subtitle   subtitle  subtitle"
+      "tabs      tabs      tabs       tabs       tabs      tabs"
+      "hextchars hextchars hextchars  hextchars  hextchars hextchars"
+      "extchars  extchars  extchars   extchars   extchars  extchars "
+      "hmatchups hmatchups hmatchups  hmatchups  hmatchups hmatchups"
+      "matchups  matchups  matchups   matchups   matchups  matchups"
+      "hstages   hstages   hmostgames hmostgames hnewgames hnewgames"
+      "stages    stages    mostgames  mostgames  newgames  newgames"
+      "hhistory  hhistory  hhistory   hhistory   hhistory  hhistory"
+      "history   history   history    history    history   history"
+      ;
+  }
 }
 
 @media screen and (max-width: 800px) {
@@ -1316,6 +1332,26 @@ span#statsGrid {
       "tabs"
       "hchars"
       "chars"
+      "hmatchups"
+      "matchups"
+      "hstages"
+      "stages"
+      "hmostgames"
+      "mostgames"
+      "hnewgames"
+      "newgames"
+      "hhistory"
+      "history"
+      ;
+  }
+
+  span#statsGrid.extendedChars {
+    grid-template-areas   :
+      "title"
+      "subtitle"
+      "tabs"
+      "hextchars"
+      "extchars"
       "hmatchups"
       "matchups"
       "hstages"

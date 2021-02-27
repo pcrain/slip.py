@@ -65,7 +65,7 @@ def help():
 @bp.route('/')
 @bp.route('/replays')
 def replays():
-    rdir     = current_app.config['REPLAY_FOLDER']
+    rdir     = current_app.config['ANALYSIS_FOLDER']
     q        = request.args.get("query",None)
     ddir     = request.args.get("path","")
     page     = request.args.get('page', 1, type=int)

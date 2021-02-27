@@ -20,7 +20,7 @@ login.login_view = 'auth.login'
 def init_environment(app):
   os.makedirs(app.config["DATA_FOLDER"],exist_ok=True)
   os.makedirs(app.config["UPLOAD_FOLDER"],exist_ok=True)
-  os.makedirs(app.config["REPLAY_FOLDER"],exist_ok=True)
+  os.makedirs(app.config["ANALYSIS_FOLDER"],exist_ok=True)
   os.makedirs(app.config["QUAR_FOLDER"],exist_ok=True)
   os.makedirs(app.config["LOG_FOLDER"],exist_ok=True)
   os.makedirs(app.config["TMP_FOLDER"],exist_ok=True)
