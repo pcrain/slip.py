@@ -90,11 +90,16 @@ button.standout {
   background-color : var(--form-bg-active);
   padding-left: 4px;
   padding-right: 4px;
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
 }
 
 button.standout::before {
   content: "➤";
-  margin-right: 4px;
+  margin-right: 0px;
 }
 
 button.missing, button.missing:disabled {
@@ -1275,7 +1280,7 @@ span#statsGrid {
   display               : inline-grid;
 }
 
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1400px) {
   span#statsGrid {
     grid-template-columns : repeat(4, minmax(0, 1fr));
     grid-template-rows    : repeat(5, min-content) minmax(300px,1fr);
@@ -1301,7 +1306,7 @@ span#statsGrid {
   }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1200px) {
+@media screen and (min-width: 800px) and (max-width: 1400px) {
   span#statsGrid {
     /*grid-gap              : 32px;*/
     grid-template-columns : repeat(6, minmax(0, 1fr));
@@ -1423,9 +1428,14 @@ span#statsMatchups img {
   /*height: 20px;*/
 }
 
+
 span#statsGrid span.h, span#statsGraphs span.h {
   font-weight : bold;
-  font-size   : 14px;
+  font-size   : 16px;
+}
+
+span#statsGrid hr {
+  margin: 2px 0;
 }
 
 span#hchars     { grid-area: hchars; }
