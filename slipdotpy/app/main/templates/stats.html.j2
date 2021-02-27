@@ -56,6 +56,11 @@
         } else {
           $("button[data-q='']").addClass("active-button");
         }
+        // alert(JSON.stringify($("[title]")));
+        {% if not UNIVERSAL_TOOLTIPS %}
+          // Load fancy tooltips manually for now
+          $("[title]").tooltips();
+        {% endif %}
       }
     </script>
 
@@ -222,7 +227,7 @@
             <th title="Mean Stock Count" class="clickable" onclick="sortTable('byExtChar',4,'desc')">Stk.</th>
             <th title="Mean Openings per Kill" class="clickable" onclick="sortTable('byExtChar',5,'asc')">Pun.</th>
             <th title="Mean Damage Taken per Stock Loss" class="clickable" onclick="sortTable('byExtChar',6,'desc')">Def.</th>
-            <th title="Mean Neutral Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',7,'desc')">Neut.</th>
+            <th title="Mean Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',7,'desc')">Neut.</th>
             <th title="Mean Move Accuracy" class="clickable" onclick="sortTable('byExtChar',8,'desc')">Acc.</th>
             <th title="Mean Frames to Act Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',9,'asc')">Ctrl.</th>
             <th title="Mean Actions per Minute" class="clickable" onclick="sortTable('byExtChar',10,'desc')">APM</th>

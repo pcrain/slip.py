@@ -44,6 +44,7 @@ body {
   background-color : rgba(48,40,48,1.00);
   font-family      : 'Proza';
   margin           : 0;
+  overflow-y       : hidden;  /* To deal with tooltip weirdness */
 }
 
 a {
@@ -1873,4 +1874,35 @@ span.inline-header {
   font-size      : 20px;
   vertical-align : center;
   margin         : 0 8px;
+}
+
+.tooltip {
+  background       : rgba(0,0,0,0.85);
+  border           : 4px solid rgba(192,224,255,0.35);
+  pointer-events   : none;
+  opacity          : 0;
+  display          : inline-block;
+  position         : absolute;
+  padding          : 10px 10px;
+  color            : rgba(192,224,255,1);
+  border-radius    : 8px;
+  text-align       : center;
+  font             : bold 14px "Helvetica Neue", Sans-Serif;
+  /*font-stretch     : condensed;*/
+  /*text-decoration  : none;*/
+  /*box-shadow       : 0 0 7px black;*/
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+.tooltip.active {
+  opacity: 1;
+  /*margin-top: 5px;*/
+  transition: opacity 0.25s ease;
+}
+.tooltip.out {
+  opacity: 0;
+  /*margin-top: -20px;*/
 }

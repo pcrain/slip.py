@@ -6,4 +6,16 @@
     &nbsp;
     <a href="{{ url_for('errors.error_log') }}">(View Error Logs)</a>
   </span>
+  {% if UNIVERSAL_TOOLTIPS %}
+    <script type="text/javascript">
+      //JS magic for getting universal tooltips working
+      var oldOnload = window.onload;
+      window.onload = function () {
+        if (typeof oldOnload == 'function') {
+          oldOnload();
+        }
+        $("[title]").tooltips();
+      }
+    </script>
+  {% endif %}
 {% endblock %}

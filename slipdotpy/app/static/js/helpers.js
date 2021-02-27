@@ -329,3 +329,89 @@ function sortTable(tid,n,dir="asc",sort="num") {
     }
   }
 }
+
+
+// Nice tooltips modified from: https://css-tricks.com/bubble-point-tooltips-with-css3-jquery/
+// IIFE to ensure safe use of $
+(function( $ ) {
+
+  // Create plugin
+  $.fn.tooltips = function(el) {
+
+    // var mousex = -1;
+    // var mousey = -1;
+
+    // $(document).mousemove(function(event) {
+    //     mousex = event.pageX;
+    //     mousey = event.pageY;
+    // });
+
+    var $tooltip,
+      $body = $('body'),
+      $el;
+
+    // Ensure chaining works
+    return this.each(function(i, el) {
+
+      $el = $(el).attr("data-tooltip", i);
+
+      // Make DIV and append to page
+      // Arrow version
+      // var $tooltip = $('<div class="tooltip" data-tooltip="' + i + '">' + $el.attr('title') + '<div class="arrow"></div></div>').appendTo("body");
+      // No arrow version
+      var $tooltip = $('<div class="tooltip" data-tooltip="' + i + '">' + $el.attr('title') + '</div>').appendTo("body");
+
+      // Position right away, so first appearance is smooth
+      var linkPosition = $el.position();
+
+      $tooltip.css({
+        top: linkPosition.top - $tooltip.outerHeight()/2,
+        left: linkPosition.left - ($tooltip.width()/2)
+      });
+
+      $el
+      // Get rid of yellow box popup
+      .removeAttr("title")
+
+      // Mouseenter
+      .hover(function(e) {
+
+        var evx = e.pageX;
+        var evy = e.pageY;
+        var ww  = window.innerWidth;
+        var wh  = window.innerHeight;
+
+        $el = $(this);
+
+        $tooltip = $('div[data-tooltip=' + $el.data('tooltip') + ']');
+
+        // Reposition tooltip, in case of page movement e.g. screen resize
+        var linkPosition = $el.position();
+
+        $tooltip.css({
+          top:  evy - ((evy > wh/2) ? $tooltip.outerHeight()+24 : -24),
+          left: evx - ((evx > ww/2) ? $tooltip.outerWidth()     :   0)
+        });
+
+        // Adding class handles animation through CSS
+        $tooltip.addClass("active");
+
+        // Mouseleave
+      }, function(e) {
+
+        $el = $(this);
+
+        // Temporary class for same-direction fadeout
+        $tooltip = $('div[data-tooltip=' + $el.data('tooltip') + ']').addClass("out");
+
+        // Remove all classes
+        // $tooltip.removeClass("active").removeClass("out");
+        $tooltip.removeClass("active").removeClass("out");
+
+        });
+
+      });
+
+    }
+
+})(jQuery);
