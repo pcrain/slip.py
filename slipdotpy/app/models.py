@@ -14,6 +14,8 @@ class Anonymous(AnonymousUserMixin):
     self.id       = -1
 
   def all_replays(self):
+    # Replay.query.options(FromCache(cache)).invalidate()
+
     pubs = Replay.query.filter_by(is_public=1)
     pubs = pubs.order_by(Replay.played.desc())
     pubs = pubs.group_by(Replay.checksum)
@@ -171,6 +173,8 @@ class Replay(db.Model):
         p2stock   = str(args.get("p2stock",   ""))
         minframes = int(args.get("lengthmin", -1))
         maxframes = int(args.get("lengthmax", -1))
+
+        # Replay.query.options(FromCache(cache)).invalidate()
 
         q         = Replay.query
 

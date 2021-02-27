@@ -70,14 +70,31 @@ input, button, .fake-button {
   color: var(--form-fg);
   background-color: var(--form-bg);
   text-align: center;
-  border-top    : none;
-  border-bottom : none;
+  border-top:     1px solid transparent;
+  border-bottom:  1px solid transparent;
   border-right  : 4px solid var(--form-border);
   border-left   : 4px solid var(--form-border);
   border-radius : 4px;
   margin: 4px 0;
   cursor: pointer;
   font-weight: bold;
+}
+
+button.inline {
+  height    : inherit;
+  font-size : inherit;
+  margin    : 0;
+}
+
+button.standout {
+  background-color : var(--form-bg-active);
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+button.standout::before {
+  content: "➤";
+  margin-right: 4px;
 }
 
 button.missing, button.missing:disabled {
@@ -1785,10 +1802,65 @@ tr:hover td.conncode, td.conncode a:hover {
   color : cyan;
 }
 
-th.sorted {
-  color: cyan;
+th.clickable {
+  background-color      : rgba(128,128,128,0.5);
+  border-radius         : 4px;
+  border                : 1px solid white;
+  padding               : 2px 2px;
+  text-align            : right;
+  /*https://stackoverflow.com/questions/2310734/how-to-make-html-text-unselectable*/
+  -webkit-touch-callout : none;
+  -webkit-user-select   : none;
+  -khtml-user-select    : none;
+  -moz-user-select      : none;
+  -ms-user-select       : none;
+  user-select           : none;
 }
 
-th.sorted.rev {
+th.clickable.sorted {
+  color: lime;
+}
+
+th.clickable.sorted.rev {
   color: red;
+}
+
+th.clickable:hover {
+  background-color : rgba(128,128,255,0.5);
+}
+
+th.clickable::before {
+  content        : "▲";
+  margin-left    : 2px;
+  margin-right   : 4px;
+  opacity        : 0;   /*placehold space for arrow*/
+  font-size      : 8px;
+  vertical-align : middle;
+}
+
+th.clickable.sorted.asc::before {
+  content: "▲";
+  opacity: 1;
+}
+
+th.clickable.sorted.desc::before {
+  content: "▼";
+  opacity: 1;
+}
+
+/*https://stackoverflow.com/questions/2310734/how-to-make-html-text-unselectable*/
+.unselectable {
+  -webkit-touch-callout : none;
+  -webkit-user-select   : none;
+  -khtml-user-select    : none;
+  -moz-user-select      : none;
+  -ms-user-select       : none;
+  user-select           : none;
+}
+
+span.inline-header {
+  font-weight    : bold;
+  font-size      : 20px;
+  vertical-align : center;
+  margin         : 0 8px;
 }

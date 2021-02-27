@@ -46,6 +46,7 @@ class Config(object):
     JUST_LAUNCHED                  = True  #Autoset to False after first page loads
     SCAN_IN_PROGRESS               = False #Autoset as needed when scans are initiated
     SCAN_REQUEST_STOPPED           = False #Whether we've requested to stop an in progress scan
+    SEARCH_CACHE_VALID             = True  #Whether our current search cache is valid
     BG_MESSAGES                    = []    #List of messages regarding background tasks
     REPLAY_NAV                     = {}    #Dictionary for tracking previous / next replay based on last search
     REPLAY_NAV_QUERY               = None  #Query that we're tracking for the REPLAY_NAV above

@@ -163,6 +163,7 @@ def api_delete_all_replays():
   current_app.config["LAST_SEARCH"]          = ""
   current_app.config["REPLAY_NAV"]           = {}
   current_app.config["REPLAY_NAV_QUERY"]     = None
+  current_app.config["SEARCH_CACHE_VALID"]   = False
   return jsonify({"status" : "ok"})
 
 #[Deprecated] API call for deleting all slip.py user data
@@ -463,6 +464,7 @@ def scan_job(token):
   current_app.config["LAST_SEARCH"]          = ""
   current_app.config["REPLAY_NAV"]           = {}
   current_app.config["REPLAY_NAV_QUERY"]     = None
+  current_app.config["SEARCH_CACHE_VALID"]   = False
 
   #Clean up
   logline(tmpfile,f"Scan completed")

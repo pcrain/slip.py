@@ -1,8 +1,66 @@
 {% extends "header.html.j2" %}
 
 {% block content %}
+    <script type="text/javascript">
+      function filterResults(me) {
+        var here = window.location.href;
+        var q    = $(me).data('q');
+        here     = removeParam("ndays",removeParam("ngames",here));
+        if (q != "") {
+          here = addParam(q,here);
+        }
+        window.location.href = ensureQuery(here);
+      }
+      function dropAllFilters() {
+        var here = window.location.href;
+        here     = removeParam("char",here);
+        here     = removeParam("vs",here);
+        here     = removeParam("stage",here);
+        here     = removeParam("against",here);
+        window.location.href = ensureQuery(here);
+      }
+      function changeOrDropUrlParam(param,val) {
+        var here = window.location.href;
+        here     = removeParam(param,here);
+        if ((val != undefined) && (val != getUrlVars()[param])) {
+          here = addParam(param+"="+val,here);
+        }
+        window.location.href = ensureQuery(here);
+      }
+      function changeChar(c) {
+        changeOrDropUrlParam("char",c);
+      }
+      function changeOpponent(c) {
+        changeOrDropUrlParam("vs",c);
+      }
+      function changeStage(s) {
+        changeOrDropUrlParam("stage",s);
+      }
+      function changeAgainst(s) {
+        if (s != undefined) {
+          s = s.replace("#","_");
+        }
+        changeOrDropUrlParam("against",s);
+      }
+      function toggleExtCharStats() {
+        $("#statsGrid").toggleClass("extendedChars")
+      }
+
+      window.onload = function() {
+        var uvars = getUrlVars();
+        if ("ndays" in uvars) {
+          $("button[data-q='ndays="+uvars["ndays"]+"']").addClass("active-button");
+        }
+        else if ("ngames" in uvars) {
+          $("button[data-q='ngames="+uvars["ngames"]+"']").addClass("active-button");
+        } else {
+          $("button[data-q='']").addClass("active-button");
+        }
+      }
+    </script>
+
     {# <span id="statsGrid"> #}
-    <span id="statsGrid" class="extendedChars">
+    <span id="statsGrid">
       <span class="title">
         Player Stats for
         <span id="statsPlayerHeader" title="Click to reset all filters" onclick="dropAllFilters()">
@@ -12,145 +70,8 @@
       <span class="subtitle">
         {{stats.subtitle}}
       </span>
-
-      <script type="text/javascript">
-        function filterResults(me) {
-          var here = window.location.href;
-          var q    = $(me).data('q');
-          here     = removeParam("ndays",removeParam("ngames",here));
-          if (q != "") {
-            here = addParam(q,here);
-          }
-          window.location.href = ensureQuery(here);
-        }
-        function dropAllFilters() {
-          var here = window.location.href;
-          here     = removeParam("char",here);
-          here     = removeParam("vs",here);
-          here     = removeParam("stage",here);
-          here     = removeParam("against",here);
-          window.location.href = ensureQuery(here);
-        }
-        function changeOrDropUrlParam(param,val) {
-          var here = window.location.href;
-          here     = removeParam(param,here);
-          if ((val != undefined) && (val != getUrlVars()[param])) {
-            here = addParam(param+"="+val,here);
-          }
-          window.location.href = ensureQuery(here);
-        }
-        function changeChar(c) {
-          changeOrDropUrlParam("char",c);
-        }
-        function changeOpponent(c) {
-          changeOrDropUrlParam("vs",c);
-        }
-        function changeStage(s) {
-          changeOrDropUrlParam("stage",s);
-        }
-        function changeAgainst(s) {
-          if (s != undefined) {
-            s = s.replace("#","_");
-          }
-          changeOrDropUrlParam("against",s);
-        }
-        // https://www.w3schools.com/howto/howto_js_sort_table.asp
-        function sortTable(tid,n,dir="asc",sort="num") {
-          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-          odir = dir;
-          table = document.getElementById(tid);
-          switching = true;
-
-          // Set headers
-          heads = table.rows[0].getElementsByTagName("TH");
-          for(i = 0; i < heads.length; i++) {
-            heads[i].classList.remove("rev");
-            if (i == n) {
-              heads[i].classList.add("sorted");
-            } else {
-              heads[i].classList.remove("sorted");
-            }
-          }
-          /* Make a loop that will continue until
-          no switching has been done: */
-          while (switching) {
-            // Start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /* Loop through all table rows (except the
-            first, which contains table headers): */
-            for (i = 1; i < (rows.length - 1); i++) {
-              // Start by saying there should be no switching:
-              shouldSwitch = false;
-              /* Get the two elements you want to compare,
-              one from current row and one from the next: */
-              x = rows[i].getElementsByTagName("TD")[n];
-              y = rows[i + 1].getElementsByTagName("TD")[n];
-              /* Check if the two rows should switch place,
-              based on the direction, asc or desc: */
-              if (sort == "num") {
-                if (dir == "asc") {
-                  if (+x.innerHTML > +y.innerHTML) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                  }
-                } else if (dir == "desc") {
-                  if (+x.innerHTML < +y.innerHTML) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                  }
-                }
-              } else {
-                if (dir == "asc") {
-                  if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                  }
-                } else if (dir == "desc") {
-                  if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                  }
-                }
-              }
-            }
-            if (shouldSwitch) {
-              /* If a switch has been marked, make the switch
-              and mark that a switch has been done: */
-              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-              switching = true;
-              // Each time a switch is done, increase this count by 1:
-              switchcount ++;
-            } else {
-              /* If no switching has been done AND the direction is "asc",
-              set the direction to "desc" and run the while loop again. */
-              if (switchcount == 0 && dir == odir) {
-                dir = (odir == "asc") ? "desc" : "asc";
-                heads[n].classList.add("rev");
-                switching = true;
-              }
-            }
-          }
-        }
-
-        window.onload = function() {
-          var uvars = getUrlVars();
-          if ("ndays" in uvars) {
-            $("button[data-q='ndays="+uvars["ndays"]+"']").addClass("active-button");
-          }
-          else if ("ngames" in uvars) {
-            $("button[data-q='ngames="+uvars["ngames"]+"']").addClass("active-button");
-          } else {
-            $("button[data-q='']").addClass("active-button");
-          }
-        }
-      </script>
-
       <span class="statFilterButtons">
+        {# <span class="inline-header">Games to Show</span> #}
         <button data-q='ndays=7'      onclick="filterResults(this)">Week       </button>
         <button data-q='ndays=28'     onclick="filterResults(this)">Month      </button>
         <button data-q='ndays=365'    onclick="filterResults(this)">Year       </button>
@@ -162,8 +83,18 @@
 
       {# Mains, Secondaries, and Other Characters #}
       <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
-      <span class="h" id="hextchars"><hr/>Extended Matchup Stats (click headers to sort)<hr/></span>
-      <span class="h" id="hmatchups"><hr/>Win Rates by Matchup<hr/></span>
+      <span class="h" id="hextchars">
+        <hr/>
+        Extended Matchup Stats
+        <button class="inline standout" onclick="toggleExtCharStats()">Hide Extended Stats</button>
+        <hr/>
+      </span>
+      <span class="h" id="hmatchups">
+        <hr/>
+        Win Rates by Matchup
+        <button class="inline standout" onclick="toggleExtCharStats()">Show Extended Stats</button>
+        <hr/>
+      </span>
       <span class="h" id="hstages"><hr/>Win Rates by Stage<hr/></span>
       <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
@@ -279,16 +210,16 @@
         <table id="byExtChar">
           <tr>
             <th title="Opponent's Character">Vs.</th>
-            <th title="Win Rate" class="clickable sorted" onclick="sortTable('byExtChar',1,'desc')">Win%</th>
+            <th title="Win Rate" class="clickable sorted desc" onclick="sortTable('byExtChar',1,'desc')">Win%</th>
             <th title="Total Number of Wins" class="clickable" onclick="sortTable('byExtChar',2,'desc')">W</th>
-            <th title="Total Number of Losses" class="clickable" onclick="sortTable('byExtChar',3,'desc')">L</th>
+            <th title="Total Number of Losses" class="clickable" onclick="sortTable('byExtChar',3,'asc')">L</th>
             <th title="Mean Stock Count" class="clickable" onclick="sortTable('byExtChar',4,'desc')">Stk.</th>
             <th title="Mean Openings per Kill" class="clickable" onclick="sortTable('byExtChar',5,'asc')">Pun.</th>
             <th title="Mean Damage Taken per Stock Loss" class="clickable" onclick="sortTable('byExtChar',6,'desc')">Def.</th>
             <th title="Mean Neutral Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',7,'desc')">Neut.</th>
-            <th title="Mean Move Hit Rate" class="clickable" onclick="sortTable('byExtChar',8,'desc')">Acc.</th>
-            <th title="Mean Action Frame Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',9,'asc')">Ctrl.</th>
-            <th title="Mean Actions / Minute" class="clickable" onclick="sortTable('byExtChar',10,'desc')">APM</th>
+            <th title="Mean Move Accuracy" class="clickable" onclick="sortTable('byExtChar',8,'desc')">Acc.</th>
+            <th title="Mean Frames to Act Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',9,'asc')">Ctrl.</th>
+            <th title="Mean Actions per Minute" class="clickable" onclick="sortTable('byExtChar',10,'desc')">APM</th>
           </tr>
           {% for mu in stats.opp %}
             {% if mu[1]+mu[2] > 0 %}
