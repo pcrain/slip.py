@@ -330,6 +330,14 @@ function sortTable(tid,n,dir="asc",sort="num") {
   }
 }
 
+// Function for converting tooltip HTML shorthand to actual formatted tooltips
+function parseTooltipHTML(h) {
+  const header = /^(.*)###/i;  //Three #'s denote a header
+
+  var s = h;
+  s     = s.replace(header, '<span class=\'ttheader\'>$1</span><hr/>');
+  return s;
+}
 
 // Nice tooltips modified from: https://css-tricks.com/bubble-point-tooltips-with-css3-jquery/
 // IIFE to ensure safe use of $
@@ -359,7 +367,7 @@ function sortTable(tid,n,dir="asc",sort="num") {
       // Arrow version
       // var $tooltip = $('<div class="tooltip" data-tooltip="' + i + '">' + $el.attr('title') + '<div class="arrow"></div></div>').appendTo("body");
       // No arrow version
-      var $tooltip = $('<div class="tooltip" data-tooltip="' + i + '">' + $el.attr('title') + '</div>').appendTo("body");
+      var $tooltip = $('<div class="tooltip" data-tooltip="' + i + '">' + parseTooltipHTML($el.attr('title')) + '</div>').appendTo("body");
 
       // Position right away, so first appearance is smooth
       var linkPosition = $el.position();
@@ -415,3 +423,4 @@ function sortTable(tid,n,dir="asc",sort="num") {
     }
 
 })(jQuery);
+

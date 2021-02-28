@@ -42,8 +42,11 @@
         }
         changeOrDropUrlParam("against",s);
       }
-      function toggleExtCharStats() {
-        $("#statsGrid").toggleClass("extendedChars")
+      function changeStatsPage(n) {
+        for(var i = 1; i <= 10; i++) {
+          $("#statsGrid").removeClass("page"+i);
+        }
+        $("#statsGrid").addClass("page"+n);
       }
 
       window.onload = function() {
@@ -65,7 +68,7 @@
     </script>
 
     {# <span id="statsGrid"> #}
-    <span id="statsGrid">
+    <span class="page1" id="statsGrid">
       <span class="title">
         Stats for
         <span id="statsPlayerHeader" title="Click to reset all filters" onclick="dropAllFilters()">
@@ -87,32 +90,32 @@
       </span>
 
       {# Mains, Secondaries, and Other Characters #}
-      <span class="h" id="hchars"><hr/>Most Played Characters<hr/></span>
-      <span class="h" id="hextchars">
+      <span class="h page1" id="hchars"><hr/>Most Played Characters<hr/></span>
+      <span class="h page2" id="hextchars">
         <hr/>
         Extended Matchup Stats
-        <button class="inline standout" onclick="toggleExtCharStats()">
+        <button class="inline standout" onclick="changeStatsPage(1)">
           Basic MU Stats
           {# Hide Extended Stats #}
         </button>
         <hr/>
       </span>
-      <span class="h" id="hmatchups">
+      <span class="h page1" id="hmatchups">
         <hr/>
         Win Rates by Matchup
-        <button class="inline standout" onclick="toggleExtCharStats()">
+        <button class="inline standout" onclick="changeStatsPage(2)">
           Extra MU Stats
           {# Show Extended Stats #}
         </button>
         <hr/>
       </span>
-      <span class="h" id="hstages"><hr/>Win Rates by Stage<hr/></span>
-      <span class="h" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
-      <span class="h" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
-      <span class="h" id="hhistory"><hr/>Games Played by Date<hr/></span>
+      <span class="h page1" id="hstages"><hr/>Win Rates by Stage<hr/></span>
+      <span class="h page1" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
+      <span class="h page1" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>
+      <span class="h page1" id="hhistory"><hr/>Games Played by Date<hr/></span>
 
       {# Player character stats #}
-      <span id="statsChars">
+      <span class="page1" id="statsChars">
         {% for c in stats.char %}
           {% set playcount = (c[1:7]|sum) %}
           {% if playcount > 0 %}
@@ -146,7 +149,7 @@
       {% elif stats.opp[18][1] + stats.opp[18][2] == 0 %}
         {% set numcols = "twoColumn" %}
       {% endif %}
-      <span id="statsMatchups" class="{{numcols}}">
+      <span class="page1" id="statsMatchups" class="{{numcols}}">
         <table id="byBestChar">
           <tr>
             <th title="Opponent's Character">Vs.</th>
@@ -217,20 +220,32 @@
       </span>
 
       {# Extended stats for each matchup #}
-      <span id="statsExtChars">
+      <span class="page2" id="statsExtChars">
         <table id="byExtChar">
           <tr>
-            <th title="Opponent's Character">Vs.</th>
-            <th title="Win Rate" class="clickable sorted desc" onclick="sortTable('byExtChar',1,'desc')">Win%</th>
-            <th title="Total Number of Wins" class="clickable" onclick="sortTable('byExtChar',2,'desc')">W</th>
-            <th title="Total Number of Losses" class="clickable" onclick="sortTable('byExtChar',3,'asc')">L</th>
-            <th title="Mean Stock Count" class="clickable" onclick="sortTable('byExtChar',4,'desc')">Stk.</th>
-            <th title="Mean Openings per Kill" class="clickable" onclick="sortTable('byExtChar',5,'asc')">Pun.</th>
-            <th title="Mean Damage Taken per Stock Loss" class="clickable" onclick="sortTable('byExtChar',6,'desc')">Def.</th>
-            <th title="Mean Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',7,'desc')">Neut.</th>
-            <th title="Mean Move Accuracy" class="clickable" onclick="sortTable('byExtChar',8,'desc')">Acc.</th>
-            <th title="Mean Frames to Act Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',9,'asc')">Ctrl.</th>
-            <th title="Mean Actions per Minute" class="clickable" onclick="sortTable('byExtChar',10,'desc')">APM</th>
+            <th>Vs.</th>
+            <th title="Win Rate###Games Won / Games Played" class="clickable sorted desc" onclick="sortTable('byExtChar',1,'desc')">Win%</th>
+            <th title="Wins###Total Number of Wins" class="clickable" onclick="sortTable('byExtChar',2,'desc')">W</th>
+            <th title="Losses###Total Number of Losses" class="clickable" onclick="sortTable('byExtChar',3,'asc')">L</th>
+            <th title="Stocks###Mean Ending Stock Count" class="clickable" onclick="sortTable('byExtChar',4,'desc')">Stk.</th>
+
+            <th title="Punish###Your Mean Openings per Kill" class="clickable" onclick="sortTable('byExtChar',5,'asc')">Pun.</th>
+            <th title="Survivability###Opponent's Mean Openings per Kill" class="clickable" onclick="sortTable('byExtChar',6,'desc')">Srv.</th>
+
+            <th title="Defense###Your Mean Damage Taken per Stock Loss" class="clickable" onclick="sortTable('byExtChar',7,'desc')">Def.</th>
+            <th title="Efficiency###Opponent's Mean Damage Taken per Stock Loss" class="clickable" onclick="sortTable('byExtChar',8,'asc')">Eff.</th>
+
+            <th title="Openings###Your Mean Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',9,'desc')">Opn.</th>
+            <th title="Counter-openings###Opponent's Mean Openings per Minute in Neutral" class="clickable" onclick="sortTable('byExtChar',10,'asc')">Coun.</th>
+
+            <th title="Accuracy###Your Mean Move Accuracy" class="clickable" onclick="sortTable('byExtChar',11,'desc')">Acc.</th>
+            <th title="Evasion###Opponent's Mean Move Accuracy" class="clickable" onclick="sortTable('byExtChar',12,'asc')">Evd.</th>
+
+            <th title="Control###Your Mean Frames to Act Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',13,'asc')">Ctrl.</th>
+            <th title="Pressure###Opponent's Mean Frames to Act Out of Hitstun / Shieldstun / Wait" class="clickable" onclick="sortTable('byExtChar',14,'desc')">Pres.</th>
+
+            <th title="Actions Per Minute###Your Mean Actions per Minute" class="clickable" onclick="sortTable('byExtChar',15,'desc')">APM</th>
+            <th title="Opponent Actions Per Minute###Opponent's Mean Actions per Minute" class="clickable" onclick="sortTable('byExtChar',16,'asc')">OAPM</th>
           </tr>
           {% for mu in stats.opp %}
             {% if mu[1]+mu[2] > 0 %}
@@ -238,22 +253,29 @@
               <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
                 <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
                 <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}</td>
-                <td>{{mu[1]}}</td>
-                <td>{{mu[2]}}</td>
-                <td>{{"%.1f"|format(mu[4])}}</td>
-                <td>{{"%.1f"|format(mu[5])}}</td>
-                <td>{{"%.1f"|format(mu[6])}}</td>
-                <td>{{"%.1f"|format(mu[7])}}</td>
-                <td>{{"%.1f"|format(mu[8])}}</td>
-                <td>{{"%.1f"|format(mu[9])}}</td>
-                <td>{{"%.1f"|format(mu[10])}}</td>
+                <td>{{mu[1]}}</td>                  {# wins #}
+                <td>{{mu[2]}}</td>                  {# losses #}
+                <td>{{"%.1f"|format(mu[4])}}</td>   {# stock count#}
+
+                <td>{{"%.1f"|format(mu[5])}} </td>  {# punish #}
+                <td>{{"%.1f"|format(mu[11])}}</td>  {# survivability (opunish) #}
+                <td>{{"%.1f"|format(mu[6])}} </td>  {# defense #}
+                <td>{{"%.1f"|format(mu[12])}}</td>  {# efficiency (odefense) #}
+                <td>{{"%.1f"|format(mu[7])}} </td>  {# neutral wins #}
+                <td>{{"%.1f"|format(mu[13])}}</td>  {# neutral losses (o neut. wins#}
+                <td>{{"%.1f"|format(mu[8])}} </td>  {# accuracy #}
+                <td>{{"%.1f"|format(mu[14])}}</td>  {# evasion (opponent accuracy) #}
+                <td>{{"%.1f"|format(mu[9])}} </td>  {# control #}
+                <td>{{"%.1f"|format(mu[15])}}</td>  {# pressure (opponent's control) #}
+                <td>{{"%.1f"|format(mu[10])}}</td>  {# APM #}
+                <td>{{"%.1f"|format(mu[16])}}</td>  {# opponent's APM #}
               </tr>
             {% endif %}
           {% endfor %}
         </table>
       </span>
 
-      <span id="statsStages">
+      <span class="page1" id="statsStages">
         <table id="byStage">
           <tr>
             <th>Stage</th>
@@ -284,7 +306,7 @@
       </span>
 
       {# Most Played Opponents #}
-      <span id="statsMost">
+      <span class="page1" id="statsMost">
         <table>
           <tr>
             <th>Code</th>
@@ -323,7 +345,7 @@
       </span>
 
       {# Most Recent Opponents #}
-      <span id="statsNew">
+      <span class="page1" id="statsNew">
         <table>
           <tr>
             <th>Code</th>
@@ -362,7 +384,7 @@
       </span>
 
       {# Most Recent Games #}
-      <span id="statsHistory">
+      <span class="page1" id="statsHistory">
         <div class="barDiv svg-container">
           {% set svg_selector = "div.bardiv" %}
           {% set jsondata     = stats["bydate"] %}

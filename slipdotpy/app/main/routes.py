@@ -340,12 +340,19 @@ def get_stats(tag,args):
     "name"   : tag,                                    #Display name for player we're showing stats for
     "count"  : len(rows),                              #Total number of matches returned from query
     "char"   : [[i]+[0,0,0,0,0,0] for i in range(26)], #Own character / colors selection choices
-    "opp"    : [[i]+[0,0,0]+[0,0,0,0,0,0,0] for i in range(26)], #Char,Win,Lose,Draw + avg. Stocks,Punish,Defense,Neutral,Accuracy,Control,APM against each character
+    "opp"    : [
+      [i]          + #Char id
+      [0,0,0]      + #Win,Lose,Draw against that char
+      [0]          + #Average end Stocks against that char
+      [0,0,0,0,0,0]+ #Punish,Defense,Neutral,Accuracy,Control,APM against that char
+      [0,0,0,0,0,0]  #Punish,Defense,Neutral,Accuracy,Control,APM for that char against you
+      for i in range(26)],
     "stg"    : [[legal[i]]+[0,0,0] for i in range(7)], #Stage,Win,Lose,Draw against each legal stage + others
     "recent" : [],                                     #Win,Lose,Draw against most recent opponents
     "top"    : [],                                     #Win,lose,Draw against most played opponents
     }
-  fourstocks = [0 for i in range(26)]                  #Four-stock counter for use with stats
+  fourstocks  = [0 for i in range(26)]                  #Our fur-stock counter for use with stats
+  fourstocked = [0 for i in range(26)]                  #Foe four-stock counter for use with stats
 
   #Set up header banner
   if args.get("ndays",False):
@@ -403,11 +410,17 @@ def get_stats(tag,args):
     stage     = r.stage
     stockdiff = (r.p1stocks-r.p2stocks)*(1 if p == 1 else -1) #stock difference between players
     ppunish   = r.p1punish   if p == 1 else r.p2punish   #player character punish
+    opunish   = r.p2punish   if p == 1 else r.p1punish   #opponent character punish
     pdefense  = r.p1defense  if p == 1 else r.p2defense  #player character defense
+    odefense  = r.p2defense  if p == 1 else r.p1defense  #opponent character defense
     pneutral  = r.p1neutral  if p == 1 else r.p2neutral  #player character neutral
+    oneutral  = r.p2neutral  if p == 1 else r.p1neutral  #opponent character neutral
     paccuracy = r.p1accuracy if p == 1 else r.p2accuracy #player character accuracy
+    oaccuracy = r.p2accuracy if p == 1 else r.p1accuracy #opponent character accuracy
     pcontrol  = r.p1control  if p == 1 else r.p2control  #player character control
+    ocontrol  = r.p2control  if p == 1 else r.p1control  #opponent character control
     pspeed    = r.p1speed    if p == 1 else r.p2speed    #player character speed
+    ospeed    = r.p2speed    if p == 1 else r.p1speed    #opponent character speed
 
     #Get latest dates, display names and tags
     if stats["name"] == tag:
@@ -437,16 +450,28 @@ def get_stats(tag,args):
     #Increment appropriate stats
     if ochar < 26:
       stats["opp"][ochar][4]  += stockdiff
+
+      #Our stats vs. this character
       stats["opp"][ochar][5]  += ppunish
       if pdefense > 0:
         stats["opp"][ochar][6]  += pdefense
       else:
-        # stats["opp"][ochar][6]  += pdefense
         fourstocks[ochar] += 1
       stats["opp"][ochar][7]  += pneutral
       stats["opp"][ochar][8]  += paccuracy
       stats["opp"][ochar][9]  += pcontrol
       stats["opp"][ochar][10] += pspeed
+
+      #This character's stats vs. us
+      stats["opp"][ochar][11]  += opunish
+      if odefense > 0:
+        stats["opp"][ochar][12]  += odefense
+      else:
+        fourstocked[ochar] += 1
+      stats["opp"][ochar][13]  += oneutral
+      stats["opp"][ochar][14]  += oaccuracy
+      stats["opp"][ochar][15]  += ocontrol
+      stats["opp"][ochar][16]  += ospeed
 
     #Track dates of matches that fall within the requested date range
     if pstocks > ostocks:
@@ -459,10 +484,12 @@ def get_stats(tag,args):
   #Take the mean of all of our stats in each matchup
   for ochar in range(26):
     ogames = sum(stats["opp"][ochar][1:4])
-    for stat in range(4,11):
+    for stat in range(4,17):
       if ogames > 0:
         if stat == 6: #For survivabilty stat, we ignore 4-stock games
           games_that_count = (ogames-fourstocks[ochar])
+        elif stat == 12: #For survivabilty stat, we ignore 4-stock games
+          games_that_count = (ogames-fourstocked[ochar])
         else:
           games_that_count = (ogames)
         if games_that_count > 0:
