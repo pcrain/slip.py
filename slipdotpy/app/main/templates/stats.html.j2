@@ -45,8 +45,10 @@
       function changeStatsPage(n) {
         for(var i = 1; i <= 10; i++) {
           $("#statsGrid").removeClass("page"+i);
+          $("#page"+i+"-button").removeClass("active-button");
         }
         $("#statsGrid").addClass("page"+n);
+        $("#page"+n+"-button").addClass("active-button");
       }
 
       window.onload = function() {
@@ -78,6 +80,13 @@
       <span class="subtitle">
         {{stats.subtitle}}
       </span>
+      <span class="statPageButtons">
+        <button class="active-button" id="page1-button" onclick="changeStatsPage(1)">Page 1</button>
+        <button id="page2-button" onclick="changeStatsPage(2)">Page 2</button>
+      </span>
+      <span class="pagetitle">
+        Stat Pages
+      </span>
       <span class="statFilterButtons">
         {# <span class="inline-header">Games to Show</span> #}
         <button data-q='ndays=7'      onclick="filterResults(this)">Week       </button>
@@ -88,27 +97,14 @@
         <button data-q='ngames=10000' onclick="filterResults(this)">10000 Games</button>
         <button data-q=''             onclick="filterResults(this)">Lifetime   </button>
       </span>
+      <span class="filtertitle">
+        Filter by recent games
+      </span>
 
       {# Mains, Secondaries, and Other Characters #}
       <span class="h page1" id="hchars"><hr/>Most Played Characters<hr/></span>
-      <span class="h page2" id="hextchars">
-        <hr/>
-        Extended Matchup Stats
-        <button class="inline standout" onclick="changeStatsPage(1)">
-          Basic MU Stats
-          {# Hide Extended Stats #}
-        </button>
-        <hr/>
-      </span>
-      <span class="h page1" id="hmatchups">
-        <hr/>
-        Win Rates by Matchup
-        <button class="inline standout" onclick="changeStatsPage(2)">
-          Extra MU Stats
-          {# Show Extended Stats #}
-        </button>
-        <hr/>
-      </span>
+      <span class="h page2" id="hextchars"><hr/>Extended Matchup Stats<hr/></span>
+      <span class="h page1" id="hmatchups"><hr/>Win Rates by Matchup<hr/></span>
       <span class="h page1" id="hstages"><hr/>Win Rates by Stage<hr/></span>
       <span class="h page1" id="hmostgames"><hr/>Most Played Opponents<hr/></span>
       <span class="h page1" id="hnewgames"><hr/>Most Recent Opponents<hr/></span>

@@ -137,9 +137,9 @@ input:hover:enabled, button:hover:enabled {
 }
 
 input:enabled:focus, button:enabled:focus, input:hover:enabled:focus, button:hover:enabled:focus {
-  border-top    : 1px solid var(--form-border-focus);
-  border-bottom : 1px solid var(--form-border-focus);
-  border-color  : var(--form-border-focus);
+  /*border-top    : 1px solid var(--form-border-focus);*/
+  /*border-bottom : 1px solid var(--form-border-focus);*/
+  /*border-color  : var(--form-border-focus);*/
 }
 
 button:disabled {
@@ -1257,6 +1257,10 @@ span#statsGrid {
   grid-template-rows    : repeat(auto, min-content) minmax(300px,1fr);
 }
 
+span#statsGrid.page2 {
+  min-width             : 1200px;
+}
+
 span#statsGrid.page1 .page2 {
   display: none;
 }
@@ -1268,8 +1272,8 @@ span#statsGrid.page2 .page1 {
 @media screen and (min-width: 1400px) {
   span#statsGrid.page1 {
     grid-template-areas:
-      "title     title     tabs       tabs       tabs"
-      "subtitle  subtitle  tabs       tabs       tabs"
+      "title     title     pages      tabs       tabs"
+      "subtitle  subtitle  tpages     ttabs      ttabs"
       "hchars    hchars    hhistory   hhistory   hhistory"
       "chars     chars     history    history    history"
       "hmatchups hmatchups hstages    hmostgames hnewgames"
@@ -1279,10 +1283,10 @@ span#statsGrid.page2 .page1 {
 
   span#statsGrid.page2 {
     grid-template-areas:
-      "title     tabs"
-      "subtitle  tabs"
-      "hextchars hextchars"
-      "extchars  extchars"
+      "title     pages     tabs"
+      "subtitle  tpages    ttabs"
+      "hextchars hextchars hextchars"
+      "extchars  extchars  extchars"
       ;
   }
 }
@@ -1294,6 +1298,9 @@ span#statsGrid.page2 .page1 {
       "title     title     title      title      title     title"
       "subtitle  subtitle  subtitle   subtitle   subtitle  subtitle"
       "tabs      tabs      tabs       tabs       tabs      tabs"
+      "ttabs     ttabs     ttabs      ttabs      ttabs     ttabs"
+      "pages     pages     pages      pages      pages     pages"
+      "tpages    tpages    tpages     tpages     tpages    tpages"
       "hchars    hchars    hchars     hchars     hchars    hchars"
       "chars     chars     chars      chars      chars     chars"
       "hmatchups hmatchups hmatchups  hmatchups  hmatchups hmatchups"
@@ -1310,6 +1317,9 @@ span#statsGrid.page2 .page1 {
       "title     title     title      title      title     title"
       "subtitle  subtitle  subtitle   subtitle   subtitle  subtitle"
       "tabs      tabs      tabs       tabs       tabs      tabs"
+      "ttabs     ttabs     ttabs      ttabs      ttabs     ttabs"
+      "pages     pages     pages      pages      pages     pages"
+      "tpages    tpages    tpages     tpages     tpages    tpages"
       "hextchars hextchars hextchars  hextchars  hextchars hextchars"
       "extchars  extchars  extchars   extchars   extchars  extchars "
       "hmatchups hmatchups hmatchups  hmatchups  hmatchups hmatchups"
@@ -1320,6 +1330,15 @@ span#statsGrid.page2 .page1 {
       "history   history   history    history    history   history"
       ;
   }
+
+  span.pagetitle {
+    display: none;
+    grid-area : tpages;
+  }
+  span.filtertitle {
+    display: none;
+    grid-area : ttabs;
+  }
 }
 
 @media screen and (max-width: 800px) {
@@ -1329,6 +1348,7 @@ span#statsGrid.page2 .page1 {
       "title"
       "subtitle"
       "tabs"
+      "pages"
       "hchars"
       "chars"
       "hmatchups"
@@ -1349,6 +1369,7 @@ span#statsGrid.page2 .page1 {
       "title"
       "subtitle"
       "tabs"
+      "pages"
       "hextchars"
       "extchars"
       "hmatchups"
@@ -1363,6 +1384,25 @@ span#statsGrid.page2 .page1 {
       "history"
       ;
   }
+
+  span.pagetitle {
+    display: none;
+    grid-area : tpages;
+  }
+  span.filtertitle {
+    display: none;
+    grid-area : ttabs;
+  }
+}
+
+span.statPageButtons {
+  grid-area : pages;
+}
+span.pagetitle {
+  grid-area : tpages;
+}
+span.filtertitle {
+  grid-area : ttabs;
 }
 
 span#statsGrid span#hextchars {
@@ -1842,7 +1882,7 @@ span.inline-header {
   padding          : 10px 10px;
   color            : rgba(192,224,255,1);
   border-radius    : 8px;
-  text-align       : center;
+  text-align       : left;
   font             : bold 14px "Helvetica Neue", Sans-Serif;
   /*font-stretch     : condensed;*/
   /*text-decoration  : none;*/
@@ -1904,9 +1944,12 @@ span.inline-header {
 }
 
 .tooltip .ttheader {
-  font-size: 16px;
-  color: white;
-  text-shadow:
+  display     : block;
+  margin      : 0 auto;
+  text-align  : center;
+  font-size   : 16px;
+  color       : white;
+  text-shadow :
     -1px -1px 0 black,
      1px -1px 0 black,
     -1px  1px 0 black,
