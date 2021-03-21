@@ -1405,12 +1405,40 @@ span.filtertitle {
   grid-area : ttabs;
 }
 
-span#statsGrid span#hextchars {
+span#statsGrid.page2 span#hextchars {
   grid-area : hextchars;
 }
 
-span#statsGrid span#statsExtChars {
-  grid-area : extchars;
+span#statsGrid.page2 span#statsExtChars {
+  grid-area             : extchars;
+  display               : inline-grid;
+  grid-template-areas   : "extDetails extTable";
+  grid-template-columns : auto auto;
+}
+
+span#matchupDetails {
+  grid-area  : extDetails;
+  max-width  : 400px;
+  margin     : 0 auto;
+  text-align : center;
+}
+
+span.mudPortrait {
+  display   : inline-block;
+  max-width : 45%;
+  width     : 45%;
+}
+
+span.mudPortrait img {
+  width: 100%;
+}
+
+span.mudPortrait#mudPortrait2 img {
+  transform: scaleX(-1);
+}
+
+table#byExtChar {
+  grid-area : extTable;
 }
 
 span#statsStages {

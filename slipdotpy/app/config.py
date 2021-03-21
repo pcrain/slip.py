@@ -9,7 +9,7 @@ class Config(object):
     SIMULTANEOUS_UPLOADS           = 100
     MAX_SCAN_THREADS               = multiprocessing.cpu_count()
     DEF_STATS                      = "?submit=&ndays=28" #Default stats page query
-    UNIVERSAL_TOOLTIPS             = False #Whether we use fancy tooltips on all pages (slows things down too much on replay index)
+    UNIVERSAL_TOOLTIPS             = True #Whether we use fancy tooltips on all pages (slows things down too much on replay index)
 
     #Global template variables
     SITE_VERSION                   = "0.7.0"

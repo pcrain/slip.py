@@ -1,5 +1,5 @@
 <span class="hoverWrapper">
-  <span class="dirSummary {{dsummary.class}}" title="{{dsummary.class}}" onclick='{{dsummary.click}}({{dsummary.path|tojson}})'>
+  <span class="dirSummary {{dsummary.class}}" onclick='{{dsummary.click}}({{dsummary.path|tojson}})'>
     {% if dsummary.class == "file" %}
       <span class="dsIcon"><img src="{{ icon_from_filename(dsummary.name)}}"></img></span>
     {% elif dsummary.class == "drive" %}

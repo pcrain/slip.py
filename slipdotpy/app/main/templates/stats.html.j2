@@ -2,6 +2,24 @@
 
 {% block content %}
     <script type="text/javascript">
+      var stats       = {{stats|tojson|safe}};
+      var intchardata = {{intchardata|tojson|safe}};
+      window.onload = function() {
+        var uvars = getUrlVars();
+        if ("ndays" in uvars) {
+          $("button[data-q='ndays="+uvars["ndays"]+"']").addClass("active-button");
+        }
+        else if ("ngames" in uvars) {
+          $("button[data-q='ngames="+uvars["ngames"]+"']").addClass("active-button");
+        } else {
+          $("button[data-q='']").addClass("active-button");
+        }
+        // alert(JSON.stringify($("[title]")));
+        {% if not UNIVERSAL_TOOLTIPS %}
+          // Load fancy tooltips manually for now
+          $("[title]").tooltips();
+        {% endif %}
+      }
       function filterResults(me) {
         var here = window.location.href;
         var q    = $(me).data('q');
@@ -51,21 +69,40 @@
         $("#page"+n+"-button").addClass("active-button");
       }
 
-      window.onload = function() {
-        var uvars = getUrlVars();
-        if ("ndays" in uvars) {
-          $("button[data-q='ndays="+uvars["ndays"]+"']").addClass("active-button");
+      function changeExtDetail(o) {
+        // alert(JSON.stringify(stats));
+        var charid = -1;
+        for(var i = 0; i < 26; ++i) {
+          if (stats["opp"][i][0] == o) {
+            charid = i;
+            break;
+          }
         }
-        else if ("ngames" in uvars) {
-          $("button[data-q='ngames="+uvars["ngames"]+"']").addClass("active-button");
-        } else {
-          $("button[data-q='']").addClass("active-button");
-        }
-        // alert(JSON.stringify($("[title]")));
-        {% if not UNIVERSAL_TOOLTIPS %}
-          // Load fancy tooltips manually for now
-          $("[title]").tooltips();
-        {% endif %}
+        odata = stats["opp"][charid];
+
+        // alert(odata);
+        var t = $("#byDetailChar");
+
+
+        $("#mudPortrait2 img")
+          .attr("src","{{ url_for('static',filename='icons/css') }}/"+intchardata[o]["intname"]+"0.png");
+
+        t.find("#p1w").html(odata[1]);
+        t.find("#p2w").html(odata[2]);
+
+        t.find("#p1p").html(odata[5].toFixed(1));
+        t.find("#p1d").html(odata[6].toFixed(1));
+        t.find("#p1o").html(odata[7].toFixed(1));
+        t.find("#p1a").html(odata[8].toFixed(1));
+        t.find("#p1c").html(odata[9].toFixed(1));
+        t.find("#p1m").html(odata[10].toFixed(1));
+
+        t.find("#p2p").html(odata[11].toFixed(1));
+        t.find("#p2d").html(odata[12].toFixed(1));
+        t.find("#p2o").html(odata[13].toFixed(1));
+        t.find("#p2a").html(odata[14].toFixed(1));
+        t.find("#p2c").html(odata[15].toFixed(1));
+        t.find("#p2m").html(odata[16].toFixed(1));
       }
     </script>
 
@@ -217,6 +254,35 @@
 
       {# Extended stats for each matchup #}
       <span class="page2" id="statsExtChars">
+        <span id="matchupDetails">
+          <span class="mudPortrait" id ="mudPortrait1">
+            {# If we are showing stats for more than one character, show generic portrait #}
+            {% if stats['char'][1][1:]|sum > 0 %}
+              <img src="{{ url_for('static',filename='icons/css') }}/_NONE0.png"/>
+            {# Show character specific portrait, with the index of the most-played costume color #}
+            {% else %}
+              <img src="{{ url_for('static',filename='icons/css') }}/{{ intchardata[stats['char'][0][0]]['intname'] }}{{stats['char'][0][1:].index(stats['char'][0][1:]|max)}}.png"/>
+            {% endif %}
+          </span>
+          <span class="mudPortrait" id ="mudPortrait2">
+            <img src="{{ url_for('static',filename='icons/css') }}/_NONE0.png"/>
+          </span>
+          <table id="byDetailChar">
+            <tr><td>Wins</td>                     <td id="p1w">0</td><td id="p2w">0</td></tr>
+            <tr><td>Openings Per Kill</td>        <td id="p1p">0</td><td id="p2p">0</td></tr>
+            <tr><td>Damage Taken Per Stock</td>   <td id="p1d">0</td><td id="p2d">0</td></tr>
+            <tr><td>Neutral Wins Per Minute</td>  <td id="p1o">0</td><td id="p2o">0</td></tr>
+            <tr><td>Move Hit %</td>               <td id="p1a">0</td><td id="p2a">0</td></tr>
+            <tr><td>Act Out of Stun / Wait</td>   <td id="p1c">0</td><td id="p2c">0</td></tr>
+            <tr><td>Actions Per Minute</td>       <td id="p1m">0</td><td id="p2m">0</td></tr>
+
+            {# <tr><td>Best Stage</td>               <td colspan=2 id="p1b"> 0</td></tr> #}
+            {# <tr><td>Worst Stage</td>              <td colspan=2 id="p1w"> 0</td></tr> #}
+            {# <tr><td>Toughest Opponent #1</td>     <td colspan=2 id="p1r1">0</td></tr> #}
+            {# <tr><td>Toughest Opponent #2</td>     <td colspan=2 id="p1r2">0</td></tr> #}
+            {# <tr><td>Toughest Opponent #3</td>     <td colspan=2 id="p1r3">0</td></tr> #}
+          </table>
+        </span>
         <table id="byExtChar">
           <tr>
             <th>Vs.</th>
@@ -245,7 +311,7 @@
           </tr>
           {% for mu in stats.opp %}
             {% if mu[1]+mu[2] > 0 %}
-              {% set click="changeOpponent("+(mu[0]|string)+")" %}
+              {% set click="changeExtDetail("+(mu[0]|string)+")" %}
               <tr title="Click to filter by games vs. {{intchardata[mu[0]]['name']}}" class="clickable" onclick="{{click}}">
                 <td><img src="{{ url_for('static',filename='icons/stock') }}/{{ intchardata[mu[0]]['intname'] }}0.png"/></td>
                 <td>{{ (100*mu[1] / ([mu[1]+mu[2],1] | max)) | int }}</td>
