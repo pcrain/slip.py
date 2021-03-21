@@ -87,22 +87,89 @@
         $("#mudPortrait2 img")
           .attr("src","{{ url_for('static',filename='icons/css') }}/"+intchardata[o]["intname"]+"0.png");
 
-        t.find("#p1w").html(odata[1]);
-        t.find("#p2w").html(odata[2]);
+        var p1wins = odata[1];
+        var p2wins = odata[2];
+        t.find("#p1w").html(p1wins);
+        t.find("#p2w").html(p2wins);
+        if(p1wins > p2wins) {
+          t.find("#p1w").addClass("hl-green");
+          t.find("#p2w").removeClass("hl-red");
+        } else {
+          t.find("#p2w").addClass("hl-red");
+          t.find("#p1w").removeClass("hl-green");
+        }
 
-        t.find("#p1p").html(odata[5].toFixed(1));
-        t.find("#p1d").html(odata[6].toFixed(1));
-        t.find("#p1o").html(odata[7].toFixed(1));
-        t.find("#p1a").html(odata[8].toFixed(1));
-        t.find("#p1c").html(odata[9].toFixed(1));
-        t.find("#p1m").html(odata[10].toFixed(1));
+        var p1punish = odata[5];
+        var p2punish = odata[11];
+        t.find("#p1p").html(p1punish.toFixed(1));
+        t.find("#p2p").html(p2punish.toFixed(1));
+        if(p1punish < p2punish) {
+          t.find("#p1p").addClass("hl-green");
+          t.find("#p2p").removeClass("hl-red");
+        } else {
+          t.find("#p2p").addClass("hl-red");
+          t.find("#p1p").removeClass("hl-green");
+        }
 
-        t.find("#p2p").html(odata[11].toFixed(1));
-        t.find("#p2d").html(odata[12].toFixed(1));
-        t.find("#p2o").html(odata[13].toFixed(1));
-        t.find("#p2a").html(odata[14].toFixed(1));
-        t.find("#p2c").html(odata[15].toFixed(1));
-        t.find("#p2m").html(odata[16].toFixed(1));
+        var p1defense = odata[6];
+        var p2defense = odata[12];
+        t.find("#p1d").html(p1defense.toFixed(1));
+        t.find("#p2d").html(p2defense.toFixed(1));
+        if(p1defense > p2defense) {
+          t.find("#p1d").addClass("hl-green");
+          t.find("#p2d").removeClass("hl-red");
+        } else {
+          t.find("#p2d").addClass("hl-red");
+          t.find("#p1d").removeClass("hl-green");
+        }
+
+        var p1openings = odata[7];
+        var p2openings = odata[13];
+        t.find("#p1o").html(p1openings.toFixed(1));
+        t.find("#p2o").html(p2openings.toFixed(1));
+        if(p1openings > p2openings) {
+          t.find("#p1o").addClass("hl-green");
+          t.find("#p2o").removeClass("hl-red");
+        } else {
+          t.find("#p2o").addClass("hl-red");
+          t.find("#p1o").removeClass("hl-green");
+        }
+
+        var p1accuracy = odata[8];
+        var p2accuracy = odata[14];
+        t.find("#p1a").html(p1accuracy.toFixed(1));
+        t.find("#p2a").html(p2accuracy.toFixed(1));
+        if(p1accuracy > p2accuracy) {
+          t.find("#p1a").addClass("hl-green");
+          t.find("#p2a").removeClass("hl-red");
+        } else {
+          t.find("#p2a").addClass("hl-red");
+          t.find("#p1a").removeClass("hl-green");
+        }
+
+        var p1control = odata[9];
+        var p2control = odata[15];
+        t.find("#p1c").html(p1control.toFixed(1));
+        t.find("#p2c").html(p2control.toFixed(1));
+        if(p1control < p2control) {
+          t.find("#p1c").addClass("hl-green");
+          t.find("#p2c").removeClass("hl-red");
+        } else {
+          t.find("#p2c").addClass("hl-red");
+          t.find("#p1c").removeClass("hl-green");
+        }
+
+        var p1apm = odata[10];
+        var p2apm = odata[16];
+        t.find("#p1m").html(p1apm.toFixed(1));
+        t.find("#p2m").html(p2apm.toFixed(1));
+        if(p1apm > p2apm) {
+          t.find("#p1m").addClass("hl-green");
+          t.find("#p2m").removeClass("hl-red");
+        } else {
+          t.find("#p2m").addClass("hl-red");
+          t.find("#p1m").removeClass("hl-green");
+        }
       }
     </script>
 
@@ -255,7 +322,7 @@
       {# Extended stats for each matchup #}
       <span class="page2" id="statsExtChars">
         <span id="matchupDetails">
-          <span class="mudPortrait" id ="mudPortrait1">
+          <span class="portrait mudPortrait" id ="mudPortrait1">
             {# If we are showing stats for more than one character, show generic portrait #}
             {% if stats['char'][1][1:]|sum > 0 %}
               <img src="{{ url_for('static',filename='icons/css') }}/_NONE0.png"/>
@@ -264,17 +331,17 @@
               <img src="{{ url_for('static',filename='icons/css') }}/{{ intchardata[stats['char'][0][0]]['intname'] }}{{stats['char'][0][1:].index(stats['char'][0][1:]|max)}}.png"/>
             {% endif %}
           </span>
-          <span class="mudPortrait" id ="mudPortrait2">
+          <span class="portrait mudPortrait" id ="mudPortrait2">
             <img src="{{ url_for('static',filename='icons/css') }}/_NONE0.png"/>
           </span>
           <table id="byDetailChar">
-            <tr><td>Wins</td>                     <td id="p1w">0</td><td id="p2w">0</td></tr>
-            <tr><td>Openings Per Kill</td>        <td id="p1p">0</td><td id="p2p">0</td></tr>
-            <tr><td>Damage Taken Per Stock</td>   <td id="p1d">0</td><td id="p2d">0</td></tr>
-            <tr><td>Neutral Wins Per Minute</td>  <td id="p1o">0</td><td id="p2o">0</td></tr>
-            <tr><td>Move Hit %</td>               <td id="p1a">0</td><td id="p2a">0</td></tr>
-            <tr><td>Act Out of Stun / Wait</td>   <td id="p1c">0</td><td id="p2c">0</td></tr>
-            <tr><td>Actions Per Minute</td>       <td id="p1m">0</td><td id="p2m">0</td></tr>
+            <tr><td id="p1w">???</td>  <td>Wins</td>                     <td id="p2w">???</td></tr>
+            <tr><td id="p1p">???</td>  <td>Openings Per Kill</td>        <td id="p2p">???</td></tr>
+            <tr><td id="p1d">???</td>  <td>Damage Taken Per Stock</td>   <td id="p2d">???</td></tr>
+            <tr><td id="p1o">???</td>  <td>Neutral Wins Per Minute</td>  <td id="p2o">???</td></tr>
+            <tr><td id="p1a">???</td>  <td>Move Hit %</td>               <td id="p2a">???</td></tr>
+            <tr><td id="p1c">???</td>  <td>Act Out of Stun / Wait</td>   <td id="p2c">???</td></tr>
+            <tr><td id="p1m">???</td>  <td>Actions Per Minute</td>       <td id="p2m">???</td></tr>
 
             {# <tr><td>Best Stage</td>               <td colspan=2 id="p1b"> 0</td></tr> #}
             {# <tr><td>Worst Stage</td>              <td colspan=2 id="p1w"> 0</td></tr> #}

@@ -1494,7 +1494,8 @@ span#statsChars span.charGrid {
   ;
 }
 
-span#statsChars span.portrait {
+span#statsChars span.portrait,
+span#statsExtChars span.portrait {
   width            : 100%;
   height           : max-content;
   grid-area        : portrait;
@@ -1503,13 +1504,16 @@ span#statsChars span.portrait {
   background-color : rgba(0,0,0,0.2);
 }
 
+span#statsChars span.portrait {
+  cursor : pointer;
+}
+
 span#statsChars span.portrait:hover {
   border           : 1px solid var(--general-hl-color-bright);
 }
 
 span.portrait img {
   width  : 100%;
-  cursor : pointer;
 }
 
 span#statsChars span.charGrid.main {
