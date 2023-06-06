@@ -3,7 +3,7 @@
 
 import sys
 
-PY_VER = sys.version[:3].replace(".","")
+PY_VER = sys.version[:4].replace(".","")
 if int(PY_VER) < 36:
   print("You must use at least Python 3.6.x to run this App")
   print(f"Your version: {sys.version.split()[0]}")
